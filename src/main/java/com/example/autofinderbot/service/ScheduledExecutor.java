@@ -29,28 +29,30 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor
 public class ScheduledExecutor {
     private static final Logger log = LoggerFactory.getLogger(ScheduledExecutor.class);
+
+    int carLimit = 30;
     CarService carService;
     TelegramBot telegramBot;
     DocumentService documentService;
+
 
     @SneakyThrows
     @Scheduled(fixedRate = 10, timeUnit = MINUTES)
     void execute() {
         Set<String> old = getOldUrls();
         List<CarResponse> newCars = new ArrayList<>();
-        Document document = documentService.load(SEARCH_URL, 30);
-        int pages = carService.getPages(document);
-        System.out.println("pages: " + pages);
-        for (int i = 1; i < pages; i++) {
-            List<CarResponse> carResponses = carService.findCars(documentService.load(SEARCH_URL(i)));
+
+        int page = 1;
+        while (newCars.size() <= carLimit) {
+            List<CarResponse> carResponses = carService.findCars(documentService.load(SEARCH_URL(page++)));
             System.out.println("Found car responses: " + carResponses.size());
-            List<CarResponse> filtered = carResponses.stream().filter(cr -> !old.contains(cr.url())).toList();
+            List<CarResponse> filtered = carResponses.stream().filter(cr -> !old.contains(cr.getUrl())).toList();
             newCars.addAll(filtered);
             System.out.println("Added filtered");
-            if(!validate(carResponses.stream().map(CarResponse::url).toList(), old)) break;
+            if(!validate(carResponses.stream().map(CarResponse::getUrl).toList(), old)) break;
         }
 
-        saveNewUrls(newCars.stream().map(CarResponse::url).toList());
+        saveNewUrls(newCars.stream().map(CarResponse::getUrl).toList());
         telegramBot.sendAll(newCars.stream().map(carService::formatCarResponse).toList());
     }
 
