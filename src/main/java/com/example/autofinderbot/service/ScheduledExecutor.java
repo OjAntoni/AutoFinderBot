@@ -2,6 +2,7 @@ package com.example.autofinderbot.service;
 
 import com.example.autofinderbot.TelegramBot;
 import com.example.autofinderbot.domain.CarResponse;
+import com.example.autofinderbot.repository.CarFileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
@@ -28,82 +29,32 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class ScheduledExecutor {
-    private static final Logger log = LoggerFactory.getLogger(ScheduledExecutor.class);
-
     int carLimit = 30;
     CarService carService;
+    CarFileRepository carFileRepository;
     TelegramBot telegramBot;
     DocumentService documentService;
 
 
     @SneakyThrows
-    @Scheduled(fixedRate = 10, timeUnit = MINUTES)
+    @Scheduled(fixedRate = 10, initialDelay = 1, timeUnit = MINUTES)
     void execute() {
-        Set<String> old = getOldUrls();
         List<CarResponse> newCars = new ArrayList<>();
 
         int page = 1;
         while (newCars.size() <= carLimit) {
             List<CarResponse> carResponses = carService.findCars(documentService.load(SEARCH_URL(page++)));
+
             System.out.println("Found car responses: " + carResponses.size());
-            List<CarResponse> filtered = carResponses.stream().filter(cr -> !old.contains(cr.getUrl())).toList();
+            List<CarResponse> filtered = carResponses.stream().filter(cr -> !carFileRepository.contains(cr.getUrl())).toList();
+
             newCars.addAll(filtered);
             System.out.println("Added filtered");
-            if(!validate(carResponses.stream().map(CarResponse::getUrl).toList(), old)) break;
+
+            if(filtered.size() != carResponses.size()) break;
         }
 
-        saveNewUrls(newCars.stream().map(CarResponse::getUrl).toList());
+        carFileRepository.saveUrls(newCars.stream().map(CarResponse::getUrl).toList());
         telegramBot.sendAll(newCars.stream().map(carService::formatCarResponse).toList());
     }
-
-    private boolean validate(List<String> urls, Set<String> old) {
-        for (String url : urls) {
-            if(old.contains(url)) return false;
-        }
-        return true;
-    }
-
-    private Set<String> getOldUrls() {
-
-        Set<String> lines = new HashSet<>();
-
-        try(BufferedReader reader = new BufferedReader(new FileReader(ResourceUtils.getFile("old")));) {
-
-            String line = reader.readLine();
-
-            while (line != null) {
-                lines.add(line);
-                line = reader.readLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return lines;
-    }
-
-    private void saveNewUrls(List<String> urls) {
-        Set<String> lines = new HashSet<>();
-
-        // Specify the file path outside of the classpath
-        File file = new File("old");  // Can use any file path, e.g., "/tmp/old.txt" or "/data/old.txt"
-        FileWriter writer;
-
-        try {
-            writer = new FileWriter(file, true); // 'true' to append data instead of overwriting
-            urls.forEach(url -> {
-                try {
-                    System.out.println("Writing: " + url);
-                    writer.write(url + "\n");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
