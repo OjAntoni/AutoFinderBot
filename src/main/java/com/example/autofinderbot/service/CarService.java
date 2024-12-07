@@ -87,6 +87,34 @@ public class CarService {
         return new CarResponse(name, brand, fuelType, mileage, unit, price, currency);
     }
 
+    public Map<String, String> extractCarProperties(Document document) {
+        Map<String, String> carProperties = new HashMap<>();
+
+        // Select all div elements with a data-testid attribute
+        Elements dataTestIdElements = document.select("div[data-testid]");
+
+        for (Element element : dataTestIdElements) {
+            // Get the value of data-testid
+            String testId = element.attr("data-testid");
+
+            // Try to find the second <p> tag inside the div (if it exists)
+            Element valueElement = element.selectFirst("p:nth-of-type(2)");
+
+            // If the second <p> doesn't exist, fall back to the first <p> tag
+            if (valueElement == null) {
+                valueElement = element.selectFirst("p");
+            }
+
+            // Add the key-value pair to the map if the value exists
+            if (valueElement != null) {
+                String value = valueElement.text().trim();
+                carProperties.put(testId, value);
+            }
+        }
+
+        return carProperties;
+    }
+
     public String formatCarResponse(CarResponse car) {
         return  "🚗 " + car.getTitle() + "\n" +
                 "🛞 Kilometers: " + car.getMileage() + "\n" +
