@@ -1,6 +1,5 @@
 package com.example.autofinderbot.shared;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 
@@ -13,9 +12,17 @@ public enum Details {
     VERSION("version", "Version"),
     DESCRIPTION("content-description-section", "Description"),
     SEATS("nr_seats", "Seats"),
-    DOORS("door_count", "Doors");
+    DOORS("door_count", "Doors"),
+    CREATED_AT("createdAt", "Production date"),
+    FUEL_TYPE("fuel_type", "Fuel type"),
+    ENGINE_CAPACITY("engine_capacity", "Engine capacity"),
+    ENGINE_POWER("engine_power", "Engine power"),
+    MILEAGE("mileage", "Mileage"),
+    GEARBOX("gearbox", "Gearbox"),
+    URBAN_CONSUMPTION("urban_consumption", "Urban consumption"),
+    EXTRA_URBAN_CONSUMPTION("extra_urban_consumption", "Extra urban consumption");
 
-
+    @Getter
     public final String attribute;
     public final String name;
 

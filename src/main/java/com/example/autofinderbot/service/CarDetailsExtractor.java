@@ -4,11 +4,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class CarDetailsExtractor {
 
     /**
@@ -17,7 +19,7 @@ public class CarDetailsExtractor {
      * @param document Jsoup Document object containing the HTML page.
      * @return HashMap with the extracted properties as key-value pairs.
      */
-    public static Map<String, String> extractCarProperties(Document document) {
+    public Map<String, String> extractCarProperties(Document document) {
         Map<String, String> carProperties = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -77,13 +79,5 @@ public class CarDetailsExtractor {
         return carProperties;
     }
 
-    public static void main(String[] args) throws IOException {
-        // Example usage: Assume "document" is a parsed Jsoup Document
-        Document document = new DocumentService().load("https://www.otomoto.pl/osobowe/oferta/skoda-superb-skoda-superb-polski-salon-stan-bdb-dwa-komplet-opon-ID6GU3V3.html");
-        Map<String, String> carDetails = extractCarProperties(document);
-
-        // Print the extracted key-value pairs
-        carDetails.forEach((key, value) -> System.out.println(key + ": " + value));
-    }
 }
 

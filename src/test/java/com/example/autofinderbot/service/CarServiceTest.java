@@ -35,7 +35,7 @@ class CarServiceTest extends BaseSpringBootTest {
     void findCars_PosTC1() throws IOException {
         Document document = documentService.load("https://www.otomoto.pl/osobowe/oferta/skoda-superb-skoda-superb-polski-salon-stan-bdb-dwa-komplet-opon-ID6GU3V3.html");
 
-        Map<String, String> stringStringMap = carService.extractCarProperties(document);
+//        Map<String, String> stringStringMap = carService.extractCarProperties(document);
         System.out.println();
     }
 }

@@ -1,5 +1,7 @@
 package com.example.autofinderbot.service;
 
+import com.example.autofinderbot.converter.CarSpecificationToCarDetailsConverter;
+import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.domain.CarResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.example.autofinderbot.shared.APIConstants.*;
 import static lombok.AccessLevel.PRIVATE;
@@ -24,6 +27,9 @@ import static lombok.AccessLevel.PRIVATE;
 @Service
 public class CarService {
     ObjectMapper objectMapper;
+    CarSpecificationToCarDetailsConverter carSpecificationToCarDetailsConverter;
+    CarDetailsExtractor carDetailsExtractor;
+    DocumentService documentService;
 
     public List<CarResponse> findCars(Document document) throws IOException {
         Element scriptElement = document.selectFirst(LISTING_JSON);
@@ -38,7 +44,7 @@ public class CarService {
         JsonNode itemList = rootNode.at(ITEM_CAR_LIST_ELEMENT);
 
         List<CarResponse> cars = new ArrayList<>();
-        Map<String, CarResponse> carUrls = new HashMap<>(); // Map to store car names and URLs
+        Map<String, CarResponse> carNamesToCarResponses = new HashMap<>(); // Map to store car names and URLs
 
         if (itemList.isArray()) {
             for (JsonNode item : itemList) {
@@ -48,20 +54,34 @@ public class CarService {
                 CarResponse carResponse = convert(carInfo, priceInfo);
 
                 cars.add(carResponse);
-                carUrls.put(carResponse.getTitle(), carResponse);
+                carNamesToCarResponses.put(carResponse.getTitle(), carResponse);
             }
 
             Elements links = document.select(LINKS);
             for (Element link : links) {
                 String text = link.text().trim();
-                if (carUrls.containsKey(text)) {
+                if (carNamesToCarResponses.containsKey(text)) {
                     String carUrl = link.attr(LINK_URL);
-                    carUrls.get(text).setUrl(carUrl);
+                    carNamesToCarResponses.get(text).setUrl(carUrl);
                 }
             }
         } else {
             throw new IOException("Element is not an array.");
         }
+
+        Map<String, String> carNamesToUrls = carNamesToCarResponses.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUrl()));
+
+        carNamesToUrls.forEach((carName, url) -> {
+            try {
+                Document carDocument = documentService.load(url);
+                Map<String, String> carProperties = carDetailsExtractor.extractCarProperties(carDocument);
+                List<CarDetail> carDetails = carSpecificationToCarDetailsConverter.convert(carProperties);
+                carNamesToCarResponses.get(carName).setDetails(carDetails);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         return cars;
     }
@@ -85,34 +105,6 @@ public class CarService {
         String currency = priceInfo.path(CURRENCY).asText();
 
         return new CarResponse(name, brand, fuelType, mileage, unit, price, currency);
-    }
-
-    public Map<String, String> extractCarProperties(Document document) {
-        Map<String, String> carProperties = new HashMap<>();
-
-        // Select all div elements with a data-testid attribute
-        Elements dataTestIdElements = document.select("div[data-testid]");
-
-        for (Element element : dataTestIdElements) {
-            // Get the value of data-testid
-            String testId = element.attr("data-testid");
-
-            // Try to find the second <p> tag inside the div (if it exists)
-            Element valueElement = element.selectFirst("p:nth-of-type(2)");
-
-            // If the second <p> doesn't exist, fall back to the first <p> tag
-            if (valueElement == null) {
-                valueElement = element.selectFirst("p");
-            }
-
-            // Add the key-value pair to the map if the value exists
-            if (valueElement != null) {
-                String value = valueElement.text().trim();
-                carProperties.put(testId, value);
-            }
-        }
-
-        return carProperties;
     }
 
     public String formatCarResponse(CarResponse car) {

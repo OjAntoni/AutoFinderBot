@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode.Exclude;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 
+import java.util.List;
+
 import static lombok.AccessLevel.PRIVATE;
 
 @RequiredArgsConstructor
@@ -24,4 +26,8 @@ public class CarResponse {
     @NonFinal
     @Setter
     String url;
+    @Exclude
+    @NonFinal
+    @Setter
+    List<CarDetail> details;
 }
