@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum Details {
     YEAR("year", "Year"),
     COLOR("color", "Color"),
-    BRAND("basic_information", "Brand"),
+    BRAND("make", "Brand"),
     MODEL("model", "Model"),
     GENERATION("generation", "Generation"),
     VERSION("version", "Version"),

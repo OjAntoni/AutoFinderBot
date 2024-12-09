@@ -27,8 +27,8 @@ import static lombok.AccessLevel.PRIVATE;
 @Service
 public class CarParserService {
     ObjectMapper objectMapper;
-    CarPropertiesToCarDetailsConverter carPropertiesToCarDetailsConverter;
-    CarPropertiesExtractor carPropertiesExtractor;
+    CarDetailsExtractor carDetailsExtractor;
+    CarResponseValidator carResponseValidator;
     DocumentService documentService;
 
     public List<CarResponse> findCars(Document document) throws IOException {
@@ -75,15 +75,16 @@ public class CarParserService {
         carNamesToUrls.forEach((carName, url) -> {
             try {
                 Document carDocument = documentService.load(url);
-                Map<String, String> carProperties = carPropertiesExtractor.extractCarProperties(carDocument);
-                List<CarDetail> carDetails = carPropertiesToCarDetailsConverter.convert(carProperties);
+                List<CarDetail> carDetails  = carDetailsExtractor.extractCarProperties(carDocument);
                 carNamesToCarResponses.get(carName).setDetails(carDetails);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
 
-        return cars;
+        return cars.stream()
+                .filter(carResponseValidator::isValid)
+                .collect(Collectors.toList());
     }
 
 

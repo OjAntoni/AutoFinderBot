@@ -1,5 +1,7 @@
 package com.example.autofinderbot.parser;
 
+import com.example.autofinderbot.domain.CarDetail;
+import com.example.autofinderbot.shared.Details;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,19 +9,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.function.Function.identity;
 
 @Component
-public class CarPropertiesExtractor {
-
-    /**
-     * Extracts car properties from the script element in the HTML document.
-     *
-     * @param document Jsoup Document object containing the HTML page.
-     * @return HashMap with the extracted properties as key-value pairs.
-     */
-    public Map<String, String> extractCarProperties(Document document) {
+public class CarDetailsExtractor {
+    public List<CarDetail> extractCarProperties(Document document) {
         Map<String, String> carProperties = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -76,8 +73,16 @@ public class CarPropertiesExtractor {
             e.printStackTrace();
         }
 
-        return carProperties;
+        return convert(carProperties);
     }
 
+    private List<CarDetail> convert(Map<String, String> specification) {
+        Map<String, Details> attributeToDetails = Arrays.stream(Details.values()).collect(Collectors.toMap(Details::getAttribute, identity()));
+        Set<String> attributes = Arrays.stream(Details.values()).map(Details::getAttribute).collect(Collectors.toSet());
+        return specification.entrySet().stream()
+                .filter(entry -> attributes.contains(entry.getKey()))
+                .map(entry -> new CarDetail(attributeToDetails.get(entry.getKey()), entry.getValue()))
+                .collect(Collectors.toList());
+    }
 }
 
