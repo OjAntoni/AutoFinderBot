@@ -1,9 +1,7 @@
 package com.example.autofinderbot.repository;
 
 import jakarta.annotation.PostConstruct;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
