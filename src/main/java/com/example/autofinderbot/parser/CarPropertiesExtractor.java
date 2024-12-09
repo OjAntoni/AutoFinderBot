@@ -1,4 +1,4 @@
-package com.example.autofinderbot.service;
+package com.example.autofinderbot.parser;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class CarDetailsExtractor {
+public class CarPropertiesExtractor {
 
     /**
      * Extracts car properties from the script element in the HTML document.

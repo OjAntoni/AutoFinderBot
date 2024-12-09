@@ -1,4 +1,4 @@
-package com.example.autofinderbot.converter;
+package com.example.autofinderbot.parser;
 
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.shared.Details;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static java.util.function.Function.*;
 
 @Component
-public class CarSpecificationToCarDetailsConverter {
+public class CarPropertiesToCarDetailsConverter {
     public List<CarDetail> convert(Map<String, String> specification) {
         Map<String, Details> attributeToDetails = Arrays.stream(Details.values()).collect(Collectors.toMap(Details::getAttribute, identity()));
         Set<String> attributes = Arrays.stream(Details.values()).map(Details::getAttribute).collect(Collectors.toSet());

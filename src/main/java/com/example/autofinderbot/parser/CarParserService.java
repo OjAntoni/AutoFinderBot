@@ -1,8 +1,8 @@
-package com.example.autofinderbot.service;
+package com.example.autofinderbot.parser;
 
-import com.example.autofinderbot.converter.CarSpecificationToCarDetailsConverter;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.domain.CarResponse;
+import com.example.autofinderbot.service.DocumentService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +25,10 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @Service
-public class CarService {
+public class CarParserService {
     ObjectMapper objectMapper;
-    CarSpecificationToCarDetailsConverter carSpecificationToCarDetailsConverter;
-    CarDetailsExtractor carDetailsExtractor;
+    CarPropertiesToCarDetailsConverter carPropertiesToCarDetailsConverter;
+    CarPropertiesExtractor carPropertiesExtractor;
     DocumentService documentService;
 
     public List<CarResponse> findCars(Document document) throws IOException {
@@ -75,8 +75,8 @@ public class CarService {
         carNamesToUrls.forEach((carName, url) -> {
             try {
                 Document carDocument = documentService.load(url);
-                Map<String, String> carProperties = carDetailsExtractor.extractCarProperties(carDocument);
-                List<CarDetail> carDetails = carSpecificationToCarDetailsConverter.convert(carProperties);
+                Map<String, String> carProperties = carPropertiesExtractor.extractCarProperties(carDocument);
+                List<CarDetail> carDetails = carPropertiesToCarDetailsConverter.convert(carProperties);
                 carNamesToCarResponses.get(carName).setDetails(carDetails);
             } catch (IOException e) {
                 throw new RuntimeException(e);
