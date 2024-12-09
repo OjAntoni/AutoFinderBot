@@ -1,6 +1,7 @@
 package com.example.autofinderbot.parser;
 
 import com.example.autofinderbot.domain.CarDetail;
+import com.example.autofinderbot.shared.APIConstants;
 import com.example.autofinderbot.shared.Details;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.example.autofinderbot.shared.APIConstants.*;
 import static java.util.function.Function.identity;
 
 @Component
@@ -22,7 +24,7 @@ public class CarDetailsExtractor {
 
         try {
             // Select the script element with JSON data
-            Element scriptElement = document.selectFirst("script#__NEXT_DATA__");
+            Element scriptElement = document.selectFirst(CAR_PAGE_JSON_DATA);
             if (scriptElement == null) {
                 throw new IllegalArgumentException("Script element with JSON data not found.");
             }
@@ -32,41 +34,41 @@ public class CarDetailsExtractor {
             JsonNode rootNode = objectMapper.readTree(jsonData);
 
             // Navigate to the "advert" object
-            JsonNode advertNode = rootNode.at("/props/pageProps/advert");
+            JsonNode advertNode = rootNode.at(CAR_PAGE_ADVERT);
 
             if (advertNode.isMissingNode()) {
                 throw new IllegalArgumentException("Advert data not found in JSON.");
             }
 
             // Extract equipment -> values
-            JsonNode equipmentNode = advertNode.path("equipment");
+            JsonNode equipmentNode = advertNode.path(CAR_PAGE_ADVERT_EQUIPMENT);
             if (equipmentNode.isArray()) {
                 for (JsonNode category : equipmentNode) {
-                    String categoryKey = category.path("key").asText();
-                    JsonNode values = category.path("values");
+                    String categoryKey = category.path(KEY).asText();
+                    JsonNode values = category.path(VALUES);
 
                     for (JsonNode value : values) {
-                        String valueKey = value.path("key").asText();
-                        String valueLabel = value.path("label").asText();
+                        String valueKey = value.path(KEY).asText();
+                        String valueLabel = value.path(LABEL).asText();
                         carProperties.put(categoryKey + "." + valueKey, valueLabel);
                     }
                 }
             }
 
             // Extract details -> values and keys
-            JsonNode detailsNode = advertNode.path("details");
+            JsonNode detailsNode = advertNode.path(CAR_PAGE_ADVERT_DETAILS);
             if (detailsNode.isArray()) {
                 for (JsonNode detail : detailsNode) {
-                    String key = detail.path("key").asText();
-                    String value = detail.path("value").asText();
+                    String key = detail.path(KEY).asText();
+                    String value = detail.path(VALUE).asText();
                     carProperties.put(key, value);
                 }
             }
 
             // Extract creation date
-            String creationDate = advertNode.path("createdAt").asText();
+            String creationDate = advertNode.path(CAR_PAGE_ADVERT_CREATED_AT).asText();
             if (!creationDate.isEmpty()) {
-                carProperties.put("createdAt", creationDate);
+                carProperties.put(CAR_PAGE_ADVERT_CREATED_AT, creationDate);
             }
 
         } catch (IOException e) {
