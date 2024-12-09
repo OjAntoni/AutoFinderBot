@@ -2,6 +2,10 @@ package com.example.autofinderbot.parser;
 
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.shared.Details;
+import com.example.autofinderbot.shared.Logger;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.experimental.FieldDefaults;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,9 +18,17 @@ import java.util.stream.Collectors;
 
 import static com.example.autofinderbot.shared.APIConstants.*;
 import static java.util.function.Function.identity;
+import static lombok.AccessLevel.PRIVATE;
 
 @Component
+@RequiredArgsConstructor
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 public class CarDetailsExtractor {
+    private static final String SCRIPT_ERROR_MESSAGE = "Script element with JSON data not found.";
+    private static final String AVERT_ERROR_MESSAGE = "Advert data not found in JSON.";
+    Logger logger;
+
+    @SneakyThrows
     public List<CarDetail> extractCarProperties(Document document) {
         Map<String, String> carProperties = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -25,7 +37,9 @@ public class CarDetailsExtractor {
             // Select the script element with JSON data
             Element scriptElement = document.selectFirst(CAR_PAGE_JSON_DATA);
             if (scriptElement == null) {
-                throw new IllegalArgumentException("Script element with JSON data not found.");
+                IllegalArgumentException exception = new IllegalArgumentException(SCRIPT_ERROR_MESSAGE);
+                logger.error(SCRIPT_ERROR_MESSAGE, exception);
+                throw exception;
             }
 
             // Parse the JSON content
@@ -36,7 +50,9 @@ public class CarDetailsExtractor {
             JsonNode advertNode = rootNode.at(CAR_PAGE_ADVERT);
 
             if (advertNode.isMissingNode()) {
-                throw new IllegalArgumentException("Advert data not found in JSON.");
+                IllegalArgumentException exception = new IllegalArgumentException(AVERT_ERROR_MESSAGE);
+                logger.error(AVERT_ERROR_MESSAGE, exception);
+                throw exception;
             }
 
             // Extract equipment -> values
@@ -71,7 +87,7 @@ public class CarDetailsExtractor {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
 
         return convert(carProperties);

@@ -1,7 +1,6 @@
 package com.example.autofinderbot;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.autofinderbot.shared.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -19,14 +18,15 @@ import java.util.List;
 @Profile("!test")
 @Component
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
-    private static final Logger log = LoggerFactory.getLogger(TelegramBot.class);
     private final TelegramClient telegramClient;
     private final String botToken;
     private long chatId;
+    private final Logger logger;
 
-    public TelegramBot(@Value("${telegram.bot.token}") String token) {
+    public TelegramBot(@Value("${telegram.bot.token}") String token, Logger logger) {
         botToken = token;
         telegramClient = new OkHttpTelegramClient(getBotToken());
+        this.logger = logger;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             try {
                 telegramClient.execute(message); // Sending our message object to user
             } catch (TelegramApiException e) {
-                e.printStackTrace();
+                logger.error(e);
             }
         }
     }
@@ -69,7 +69,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             try {
                 telegramClient.execute(message); // Sending our message object to user
             } catch (TelegramApiException e) {
-                e.printStackTrace();
+                logger.error(e);
             }
         }
     }

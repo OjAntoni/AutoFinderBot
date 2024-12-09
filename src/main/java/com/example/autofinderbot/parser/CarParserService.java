@@ -3,6 +3,7 @@ package com.example.autofinderbot.parser;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.domain.CarResponse;
 import com.example.autofinderbot.service.DocumentService;
+import com.example.autofinderbot.shared.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,9 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @Service
 public class CarParserService {
+    private static final String SCRIPT_ERROR_MESSAGE = "Script element with JSON data not found.";
+    private static final String NOT_AN_ARRAY_ERROR_MESSAGE = "Element is not an array.";
+    Logger logger;
     ObjectMapper objectMapper;
     CarDetailsExtractor carDetailsExtractor;
     CarResponseValidator carResponseValidator;
@@ -34,7 +38,8 @@ public class CarParserService {
     public List<CarResponse> findCars(Document document) throws IOException {
         Element scriptElement = document.selectFirst(LISTING_JSON);
         if (scriptElement == null) {
-            throw new IOException("No element found.");
+            logger.error(SCRIPT_ERROR_MESSAGE);
+            return List.of();
         }
 
         String jsonData = scriptElement.html();
@@ -66,7 +71,7 @@ public class CarParserService {
                 }
             }
         } else {
-            throw new IOException("Element is not an array.");
+            logger.error(NOT_AN_ARRAY_ERROR_MESSAGE);
         }
 
         Map<String, String> carNamesToUrls = carNamesToCarResponses.entrySet().stream()
@@ -86,7 +91,6 @@ public class CarParserService {
                 .filter(carResponseValidator::isValid)
                 .collect(Collectors.toList());
     }
-
 
     private JsonNode carInfo(JsonNode node) {
         return node.at(CAR_INFO);
@@ -109,9 +113,12 @@ public class CarParserService {
     }
 
     public String formatCarResponse(CarResponse car) {
+        String details = car.getDetails().stream().map(detail -> "%s : %s".formatted(detail.detail().name, detail.value()))
+                .collect(Collectors.joining("\n"));
         return  "🚗 " + car.getTitle() + "\n" +
                 "🛞 Kilometers: " + car.getMileage() + "\n" +
                 "💵 Price: " + car.getPrice() + "\n" +
-                "🔗 Link " + car.getUrl();
+                "🔗 Link " + car.getUrl() + "\n\n" +
+                details;
     }
 }
