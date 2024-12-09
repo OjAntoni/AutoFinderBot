@@ -1,6 +1,8 @@
-package com.example.autofinderbot.service;
+package com.example.autofinderbot.parser;
 
+import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.domain.CarResponse;
+import com.example.autofinderbot.service.DocumentService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.example.autofinderbot.shared.APIConstants.*;
 import static lombok.AccessLevel.PRIVATE;
@@ -22,8 +25,11 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @Service
-public class CarService {
+public class CarParserService {
     ObjectMapper objectMapper;
+    CarDetailsExtractor carDetailsExtractor;
+    CarResponseValidator carResponseValidator;
+    DocumentService documentService;
 
     public List<CarResponse> findCars(Document document) throws IOException {
         Element scriptElement = document.selectFirst(LISTING_JSON);
@@ -38,7 +44,7 @@ public class CarService {
         JsonNode itemList = rootNode.at(ITEM_CAR_LIST_ELEMENT);
 
         List<CarResponse> cars = new ArrayList<>();
-        Map<String, CarResponse> carUrls = new HashMap<>(); // Map to store car names and URLs
+        Map<String, CarResponse> carNamesToCarResponses = new HashMap<>(); // Map to store car names and URLs
 
         if (itemList.isArray()) {
             for (JsonNode item : itemList) {
@@ -48,22 +54,37 @@ public class CarService {
                 CarResponse carResponse = convert(carInfo, priceInfo);
 
                 cars.add(carResponse);
-                carUrls.put(carResponse.getTitle(), carResponse);
+                carNamesToCarResponses.put(carResponse.getTitle(), carResponse);
             }
 
             Elements links = document.select(LINKS);
             for (Element link : links) {
                 String text = link.text().trim();
-                if (carUrls.containsKey(text)) {
+                if (carNamesToCarResponses.containsKey(text)) {
                     String carUrl = link.attr(LINK_URL);
-                    carUrls.get(text).setUrl(carUrl);
+                    carNamesToCarResponses.get(text).setUrl(carUrl);
                 }
             }
         } else {
             throw new IOException("Element is not an array.");
         }
 
-        return cars;
+        Map<String, String> carNamesToUrls = carNamesToCarResponses.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUrl()));
+
+        carNamesToUrls.forEach((carName, url) -> {
+            try {
+                Document carDocument = documentService.load(url);
+                List<CarDetail> carDetails  = carDetailsExtractor.extractCarProperties(carDocument);
+                carNamesToCarResponses.get(carName).setDetails(carDetails);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return cars.stream()
+                .filter(carResponseValidator::isValid)
+                .collect(Collectors.toList());
     }
 
 

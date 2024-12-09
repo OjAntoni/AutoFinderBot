@@ -1,9 +1,5 @@
 package com.example.autofinderbot;
 
-import com.example.autofinderbot.service.CarService;
-import com.example.autofinderbot.service.DocumentService;
-import lombok.SneakyThrows;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,9 +15,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.List;
-
-import static com.example.autofinderbot.shared.APIConstants.SEARCH_URL;
-import static org.jsoup.Jsoup.connect;
 
 @Profile("!test")
 @Component
