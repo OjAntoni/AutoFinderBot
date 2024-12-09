@@ -4,6 +4,7 @@ import com.example.autofinderbot.TelegramBot;
 import com.example.autofinderbot.domain.CarResponse;
 import com.example.autofinderbot.parser.CarParserService;
 import com.example.autofinderbot.repository.CarFileRepository;
+import com.example.autofinderbot.shared.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +29,7 @@ public class ScheduledExecutor {
     CarFileRepository carFileRepository;
     TelegramBot telegramBot;
     DocumentService documentService;
-
+    Logger logger;
 
     @SneakyThrows
     @Scheduled(fixedRate = 10, initialDelay = 1, timeUnit = MINUTES)
@@ -39,11 +40,11 @@ public class ScheduledExecutor {
         while (newCars.size() <= carLimit) {
             List<CarResponse> carResponses = carParserService.findCars(documentService.load(SEARCH_URL(page++)));
 
-            System.out.println("Found car responses: " + carResponses.size());
+            logger.debug("Found car responses: %d", carResponses.size());
             List<CarResponse> filtered = carResponses.stream().filter(cr -> !carFileRepository.contains(cr.getUrl())).toList();
 
             newCars.addAll(filtered);
-            System.out.println("Added filtered");
+            logger.debug("Added filtered cars: %d", filtered.size());
 
             if(filtered.size() != carResponses.size()) break;
         }
