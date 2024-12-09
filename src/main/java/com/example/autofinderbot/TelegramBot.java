@@ -16,8 +16,6 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.List;
 
-import static com.example.autofinderbot.shared.APIConstants.SEARCH_URL;
-
 @Profile("!test")
 @Component
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {

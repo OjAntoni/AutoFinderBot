@@ -1,7 +1,6 @@
 package com.example.autofinderbot.parser;
 
 import com.example.autofinderbot.domain.CarDetail;
-import com.example.autofinderbot.shared.APIConstants;
 import com.example.autofinderbot.shared.Details;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
