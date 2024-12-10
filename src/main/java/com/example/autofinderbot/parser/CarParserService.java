@@ -113,7 +113,7 @@ public class CarParserService {
     }
 
     public String formatCarResponse(CarResponse car) {
-        String details = car.getDetails().stream().map(detail -> "%s : %s".formatted(detail.detail().name, detail.value()))
+        String details = car.getDetails().stream().map(detail -> "%s : %s".formatted(detail.getDetail(), detail.getValue()))
                 .collect(Collectors.joining("\n"));
         return  "🚗 " + car.getTitle() + "\n" +
                 "🛞 Kilometers: " + car.getMileage() + "\n" +

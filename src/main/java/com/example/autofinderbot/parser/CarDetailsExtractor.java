@@ -98,7 +98,7 @@ public class CarDetailsExtractor {
         Set<String> attributes = Arrays.stream(Details.values()).map(Details::getAttribute).collect(Collectors.toSet());
         return specification.entrySet().stream()
                 .filter(entry -> attributes.contains(entry.getKey()))
-                .map(entry -> new CarDetail(attributeToDetails.get(entry.getKey()), entry.getValue()))
+                .map(entry -> new CarDetail(attributeToDetails.get(entry.getKey()).name, entry.getValue()))
                 .collect(Collectors.toList());
     }
 }
