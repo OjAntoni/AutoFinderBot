@@ -1,0 +1,18 @@
+--liquibase formatted sql
+-- changeset anton:001
+
+insert into car_response (id, title, brand, fuel_type, mileage, mileage_unit, price, currency, url) values
+(1, 'Audi A4', 'Audi', 'Diesel', 100000, 'km', 10000, 'EUR', 'https://www.example.com/audi-a4'),
+(2, 'BMW 3', 'BMW', 'Petrol', 200000, 'km', 20000, 'EUR', 'https://www.example.com/bmw-3'),
+(3, 'Mercedes C', 'Mercedes', 'Diesel', 300000, 'km', 30000, 'EUR', 'https://www.example.com/mercedes-c');
+
+insert into car_detail (id, car_response_id, detail, value) values
+(1, 1, 'color', 'black'),
+(2, 1, 'year', '2010'),
+(3, 2, 'color', 'white'),
+(4, 2, 'year', '2015'),
+(5, 3, 'color', 'silver'),
+(6, 3, 'year', '2018'),
+(7, 1, 'engine', '2.0 TDI'),
+(8, 2, 'engine', '2.0 TFSI'),
+(9, 3, 'engine', '2.0 TDI');
