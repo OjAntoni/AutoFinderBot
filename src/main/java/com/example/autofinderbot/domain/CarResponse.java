@@ -1,9 +1,6 @@
 package com.example.autofinderbot.domain;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.EqualsAndHashCode.Exclude;
 import lombok.experimental.FieldDefaults;
@@ -19,6 +16,9 @@ import static lombok.AccessLevel.PRIVATE;
 @Getter
 @EqualsAndHashCode
 @ToString
+@Builder
+@AllArgsConstructor
+@Table(name = "car_response")
 public class CarResponse {
     @Id
     long id;
