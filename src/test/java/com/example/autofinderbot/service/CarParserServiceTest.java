@@ -23,9 +23,7 @@ class CarParserServiceTest extends BaseSpringBootTest {
 
     @Test
     void findCars_PosTC() throws IOException {
-        Document document = documentService.load(SEARCH_URL);
-
-        List<CarResponse> cars = carParserService.findCars(document);
+        List<CarResponse> cars = carParserService.findCars(SEARCH_URL);
 
         assertThat(cars)
                 .isNotEmpty();

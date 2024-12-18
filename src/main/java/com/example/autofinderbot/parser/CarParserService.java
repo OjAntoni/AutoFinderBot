@@ -38,7 +38,8 @@ public class CarParserService {
     CarResponseValidator carResponseValidator;
     DocumentService documentService;
 
-    public List<CarResponse> findCars(Document document) throws IOException {
+    public List<CarResponse> findCars(String url) throws IOException {
+        Document document = documentService.load(url, doc -> doc.selectFirst(LISTING_JSON) != null);
         Element scriptElement = document.selectFirst(LISTING_JSON);
         if (scriptElement == null) {
             logger.error(SCRIPT_ERROR_MESSAGE);
@@ -80,15 +81,10 @@ public class CarParserService {
         Map<String, String> carNamesToUrls = carNamesToCarResponses.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUrl()));
 
-        carNamesToUrls.forEach((carName, url) -> {
-            try {
-                Document carDocument = documentService.load(url);
-                List<CarDetail> carDetails  = carDetailsExtractor.extractCarProperties(carDocument);
-                extractCreationDate(carDetails, carNamesToCarResponses.get(carName));
-                carNamesToCarResponses.get(carName).setDetails(carDetails);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        carNamesToUrls.forEach((carName, carUrl) -> {
+            List<CarDetail> carDetails  = carDetailsExtractor.extractCarProperties(carUrl);
+            extractCreationDate(carDetails, carNamesToCarResponses.get(carName));
+            carNamesToCarResponses.get(carName).setDetails(carDetails);
         });
 
         return cars.stream()

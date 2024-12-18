@@ -28,7 +28,6 @@ public class ScheduledExecutor {
     CarParserService carParserService;
     CarFileRepository carFileRepository;
     TelegramBot telegramBot;
-    DocumentService documentService;
     Logger logger;
 
     @SneakyThrows
@@ -38,7 +37,7 @@ public class ScheduledExecutor {
 
         int page = 1;
         while (newCars.size() <= carLimit) {
-            List<CarResponse> carResponses = carParserService.findCars(documentService.load(SEARCH_URL(page++)));
+            List<CarResponse> carResponses = carParserService.findCars(SEARCH_URL(page++));
 
             logger.debug("Found car responses: %d", carResponses.size());
             List<CarResponse> filtered = carResponses.stream().filter(cr -> !carFileRepository.contains(cr.getUrl())).toList();
