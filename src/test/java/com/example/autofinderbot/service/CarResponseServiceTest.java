@@ -39,4 +39,11 @@ class CarResponseServiceTest extends BaseSpringBootTest {
                 .isNotEmpty();
     }
 
+    @Test
+    void existsByUrl_PosTC() {
+        assertThat(carResponseService.exists("https://www.example.com/audi-a4"))
+                .isTrue();
+    }
+
+
 }

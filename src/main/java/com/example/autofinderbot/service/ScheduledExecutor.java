@@ -24,7 +24,7 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class ScheduledExecutor {
-    int carLimit = 30;
+    private static final int CAR_LIMIT = 30;
     CarParserService carParserService;
     CarFileRepository carFileRepository;
     TelegramBot telegramBot;
@@ -36,11 +36,14 @@ public class ScheduledExecutor {
         List<CarResponse> newCars = new ArrayList<>();
 
         int page = 1;
-        while (newCars.size() <= carLimit) {
+        while (newCars.size() <= CAR_LIMIT) {
             List<CarResponse> carResponses = carParserService.findCars(SEARCH_URL(page++));
 
             logger.debug("Found car responses: %d", carResponses.size());
-            List<CarResponse> filtered = carResponses.stream().filter(cr -> !carFileRepository.contains(cr.getUrl())).toList();
+            List<CarResponse> filtered = carResponses.stream()
+                    .filter(cr -> !carFileRepository.contains(cr.getUrl()))
+                    .limit(newCars.size()+carResponses.size() > CAR_LIMIT ? CAR_LIMIT - newCars.size() : carResponses.size())
+                    .toList();
 
             newCars.addAll(filtered);
             logger.debug("Added filtered cars: %d", filtered.size());

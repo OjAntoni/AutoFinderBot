@@ -23,4 +23,8 @@ public class CarResponseService {
         logger.debug("Saving car response: %s", carResponse);
         return carResponseRepository.save(carResponse);
     }
+
+    public boolean exists(String url) {
+        return carResponseRepository.existsByUrl(url);
+    }
 }
