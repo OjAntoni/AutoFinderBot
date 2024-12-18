@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +29,7 @@ class CarResponseServiceTest extends BaseSpringBootTest {
                 .mileage(100500)
                 .currency("currency")
                 .fuelType("fuelType")
+                .createdAt(LocalDateTime.now())
                 .details(List.of(new CarDetail("key", "value")))
                 .build();
 

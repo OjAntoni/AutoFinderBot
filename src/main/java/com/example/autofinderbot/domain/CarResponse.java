@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.EqualsAndHashCode.Exclude;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -32,6 +32,9 @@ public class CarResponse {
     @Exclude
     @Setter
     String url;
+    @Setter
+    @Exclude
+    LocalDateTime createdAt;
     @Exclude
     @Setter
     @OneToMany(mappedBy = "carResponseId", cascade = CascadeType.ALL)

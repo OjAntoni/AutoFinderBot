@@ -3,6 +3,7 @@ package com.example.autofinderbot.parser;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.domain.CarResponse;
 import com.example.autofinderbot.service.DocumentService;
+import com.example.autofinderbot.shared.Details;
 import com.example.autofinderbot.shared.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,8 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +84,7 @@ public class CarParserService {
             try {
                 Document carDocument = documentService.load(url);
                 List<CarDetail> carDetails  = carDetailsExtractor.extractCarProperties(carDocument);
+                extractCreationDate(carDetails, carNamesToCarResponses.get(carName));
                 carNamesToCarResponses.get(carName).setDetails(carDetails);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -110,6 +114,16 @@ public class CarParserService {
         String currency = priceInfo.path(CURRENCY).asText();
 
         return new CarResponse(name, brand, fuelType, mileage, unit, price, currency);
+    }
+
+    private void extractCreationDate(List<CarDetail> carDetails, CarResponse carResponse) {
+        carDetails.stream().filter(cd -> cd.getDetail().equals(Details.CREATED_AT.name))
+                .findFirst().ifPresent(cd -> {
+                    ZonedDateTime zonedDateTime = ZonedDateTime.parse(cd.getValue());
+                    LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();
+                    carResponse.setCreatedAt(localDateTime);
+                    carDetails.remove(cd);
+                });
     }
 
     public String formatCarResponse(CarResponse car) {
