@@ -1,14 +1,14 @@
 package com.example.autofinderbot.service;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
+import com.example.autofinderbot.repository.CarDetailRepository;
 import com.example.autofinderbot.repository.CarRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class CarScheduledServiceTest extends BaseSpringBootTest {
     @Autowired
@@ -17,13 +17,27 @@ class CarScheduledServiceTest extends BaseSpringBootTest {
     @Autowired
     CarRepository carRepository;
 
+    @Autowired
+    CarDetailRepository carDetailRepository;
+
     @Test
-    void saveAllCars(){
+    void saveAllCars_PosTC(){
         long count = carRepository.count();
 
-        carScheduledService.execute();
+        carScheduledService.updateCarDatabase();
 
         assertThat(carRepository.count())
                 .isEqualTo(count + 30);
+    }
+
+    @Test
+    void deleteExpiredCars_PosTC(){
+        carScheduledService.deleteExpiredCars();
+
+        assertThat(carRepository.findAllById(List.of(4L, 5L, 6L)))
+                .isEmpty();
+
+        assertThat(carDetailRepository.findAllByCarIdIn(List.of(4L, 5L, 6L)))
+                .isEmpty();
     }
 }

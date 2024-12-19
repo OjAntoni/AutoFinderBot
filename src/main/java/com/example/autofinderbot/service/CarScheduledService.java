@@ -5,8 +5,12 @@ import com.example.autofinderbot.parser.CarParserService;
 import com.example.autofinderbot.shared.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,12 +25,14 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor
 public class CarScheduledService {
     private static final int CAR_LIMIT = 30;
+    DocumentService documentService;
     CarParserService carParserService;
     CarService carService;
     Logger logger;
 
     @Scheduled(fixedRate = 10, initialDelay = 0, timeUnit = MINUTES)
-    void execute() {
+    @Transactional
+    void updateCarDatabase() {
         List<Car> newCars = new ArrayList<>();
         int page = 1;
         while (newCars.size() <= CAR_LIMIT) {
@@ -53,5 +59,25 @@ public class CarScheduledService {
         }
 
         carService.saveAll(newCars);
+    }
+
+    @Scheduled(fixedRate = 60, initialDelay = 30, timeUnit = MINUTES)
+    void deleteExpiredCars() {
+        Sort sort = Sort.by(Sort.Order.asc("createdAt"));
+        int pageSize = 50;
+        int page = 0;
+
+        Page<Car> cars = carService.findAll(PageRequest.of(page, pageSize, sort));
+        while (cars.hasContent()) {
+            List<Long> expiredCarIds = cars.stream()
+                    .parallel()
+                    .filter(car -> !documentService.isValid(car.getUrl()))
+                    .map(Car::getId)
+                    .toList();
+
+            carService.deleteAll(expiredCarIds);
+
+            cars = carService.findAll(PageRequest.of(++page, pageSize, sort));
+        }
     }
 }

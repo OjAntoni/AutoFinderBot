@@ -37,7 +37,7 @@ public class Car {
     LocalDateTime createdAt;
     @Exclude
     @Setter
-    @OneToMany(mappedBy = "carResponseId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "carId", cascade = CascadeType.ALL)
     List<CarDetail> details;
 
     public Car(String title, String brand, String fuelType, long mileage, String mileageUnit, double price, String currency) {

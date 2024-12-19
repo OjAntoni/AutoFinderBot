@@ -4,8 +4,12 @@ import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.shared.Logger;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -30,13 +34,23 @@ public class CarService {
     }
 
     @Transactional
-    public List<Car> saveAll(Collection<Car> cars) {
+    public List<Car> saveAll(@NotNull Collection<@Valid Car> cars) {
         logger.debug("Saving all %d cars", cars.size());
         return carRepository.saveAll(cars);
     }
 
     @Transactional(readOnly = true)
-    public boolean exists(String url) {
+    public boolean exists(@NotNull String url) {
         return carRepository.existsByUrl(url);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Car> findAll(Pageable pageable) {
+        return carRepository.findAll(pageable);
+    }
+
+    @Transactional
+    public void deleteAll(Collection<Long> ids){
+        carRepository.deleteAllById(ids);
     }
 }

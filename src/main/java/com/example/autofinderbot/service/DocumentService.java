@@ -55,4 +55,16 @@ public class DocumentService {
     public Document load(@NonNull @NotBlank @NotEmpty String url, Predicate<Document> validator) throws IOException {
         return load(url, DEFAULT_RETRY_COUNT, validator);
     }
+
+    public boolean isValid(String url) {
+        try {
+            int code = connect(url)
+                    .ignoreHttpErrors(true)
+                    .execute()
+                    .statusCode();
+            return code / 100 != 4 && code / 100 != 5;
+        } catch (IOException e) {
+            return false;
+        }
+    }
 }
