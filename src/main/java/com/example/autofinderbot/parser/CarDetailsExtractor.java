@@ -24,7 +24,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-public class CarDetailsExtractor {
+class CarDetailsExtractor {
     private static final String SCRIPT_ERROR_MESSAGE = "Script element with JSON data not found.";
     private static final String AVERT_ERROR_MESSAGE = "Advert data not found in JSON.";
     Logger logger;

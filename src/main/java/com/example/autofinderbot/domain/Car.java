@@ -18,8 +18,7 @@ import static lombok.AccessLevel.PRIVATE;
 @ToString
 @Builder
 @AllArgsConstructor
-@Table(name = "car_response")
-public class CarResponse {
+public class Car {
     @Id
     long id;
     String title;
@@ -40,7 +39,7 @@ public class CarResponse {
     @OneToMany(mappedBy = "carResponseId", cascade = CascadeType.ALL)
     List<CarDetail> details;
 
-    public CarResponse(String title, String brand, String fuelType, long mileage, String mileageUnit, double price, String currency) {
+    public Car(String title, String brand, String fuelType, long mileage, String mileageUnit, double price, String currency) {
         this.title = title;
         this.brand = brand;
         this.fuelType = fuelType;

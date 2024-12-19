@@ -1,7 +1,7 @@
 package com.example.autofinderbot.parser;
 
 import com.example.autofinderbot.domain.CarDetail;
-import com.example.autofinderbot.domain.CarResponse;
+import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.service.DocumentService;
 import com.example.autofinderbot.shared.Details;
 import com.example.autofinderbot.shared.Logger;
@@ -35,10 +35,10 @@ public class CarParserService {
     Logger logger;
     ObjectMapper objectMapper;
     CarDetailsExtractor carDetailsExtractor;
-    CarResponseValidator carResponseValidator;
+    CarValidator carValidator;
     DocumentService documentService;
 
-    public List<CarResponse> findCars(String url) throws IOException {
+    public List<Car> findCars(String url) throws IOException {
         Document document = documentService.load(url, doc -> doc.selectFirst(LISTING_JSON) != null);
         Element scriptElement = document.selectFirst(LISTING_JSON);
         if (scriptElement == null) {
@@ -52,18 +52,18 @@ public class CarParserService {
 
         JsonNode itemList = rootNode.at(ITEM_CAR_LIST_ELEMENT);
 
-        List<CarResponse> cars = new ArrayList<>();
-        Map<String, CarResponse> carNamesToCarResponses = new HashMap<>(); // Map to store car names and URLs
+        List<Car> cars = new ArrayList<>();
+        Map<String, Car> carNamesToCarResponses = new HashMap<>(); // Map to store car names and URLs
 
         if (itemList.isArray()) {
             for (JsonNode item : itemList) {
                 JsonNode carInfo = carInfo(item);
                 JsonNode priceInfo = priceInfo(item);
 
-                CarResponse carResponse = convert(carInfo, priceInfo);
+                Car car = convert(carInfo, priceInfo);
 
-                cars.add(carResponse);
-                carNamesToCarResponses.put(carResponse.getTitle(), carResponse);
+                cars.add(car);
+                carNamesToCarResponses.put(car.getTitle(), car);
             }
 
             Elements links = document.select(LINKS);
@@ -88,7 +88,7 @@ public class CarParserService {
         });
 
         return cars.stream()
-                .filter(carResponseValidator::isValid)
+                .filter(carValidator::isValid)
                 .collect(Collectors.toList());
     }
 
@@ -100,7 +100,7 @@ public class CarParserService {
         return node.at(PRICE_INFO);
     }
 
-    private CarResponse convert(JsonNode carInfo, JsonNode priceInfo) {
+    private Car convert(JsonNode carInfo, JsonNode priceInfo) {
         String name = carInfo.path(NAME).asText();
         String brand = carInfo.path(BRAND).asText();
         String fuelType = carInfo.path(FUEL_TYPE).asText();
@@ -109,26 +109,16 @@ public class CarParserService {
         double price = priceInfo.path(PRICE).asDouble();
         String currency = priceInfo.path(CURRENCY).asText();
 
-        return new CarResponse(name, brand, fuelType, mileage, unit, price, currency);
+        return new Car(name, brand, fuelType, mileage, unit, price, currency);
     }
 
-    private void extractCreationDate(List<CarDetail> carDetails, CarResponse carResponse) {
+    private void extractCreationDate(List<CarDetail> carDetails, Car car) {
         carDetails.stream().filter(cd -> cd.getDetail().equals(Details.CREATED_AT.name))
                 .findFirst().ifPresent(cd -> {
                     ZonedDateTime zonedDateTime = ZonedDateTime.parse(cd.getValue());
                     LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();
-                    carResponse.setCreatedAt(localDateTime);
+                    car.setCreatedAt(localDateTime);
                     carDetails.remove(cd);
                 });
-    }
-
-    public String formatCarResponse(CarResponse car) {
-        String details = car.getDetails().stream().map(detail -> "%s : %s".formatted(detail.getDetail(), detail.getValue()))
-                .collect(Collectors.joining("\n"));
-        return  "🚗 " + car.getTitle() + "\n" +
-                "🛞 Kilometers: " + car.getMileage() + "\n" +
-                "💵 Price: " + car.getPrice() + "\n" +
-                "🔗 Link " + car.getUrl() + "\n\n" +
-                details;
     }
 }

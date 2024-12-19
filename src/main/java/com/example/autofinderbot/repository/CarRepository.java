@@ -1,10 +1,10 @@
 package com.example.autofinderbot.repository;
 
-import com.example.autofinderbot.domain.CarResponse;
+import com.example.autofinderbot.domain.Car;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CarResponseRepository extends JpaRepository<CarResponse, Long> {
+public interface CarRepository extends JpaRepository<Car, Long> {
     boolean existsByUrl(String url);
 }

@@ -1,7 +1,7 @@
 package com.example.autofinderbot.service;
 
-import com.example.autofinderbot.domain.CarResponse;
-import com.example.autofinderbot.repository.CarResponseRepository;
+import com.example.autofinderbot.domain.Car;
+import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.shared.Logger;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +16,15 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor
 @Validated
 public class CarResponseService {
-    CarResponseRepository carResponseRepository;
+    CarRepository carRepository;
     Logger logger;
 
-    public CarResponse save(@Valid CarResponse carResponse) {
-        logger.debug("Saving car response: %s", carResponse);
-        return carResponseRepository.save(carResponse);
+    public Car save(@Valid Car car) {
+        logger.debug("Saving car: %s", car);
+        return carRepository.save(car);
     }
 
     public boolean exists(String url) {
-        return carResponseRepository.existsByUrl(url);
+        return carRepository.existsByUrl(url);
     }
 }

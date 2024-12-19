@@ -1,7 +1,7 @@
 package com.example.autofinderbot.service;
 
 import com.example.autofinderbot.TelegramBot;
-import com.example.autofinderbot.domain.CarResponse;
+import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.parser.CarParserService;
 import com.example.autofinderbot.repository.CarFileRepository;
 import com.example.autofinderbot.shared.Logger;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.autofinderbot.shared.APIConstants.SEARCH_URL;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -33,25 +34,35 @@ public class ScheduledExecutor {
     @SneakyThrows
     @Scheduled(fixedRate = 10, initialDelay = 1, timeUnit = MINUTES)
     void execute() {
-        List<CarResponse> newCars = new ArrayList<>();
+        List<Car> newCars = new ArrayList<>();
 
         int page = 1;
         while (newCars.size() <= CAR_LIMIT) {
-            List<CarResponse> carResponses = carParserService.findCars(SEARCH_URL(page++));
+            List<Car> cars = carParserService.findCars(SEARCH_URL(page++));
 
-            logger.debug("Found car responses: %d", carResponses.size());
-            List<CarResponse> filtered = carResponses.stream()
+            logger.debug("Found car responses: %d", cars.size());
+            List<Car> filtered = cars.stream()
                     .filter(cr -> !carFileRepository.contains(cr.getUrl()))
-                    .limit(newCars.size()+carResponses.size() > CAR_LIMIT ? CAR_LIMIT - newCars.size() : carResponses.size())
+                    .limit(newCars.size()+ cars.size() > CAR_LIMIT ? CAR_LIMIT - newCars.size() : cars.size())
                     .toList();
 
             newCars.addAll(filtered);
             logger.debug("Added filtered cars: %d", filtered.size());
 
-            if(filtered.size() != carResponses.size()) break;
+            if(filtered.size() != cars.size()) break;
         }
 
-        carFileRepository.saveUrls(newCars.stream().map(CarResponse::getUrl).toList());
-        telegramBot.sendAll(newCars.stream().map(carParserService::formatCarResponse).toList());
+        carFileRepository.saveUrls(newCars.stream().map(Car::getUrl).toList());
+        telegramBot.sendAll(newCars.stream().map(this::formatCarResponse).toList());
+    }
+
+    private String formatCarResponse(Car car) {
+        String details = car.getDetails().stream().map(detail -> "%s : %s".formatted(detail.getDetail(), detail.getValue()))
+                .collect(Collectors.joining("\n"));
+        return  "🚗 " + car.getTitle() + "\n" +
+                "🛞 Kilometers: " + car.getMileage() + "\n" +
+                "💵 Price: " + car.getPrice() + "\n" +
+                "🔗 Link " + car.getUrl() + "\n\n" +
+                details;
     }
 }
