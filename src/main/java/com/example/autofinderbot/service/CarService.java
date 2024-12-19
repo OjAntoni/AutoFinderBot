@@ -15,7 +15,7 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Validated
-public class CarResponseService {
+public class CarService {
     CarRepository carRepository;
     Logger logger;
 

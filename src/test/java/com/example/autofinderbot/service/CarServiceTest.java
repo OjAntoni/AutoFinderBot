@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CarServiceTest extends BaseSpringBootTest {
     @Autowired
-    CarResponseService carResponseService;
+    CarService carService;
     @Autowired
     CarRepository carRepository;
 
@@ -33,7 +33,7 @@ class CarServiceTest extends BaseSpringBootTest {
                 .details(List.of(new CarDetail("key", "value")))
                 .build();
 
-        carResponseService.save(car);
+        carService.save(car);
 
         assertThat(carRepository.findOne(Example.of(car)))
                 .isNotEmpty();
@@ -41,7 +41,7 @@ class CarServiceTest extends BaseSpringBootTest {
 
     @Test
     void existsByUrl_PosTC() {
-        assertThat(carResponseService.exists("https://www.example.com/audi-a4"))
+        assertThat(carService.exists("https://www.example.com/audi-a4"))
                 .isTrue();
     }
 
