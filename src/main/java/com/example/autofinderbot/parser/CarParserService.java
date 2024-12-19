@@ -1,8 +1,9 @@
 package com.example.autofinderbot.parser;
 
 import com.example.autofinderbot.domain.CarDetail;
-import com.example.autofinderbot.domain.CarResponse;
+import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.service.DocumentService;
+import com.example.autofinderbot.shared.Details;
 import com.example.autofinderbot.shared.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,8 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,10 +35,11 @@ public class CarParserService {
     Logger logger;
     ObjectMapper objectMapper;
     CarDetailsExtractor carDetailsExtractor;
-    CarResponseValidator carResponseValidator;
+    CarValidator carValidator;
     DocumentService documentService;
 
-    public List<CarResponse> findCars(Document document) throws IOException {
+    public List<Car> findCars(String url) throws IOException {
+        Document document = documentService.load(url, doc -> doc.selectFirst(LISTING_JSON) != null);
         Element scriptElement = document.selectFirst(LISTING_JSON);
         if (scriptElement == null) {
             logger.error(SCRIPT_ERROR_MESSAGE);
@@ -48,18 +52,18 @@ public class CarParserService {
 
         JsonNode itemList = rootNode.at(ITEM_CAR_LIST_ELEMENT);
 
-        List<CarResponse> cars = new ArrayList<>();
-        Map<String, CarResponse> carNamesToCarResponses = new HashMap<>(); // Map to store car names and URLs
+        List<Car> cars = new ArrayList<>();
+        Map<String, Car> carNamesToCarResponses = new HashMap<>(); // Map to store car names and URLs
 
         if (itemList.isArray()) {
             for (JsonNode item : itemList) {
                 JsonNode carInfo = carInfo(item);
                 JsonNode priceInfo = priceInfo(item);
 
-                CarResponse carResponse = convert(carInfo, priceInfo);
+                Car car = convert(carInfo, priceInfo);
 
-                cars.add(carResponse);
-                carNamesToCarResponses.put(carResponse.getTitle(), carResponse);
+                cars.add(car);
+                carNamesToCarResponses.put(car.getTitle(), car);
             }
 
             Elements links = document.select(LINKS);
@@ -77,18 +81,14 @@ public class CarParserService {
         Map<String, String> carNamesToUrls = carNamesToCarResponses.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUrl()));
 
-        carNamesToUrls.forEach((carName, url) -> {
-            try {
-                Document carDocument = documentService.load(url);
-                List<CarDetail> carDetails  = carDetailsExtractor.extractCarProperties(carDocument);
-                carNamesToCarResponses.get(carName).setDetails(carDetails);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        carNamesToUrls.forEach((carName, carUrl) -> {
+            List<CarDetail> carDetails  = carDetailsExtractor.extractCarProperties(carUrl);
+            extractCreationDate(carDetails, carNamesToCarResponses.get(carName));
+            carNamesToCarResponses.get(carName).setDetails(carDetails);
         });
 
         return cars.stream()
-                .filter(carResponseValidator::isValid)
+                .filter(carValidator::isValid)
                 .collect(Collectors.toList());
     }
 
@@ -100,7 +100,7 @@ public class CarParserService {
         return node.at(PRICE_INFO);
     }
 
-    private CarResponse convert(JsonNode carInfo, JsonNode priceInfo) {
+    private Car convert(JsonNode carInfo, JsonNode priceInfo) {
         String name = carInfo.path(NAME).asText();
         String brand = carInfo.path(BRAND).asText();
         String fuelType = carInfo.path(FUEL_TYPE).asText();
@@ -109,16 +109,16 @@ public class CarParserService {
         double price = priceInfo.path(PRICE).asDouble();
         String currency = priceInfo.path(CURRENCY).asText();
 
-        return new CarResponse(name, brand, fuelType, mileage, unit, price, currency);
+        return new Car(name, brand, fuelType, mileage, unit, price, currency);
     }
 
-    public String formatCarResponse(CarResponse car) {
-        String details = car.getDetails().stream().map(detail -> "%s : %s".formatted(detail.detail().name, detail.value()))
-                .collect(Collectors.joining("\n"));
-        return  "🚗 " + car.getTitle() + "\n" +
-                "🛞 Kilometers: " + car.getMileage() + "\n" +
-                "💵 Price: " + car.getPrice() + "\n" +
-                "🔗 Link " + car.getUrl() + "\n\n" +
-                details;
+    private void extractCreationDate(List<CarDetail> carDetails, Car car) {
+        carDetails.stream().filter(cd -> cd.getDetail().equals(Details.CREATED_AT.name))
+                .findFirst().ifPresent(cd -> {
+                    ZonedDateTime zonedDateTime = ZonedDateTime.parse(cd.getValue());
+                    LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();
+                    car.setCreatedAt(localDateTime);
+                    carDetails.remove(cd);
+                });
     }
 }

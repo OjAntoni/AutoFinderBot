@@ -1,9 +1,9 @@
 package com.example.autofinderbot.service;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
-import com.example.autofinderbot.domain.CarResponse;
+import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.parser.CarParserService;
-import org.jsoup.nodes.Document;
+import com.example.autofinderbot.shared.Details;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,13 +22,13 @@ class CarParserServiceTest extends BaseSpringBootTest {
 
     @Test
     void findCars_PosTC() throws IOException {
-        Document document = documentService.load(SEARCH_URL);
-
-        List<CarResponse> cars = carParserService.findCars(document);
+        List<Car> cars = carParserService.findCars(SEARCH_URL);
 
         assertThat(cars)
                 .isNotEmpty();
         assertThat(cars)
+                .anyMatch(carResponse -> carResponse.getCreatedAt() != null &&
+                        carResponse.getDetails().stream().noneMatch(cd -> cd.getDetail().equals(Details.CREATED_AT.name)))
                 .allMatch(carResponse -> carResponse.getUrl() != null)
                 .allMatch(carResponse -> !carResponse.getDetails().isEmpty());
     }

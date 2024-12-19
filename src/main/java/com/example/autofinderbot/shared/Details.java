@@ -13,7 +13,7 @@ public enum Details {
     DESCRIPTION("content-description-section", "Description"),
     SEATS("nr_seats", "Seats"),
     DOORS("door_count", "Doors"),
-    CREATED_AT("createdAt", "Production date"),
+    CREATED_AT("createdAt", "Created at"),
     FUEL_TYPE("fuel_type", "Fuel type"),
     ENGINE_CAPACITY("engine_capacity", "Engine capacity"),
     ENGINE_POWER("engine_power", "Engine power"),

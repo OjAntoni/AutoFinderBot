@@ -1,6 +1,7 @@
 package com.example.autofinderbot.parser;
 
 import com.example.autofinderbot.domain.CarDetail;
+import com.example.autofinderbot.service.DocumentService;
 import com.example.autofinderbot.shared.Details;
 import com.example.autofinderbot.shared.Logger;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +24,16 @@ import static lombok.AccessLevel.PRIVATE;
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-public class CarDetailsExtractor {
+class CarDetailsExtractor {
     private static final String SCRIPT_ERROR_MESSAGE = "Script element with JSON data not found.";
     private static final String AVERT_ERROR_MESSAGE = "Advert data not found in JSON.";
     Logger logger;
+    DocumentService documentService;
 
     @SneakyThrows
-    public List<CarDetail> extractCarProperties(Document document) {
+    public List<CarDetail> extractCarProperties(String url) {
+        Document document = documentService.load(url, (doc -> doc.selectFirst(CAR_PAGE_JSON_DATA) != null));
+
         Map<String, String> carProperties = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -51,6 +55,7 @@ public class CarDetailsExtractor {
 
             if (advertNode.isMissingNode()) {
                 IllegalArgumentException exception = new IllegalArgumentException(AVERT_ERROR_MESSAGE);
+                //TODO dont throw excetion
                 logger.error(AVERT_ERROR_MESSAGE, exception);
                 throw exception;
             }
@@ -98,7 +103,7 @@ public class CarDetailsExtractor {
         Set<String> attributes = Arrays.stream(Details.values()).map(Details::getAttribute).collect(Collectors.toSet());
         return specification.entrySet().stream()
                 .filter(entry -> attributes.contains(entry.getKey()))
-                .map(entry -> new CarDetail(attributeToDetails.get(entry.getKey()), entry.getValue()))
+                .map(entry -> new CarDetail(attributeToDetails.get(entry.getKey()).name, entry.getValue()))
                 .collect(Collectors.toList());
     }
 }
