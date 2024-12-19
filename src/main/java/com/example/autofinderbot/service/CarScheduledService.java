@@ -14,7 +14,6 @@ import java.util.List;
 
 import static com.example.autofinderbot.shared.APIConstants.SEARCH_URL;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static lombok.AccessLevel.PRIVATE;
 
 @Component
@@ -26,7 +25,7 @@ public class CarScheduledService {
     CarService carService;
     Logger logger;
 
-    @Scheduled(fixedRate = 10, initialDelay = 0, timeUnit = SECONDS)
+    @Scheduled(fixedRate = 10, initialDelay = 0, timeUnit = MINUTES)
     void execute() {
         List<Car> newCars = new ArrayList<>();
         int page = 1;

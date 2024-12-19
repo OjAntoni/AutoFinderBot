@@ -32,7 +32,7 @@ public class ScheduledExecutor {
     Logger logger;
 
     @SneakyThrows
-    @Scheduled(fixedRate = 10, initialDelay = 1, timeUnit = MINUTES)
+//    @Scheduled(fixedRate = 10, initialDelay = 1, timeUnit = MINUTES)
     void execute() {
         List<Car> newCars = new ArrayList<>();
 

@@ -55,6 +55,7 @@ class CarDetailsExtractor {
 
             if (advertNode.isMissingNode()) {
                 IllegalArgumentException exception = new IllegalArgumentException(AVERT_ERROR_MESSAGE);
+                //TODO dont throw excetion
                 logger.error(AVERT_ERROR_MESSAGE, exception);
                 throw exception;
             }
