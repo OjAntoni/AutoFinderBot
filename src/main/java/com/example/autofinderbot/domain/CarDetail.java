@@ -15,6 +15,7 @@ public class CarDetail{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+    @Setter
     @Column(nullable = false)
     long carId;
     @Column(nullable = false)

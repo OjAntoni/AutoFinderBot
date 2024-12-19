@@ -8,6 +8,8 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.FetchType.EAGER;
 import static lombok.AccessLevel.PRIVATE;
 
 @Entity
@@ -37,7 +39,7 @@ public class Car {
     LocalDateTime createdAt;
     @Exclude
     @Setter
-    @OneToMany(mappedBy = "carId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "carId", cascade = REMOVE, orphanRemoval = true, fetch = EAGER)
     List<CarDetail> details;
 
     public Car(String title, String brand, String fuelType, long mileage, String mileageUnit, double price, String currency) {

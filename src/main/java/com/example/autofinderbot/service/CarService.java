@@ -1,8 +1,11 @@
 package com.example.autofinderbot.service;
 
 import com.example.autofinderbot.domain.Car;
+import com.example.autofinderbot.domain.CarDetail;
+import com.example.autofinderbot.repository.CarDetailRepository;
 import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.shared.Logger;
+import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -25,18 +28,29 @@ import static lombok.AccessLevel.PRIVATE;
 @Validated
 public class CarService {
     CarRepository carRepository;
+    CarDetailRepository carDetailRepository;
     Logger logger;
 
     @Transactional
     public Car save(@Valid Car car) {
         logger.debug("Saving car: %s", car);
-        return carRepository.save(car);
+        long carId = carRepository.save(car).getId();
+        List<CarDetail> carDetails = car.getDetails().stream().peek(cd -> cd.setCarId(carId)).toList();
+        carDetailRepository.saveAll(carDetails);
+        car.setDetails(carDetails);
+        return car;
     }
 
     @Transactional
     public List<Car> saveAll(@NotNull Collection<@Valid Car> cars) {
         logger.debug("Saving all %d cars", cars.size());
-        return carRepository.saveAll(cars);
+        List<Car> savedCars = carRepository.saveAll(cars);
+        List<CarDetail> carDetails = savedCars.stream()
+                .peek(car -> car.getDetails().forEach(cd -> cd.setCarId(car.getId())))
+                .flatMap(car -> car.getDetails().stream())
+                .toList();
+        carDetailRepository.saveAll(carDetails);
+        return savedCars;
     }
 
     @Transactional(readOnly = true)

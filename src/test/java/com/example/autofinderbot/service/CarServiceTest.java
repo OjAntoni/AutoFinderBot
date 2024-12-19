@@ -33,10 +33,14 @@ class CarServiceTest extends BaseSpringBootTest {
                 .details(List.of(new CarDetail("key", "value")))
                 .build();
 
-        carService.save(car);
+        Car savedCar = carService.save(car);
+
+        assertThat(savedCar)
+                .matches(c -> !c.getDetails().isEmpty() && c.getDetails().stream().allMatch(detail -> detail.getCarId() == savedCar.getId()));
 
         assertThat(carRepository.findOne(Example.of(car)))
-                .isNotEmpty();
+                .isNotEmpty()
+                .matches(c -> !c.orElseThrow().getDetails().isEmpty());
     }
 
     @Test
@@ -45,5 +49,41 @@ class CarServiceTest extends BaseSpringBootTest {
                 .isTrue();
     }
 
+    @Test
+    void saveAll_PosTC() {
+        List<Car> cars = List.of(
+                Car.builder()
+                        .url("https://example.com")
+                        .brand("brand")
+                        .price(1000)
+                        .title("title")
+                        .mileage(100500)
+                        .currency("currency")
+                        .fuelType("fuelType")
+                        .createdAt(LocalDateTime.now())
+                        .details(List.of(new CarDetail("key", "value")))
+                        .build(),
+                Car.builder()
+                        .url("https://example.com")
+                        .brand("brand")
+                        .price(1000)
+                        .title("title")
+                        .mileage(100500)
+                        .currency("currency")
+                        .fuelType("fuelType")
+                        .createdAt(LocalDateTime.now())
+                        .details(List.of(new CarDetail("key", "value")))
+                        .build()
+        );
+
+        List<Car> carsReturned = carService.saveAll(cars);
+
+        assertThat(carsReturned)
+                .allMatch(c -> !c.getDetails().isEmpty() && c.getDetails().stream().allMatch(detail -> detail.getCarId() > 0));
+
+        assertThat(carRepository.findAll().stream().filter(c -> c.getUrl().equals("https://example.com")))
+                .allMatch(c -> c.getDetails().size() == 1)
+                .hasSize(2);
+    }
 
 }

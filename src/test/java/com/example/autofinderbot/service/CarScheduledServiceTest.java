@@ -5,6 +5,7 @@ import com.example.autofinderbot.repository.CarDetailRepository;
 import com.example.autofinderbot.repository.CarRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ class CarScheduledServiceTest extends BaseSpringBootTest {
     CarDetailRepository carDetailRepository;
 
     @Test
+    @Transactional
     void saveAllCars_PosTC(){
         long count = carRepository.count();
 
@@ -31,6 +33,7 @@ class CarScheduledServiceTest extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     void deleteExpiredCars_PosTC(){
         carScheduledService.deleteExpiredCars();
 
