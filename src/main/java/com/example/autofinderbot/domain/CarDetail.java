@@ -1,8 +1,6 @@
 package com.example.autofinderbot.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,6 +13,7 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE)
 public class CarDetail{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     @Column(nullable = false)
     long carResponseId;

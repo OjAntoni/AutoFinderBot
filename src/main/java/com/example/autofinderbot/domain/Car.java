@@ -20,6 +20,7 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor
 public class Car {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     String title;
     String brand;

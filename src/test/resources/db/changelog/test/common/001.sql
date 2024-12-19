@@ -16,3 +16,7 @@ insert into car_detail (id, car_response_id, detail, value) values
 (7, 1, 'engine', '2.0 TDI'),
 (8, 2, 'engine', '2.0 TFSI'),
 (9, 3, 'engine', '2.0 TDI');
+
+ALTER SEQUENCE car_id_seq RESTART WITH 100;
+ALTER SEQUENCE car_detail_id_seq RESTART WITH 1000;
+
