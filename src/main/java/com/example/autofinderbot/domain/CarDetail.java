@@ -1,6 +1,29 @@
 package com.example.autofinderbot.domain;
 
-import com.example.autofinderbot.shared.Details;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
-public record CarDetail(Details detail, String value) {
+import static lombok.AccessLevel.PRIVATE;
+
+@Entity
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = PRIVATE)
+public class CarDetail{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    long id;
+    @Column(nullable = false)
+    long carResponseId;
+    @Column(nullable = false)
+    String detail;
+    @Column(nullable = false)
+    String value;
+
+    public CarDetail(String detail, String value) {
+        this.detail = detail;
+        this.value = value;
+    }
 }
