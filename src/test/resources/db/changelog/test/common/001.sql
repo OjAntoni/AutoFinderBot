@@ -27,5 +27,6 @@ insert into car_detail (id, car_id, detail, value) values
 (15, 6, 'year', '2018');
 
 ALTER SEQUENCE car_id_seq RESTART WITH 100;
-ALTER SEQUENCE car_detail_id_seq RESTART WITH 1000;
-
+ALTER SEQUENCE car_detail_id_seq RESTART WITH 100;
+ALTER SEQUENCE report_id_seq RESTART WITH 100;
+ALTER SEQUENCE users_id_seq RESTART WITH 100;
