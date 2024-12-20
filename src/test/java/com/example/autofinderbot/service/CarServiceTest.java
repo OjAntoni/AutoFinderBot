@@ -75,17 +75,6 @@ class CarServiceTest extends BaseSpringBootTest {
 
         assertThat(carDetailRepository.findAllByCarIdIn(carsReturned.stream().map(Car::getId).toList()))
                 .hasSize(2);
-
-        Optional<Report> report = reportRepository.findAll().stream().max(comparing(Report::getCreatedAt));
-
-        assertThat(report)
-                .isPresent()
-                .get()
-                .extracting(Report::getAffectedRows, Report::getOperation)
-                .containsExactly(2L, INSERT);
-
-        assertThat(report.get().getTargetIds())
-                .containsExactlyInAnyOrderElementsOf(carsReturned.stream().map(Car::getId).toList());
     }
 
     @Test
@@ -97,14 +86,6 @@ class CarServiceTest extends BaseSpringBootTest {
 
         assertThat(carDetailRepository.findAllByCarIdIn(List.of(1L, 2L)))
                 .isEmpty();
-
-        Optional<Report> report = reportRepository.findAll().stream().max(comparing(Report::getCreatedAt));
-
-        assertThat(report)
-                .isPresent()
-                .get()
-                .extracting(Report::getAffectedRows, Report::getOperation)
-                .containsExactly(2L, DELETE);
     }
 
 }

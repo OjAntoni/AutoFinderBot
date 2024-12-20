@@ -46,13 +46,6 @@ public class CarService {
                 .toList();
         carDetailRepository.saveAll(carDetails);
 
-        Report report = new Report();
-        report.setAffectedRows(savedCars.size());
-        report.setCreatedAt(dateTimeUtil.now());
-        report.setOperation(INSERT);
-        report.setTargetIds(savedCars.stream().map(Car::getId).toList());
-        reportRepository.save(report);
-
         return savedCars;
     }
 
@@ -68,13 +61,6 @@ public class CarService {
 
     @Transactional
     public void deleteAll(Collection<Long> ids){
-        long rowsToDelete = carRepository.countAllByIdIn(ids);
-        Report report = new Report();
-        report.setAffectedRows(rowsToDelete);
-        report.setCreatedAt(dateTimeUtil.now());
-        report.setOperation(DELETE);
-
         carRepository.deleteAllById(ids);
-        reportRepository.save(report);
     }
 }
