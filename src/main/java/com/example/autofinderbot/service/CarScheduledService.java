@@ -57,8 +57,6 @@ public class CarScheduledService {
 
             if(filtered.size() != cars.size()) break;
         }
-
-
     }
 
     @Scheduled(fixedRate = 60, initialDelay = 30, timeUnit = MINUTES)
