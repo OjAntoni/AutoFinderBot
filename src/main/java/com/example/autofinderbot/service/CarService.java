@@ -2,17 +2,18 @@ package com.example.autofinderbot.service;
 
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.CarDetail;
+import com.example.autofinderbot.domain.Report;
 import com.example.autofinderbot.repository.CarDetailRepository;
 import com.example.autofinderbot.repository.CarRepository;
+import com.example.autofinderbot.repository.ReportRepository;
+import com.example.autofinderbot.shared.DateTimeUtil;
 import com.example.autofinderbot.shared.Logger;
-import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,8 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Collection;
 import java.util.List;
 
+import static com.example.autofinderbot.domain.Report.Operation.DELETE;
+import static com.example.autofinderbot.domain.Report.Operation.INSERT;
 import static lombok.AccessLevel.PRIVATE;
 
 @Service
@@ -29,17 +32,9 @@ import static lombok.AccessLevel.PRIVATE;
 public class CarService {
     CarRepository carRepository;
     CarDetailRepository carDetailRepository;
+    ReportRepository reportRepository;
     Logger logger;
-
-    @Transactional
-    public Car save(@Valid Car car) {
-        logger.debug("Saving car: %s", car);
-        long carId = carRepository.save(car).getId();
-        List<CarDetail> carDetails = car.getDetails().stream().peek(cd -> cd.setCarId(carId)).toList();
-        carDetailRepository.saveAll(carDetails);
-        car.setDetails(carDetails);
-        return car;
-    }
+    DateTimeUtil dateTimeUtil;
 
     @Transactional
     public List<Car> saveAll(@NotNull Collection<@Valid Car> cars) {
@@ -50,6 +45,7 @@ public class CarService {
                 .flatMap(car -> car.getDetails().stream())
                 .toList();
         carDetailRepository.saveAll(carDetails);
+
         return savedCars;
     }
 

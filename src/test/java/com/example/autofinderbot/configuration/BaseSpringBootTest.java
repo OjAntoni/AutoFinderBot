@@ -46,6 +46,7 @@ public abstract class BaseSpringBootTest {
     static void overrideProperties(DynamicPropertyRegistry registry) throws IOException {
         Path tempFilePath = tempDir.resolve("old-test.txt");
         Files.copy(Paths.get("src/test/resources/old"), tempFilePath);
+
         registry.add("telegram.bot.storage.file", tempFilePath::toString);
 
         registry.add("spring.datasource.url", POSTGRES_CONTAINER::getJdbcUrl);
