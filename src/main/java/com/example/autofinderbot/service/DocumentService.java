@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.function.Predicate;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -33,19 +34,19 @@ public class DocumentService {
 
     public Document load(@NonNull @NotBlank @NotEmpty String url, @PositiveOrZero int retryCount, Predicate<Document> validator) throws IOException {
         logger.debug("Started loading %s", url);
-        Document document = connect(url)
-                .maxBodySize(INFINITE_BODY_SIZE)
-                .timeout(INFINITE_TIMEOUT)
-                .userAgent(USER_AGENT)
-                .get();
-        boolean loadSucceeded = validator.test(document);
-        while (!loadSucceeded && --retryCount > 0) {
-            document = connect(url)
-                    .maxBodySize(INFINITE_BODY_SIZE)
-                    .timeout(INFINITE_TIMEOUT)
-                    .userAgent(USER_AGENT)
-                    .get();
-            loadSucceeded = validator.test(document);
+        Document document = null;
+        boolean loadSucceeded = false;
+        while (!loadSucceeded && retryCount-- > 0) {
+            try {
+                document = connect(url)
+                        .maxBodySize(INFINITE_BODY_SIZE)
+                        .timeout(INFINITE_TIMEOUT)
+                        .userAgent(USER_AGENT)
+                        .get();
+                loadSucceeded = validator.test(document);
+            } catch (UnknownHostException e) {
+                logger.warn("Unknown host exception: %s", url);
+            }
         }
         if(!loadSucceeded) throw new IOException("Failed to load %s".formatted(url));
         logger.debug("Ended loading %s", url);
