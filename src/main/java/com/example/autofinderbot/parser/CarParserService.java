@@ -18,9 +18,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static com.example.autofinderbot.shared.APIConstants.*;
@@ -32,6 +35,7 @@ import static lombok.AccessLevel.PRIVATE;
 public class CarParserService {
     private static final String SCRIPT_ERROR_MESSAGE = "Script element with JSON data not found.";
     private static final String NOT_AN_ARRAY_ERROR_MESSAGE = "Element is not an array.";
+    private static final int THREAD_POOL_SIZE = 30;
     Logger logger;
     ObjectMapper objectMapper;
     CarDetailsExtractor carDetailsExtractor;
@@ -53,7 +57,7 @@ public class CarParserService {
         JsonNode itemList = rootNode.at(ITEM_CAR_LIST_ELEMENT);
 
         List<Car> cars = new ArrayList<>();
-        Map<String, Car> carNamesToCarResponses = new HashMap<>(); // Map to store car names and URLs
+        Map<String, Car> carNameToCars = new ConcurrentHashMap<>(); // Map to store car names and URLs
 
         if (itemList.isArray()) {
             for (JsonNode item : itemList) {
@@ -63,29 +67,39 @@ public class CarParserService {
                 Car car = convert(carInfo, priceInfo);
 
                 cars.add(car);
-                carNamesToCarResponses.put(car.getTitle(), car);
+                carNameToCars.put(car.getTitle(), car);
             }
 
             Elements links = document.select(LINKS);
             for (Element link : links) {
                 String text = link.text().trim();
-                if (carNamesToCarResponses.containsKey(text)) {
+                if (carNameToCars.containsKey(text)) {
                     String carUrl = link.attr(LINK_URL);
-                    carNamesToCarResponses.get(text).setUrl(carUrl);
+                    carNameToCars.get(text).setUrl(carUrl);
                 }
             }
         } else {
             logger.error(NOT_AN_ARRAY_ERROR_MESSAGE);
         }
 
-        Map<String, String> carNamesToUrls = carNamesToCarResponses.entrySet().stream()
+        Map<String, String> carNamesToUrls = carNameToCars.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUrl()));
 
-        carNamesToUrls.forEach((carName, carUrl) -> {
-            List<CarDetail> carDetails  = carDetailsExtractor.extractCarProperties(carUrl);
-            extractCreationDate(carDetails, carNamesToCarResponses.get(carName));
-            carNamesToCarResponses.get(carName).setDetails(carDetails);
-        });
+        try(ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE)) {
+            List<CompletableFuture<Void>> futures = carNamesToUrls.entrySet().stream()
+                    .map(entry -> CompletableFuture.runAsync(() -> {
+                        String carName = entry.getKey();
+                        String carUrl = entry.getValue();
+
+                        List<CarDetail> carDetails = carDetailsExtractor.extractCarProperties(carUrl);
+
+                        extractCreationDate(carDetails, carNameToCars.get(carName));
+                        carNameToCars.get(carName).setDetails(carDetails);
+                    }, executor))
+                    .toList();
+
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        }
 
         return cars.stream()
                 .filter(carValidator::isValid)
