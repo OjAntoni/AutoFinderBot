@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -19,6 +20,7 @@ import java.util.List;
 @ActiveProfiles("test")
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
+@Transactional
 public abstract class BaseSpringBootTest {
     static final String POSTGRES_IMAGE = "postgres:17.2";
     static final String POSTGRES_DB = "postgres";

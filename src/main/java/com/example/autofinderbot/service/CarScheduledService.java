@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ public class CarScheduledService {
     Logger logger;
 
     @Scheduled(fixedRate = 10, initialDelay = 0, timeUnit = MINUTES)
-    @Transactional
     void updateCarDatabase() {
         List<Car> newCars = new ArrayList<>();
         int page = 1;
@@ -52,13 +50,15 @@ public class CarScheduledService {
                     .limit(newCars.size()+ cars.size() > CAR_LIMIT ? CAR_LIMIT - newCars.size() : cars.size())
                     .toList();
 
+            carService.saveAll(filtered);
+
             newCars.addAll(filtered);
             logger.debug("Added filtered cars: %d", filtered.size());
 
             if(filtered.size() != cars.size()) break;
         }
 
-        carService.saveAll(newCars);
+
     }
 
     @Scheduled(fixedRate = 60, initialDelay = 30, timeUnit = MINUTES)
