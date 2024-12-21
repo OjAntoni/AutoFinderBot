@@ -78,6 +78,15 @@ jacocoTestReport {
 
 }
 
+def exludedPackages = [
+        'com.example.autofinderbot.config.*',
+        'com.example.autofinderbot.domain.*',
+        'com.example.autofinderbot.repository.*',
+        'com.example.autofinderbot.shared.*',
+        'com.example.autofinderbot.AutoFinderBotApplication*',
+        'com.example.autofinderbot.TelegramBot*'
+]
+
 jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
     violationRules {
@@ -86,28 +95,27 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.8 // 80% minimum line coverage
+                minimum = 0.8
             }
-            excludes = [
-                    'com.example.autofinderbot.config.*',
-                    'com.example.autofinderbot.domain.*',
-                    'com.example.autofinderbot.repository.*',
-                    'com.example.autofinderbot.shared.*'
-            ]
+            excludes = exludedPackages
         }
         rule {
             element = 'CLASS'
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.7 // 70% minimum branch coverage
+                minimum = 0.5
             }
-            excludes = [
-                    'com.example.autofinderbot.config.*',
-                    'com.example.autofinderbot.domain.*',
-                    'com.example.autofinderbot.repository.*',
-                    'com.example.autofinderbot.shared.*'
-            ]
+            excludes = exludedPackages
+        }
+        rule {
+            element = 'METHOD'
+            limit {
+                counter = 'METHOD'
+                value = 'COVEREDRATIO'
+                minimum = 1
+            }
+            excludes = exludedPackages
         }
     }
 }

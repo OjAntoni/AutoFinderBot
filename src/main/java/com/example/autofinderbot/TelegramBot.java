@@ -2,7 +2,6 @@ package com.example.autofinderbot;
 
 import com.example.autofinderbot.shared.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
@@ -15,7 +14,6 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.List;
 
-@Profile("!test")
 @Component
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
     private final TelegramClient telegramClient;
@@ -23,9 +21,9 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     private long chatId;
     private final Logger logger;
 
-    public TelegramBot(@Value("${telegram.bot.token}") String token, Logger logger) {
+    public TelegramBot(@Value("${telegram.bot.token}") String token, Logger logger, TelegramClient telegramClient) {
         botToken = token;
-        telegramClient = new OkHttpTelegramClient(getBotToken());
+        this.telegramClient = telegramClient;
         this.logger = logger;
     }
 

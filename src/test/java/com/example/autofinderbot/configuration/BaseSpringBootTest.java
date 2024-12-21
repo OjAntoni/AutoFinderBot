@@ -1,13 +1,18 @@
 package com.example.autofinderbot.configuration;
 
+import com.example.autofinderbot.TelegramBot;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -16,6 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -53,5 +60,21 @@ public abstract class BaseSpringBootTest {
         registry.add("spring.datasource.username", POSTGRES_CONTAINER::getUsername);
         registry.add("spring.datasource.password", POSTGRES_CONTAINER::getPassword);
         registry.add("spring.liquibase.change-log", () -> "classpath:db/changelog/test/db.changelog-test.yaml");
+    }
+
+    @TestConfiguration
+    static class MockConfig {
+
+        @Bean
+        @Primary
+        public TelegramBot telegramBotMock() {
+            return mock(TelegramBot.class);
+        }
+
+        @Bean
+        @Primary
+        public TelegramClient telegramClientMock() {
+            return mock(TelegramClient.class);
+        }
     }
 }
