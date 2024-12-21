@@ -26,6 +26,12 @@ insert into car_detail (id, car_id, detail, value) values
 (14, 6, 'color', 'green'),
 (15, 6, 'year', '2018');
 
-ALTER SEQUENCE car_id_seq RESTART WITH 100;
-ALTER SEQUENCE car_detail_id_seq RESTART WITH 1000;
+insert into users(id, chat_id, search_url) values
+(1, 1, 'https://www.example.com/search-1'),
+(2, 2, 'https://www.example.com/search-2'),
+(3, 3, 'https://www.example.com/search-3');
 
+ALTER SEQUENCE car_id_seq RESTART WITH 100;
+ALTER SEQUENCE car_detail_id_seq RESTART WITH 100;
+ALTER SEQUENCE report_id_seq RESTART WITH 100;
+ALTER SEQUENCE users_id_seq RESTART WITH 100;
