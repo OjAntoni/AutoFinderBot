@@ -21,8 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Collection;
 import java.util.List;
 
-import static com.example.autofinderbot.domain.Report.Operation.DELETE;
-import static com.example.autofinderbot.domain.Report.Operation.INSERT;
 import static lombok.AccessLevel.PRIVATE;
 
 @Service
@@ -32,9 +30,7 @@ import static lombok.AccessLevel.PRIVATE;
 public class CarService {
     CarRepository carRepository;
     CarDetailRepository carDetailRepository;
-    ReportRepository reportRepository;
     Logger logger;
-    DateTimeUtil dateTimeUtil;
 
     @Transactional
     public List<Car> saveAll(@NotNull Collection<@Valid Car> cars) {

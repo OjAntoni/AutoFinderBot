@@ -64,7 +64,7 @@ public class DocumentService {
                     .execute()
                     .statusCode();
             return code / 100 != 4 && code / 100 != 5;
-        } catch (IOException e) {
+        } catch (Exception e) {
             return false;
         }
     }
