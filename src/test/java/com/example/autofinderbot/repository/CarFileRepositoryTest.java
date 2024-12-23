@@ -34,7 +34,7 @@ class CarFileRepositoryTest extends BaseSpringBootTest {
 
         recreateCarFileRepository();
 
-        assertThat(carFileRepository.contains("https://example.com/four"))
+        assertThat(carFileRepository.contains("https://example.com/four2"))
                 .isTrue();
     }
 
