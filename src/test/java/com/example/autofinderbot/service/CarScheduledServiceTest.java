@@ -1,13 +1,13 @@
 package com.example.autofinderbot.service;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
-import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.Report;
 import com.example.autofinderbot.repository.CarDetailRepository;
 import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.repository.ReportRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +31,7 @@ class CarScheduledServiceTest extends BaseSpringBootTest {
     ReportRepository reportRepository;
 
     @Test
+    @Transactional
     void saveAllCars_PosTC(){
         long count = carRepository.count();
 
@@ -38,7 +39,6 @@ class CarScheduledServiceTest extends BaseSpringBootTest {
 
         assertThat(carRepository.count())
                 .isEqualTo(count + 30);
-
 
         Optional<Report> report = reportRepository.findAll().stream().max(comparing(Report::getCreatedAt));
 
