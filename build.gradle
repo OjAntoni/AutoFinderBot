@@ -2,6 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
     id 'java'
+    id 'jacoco'
     id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
 }
@@ -43,13 +44,80 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
-}
-
-tasks.test {
     testLogging {
         events("passed", "failed")
         exceptionFormat = TestExceptionFormat.SHORT
     }
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, exclude: [
+                            '**/config/**',
+                            '**/domain/**',
+                            '**/shared/**'
+                    ])
+                })
+        )
+    }
+
+}
+
+def exludedPackages = [
+        'com.example.autofinderbot.config.*',
+        'com.example.autofinderbot.domain.*',
+        'com.example.autofinderbot.shared.*',
+        'com.example.autofinderbot.AutoFinderBotApplication*',
+        'com.example.autofinderbot.TelegramBot*'
+]
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.8
+            }
+            excludes = exludedPackages
+        }
+        rule {
+            element = 'CLASS'
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.5
+            }
+            excludes = exludedPackages
+        }
+        rule {
+            element = 'METHOD'
+            limit {
+                counter = 'METHOD'
+                value = 'COVEREDRATIO'
+                minimum = 1
+            }
+            excludes = exludedPackages
+        }
+    }
+}
+
+tasks.build {
+    dependsOn jacocoTestCoverageVerification
 }

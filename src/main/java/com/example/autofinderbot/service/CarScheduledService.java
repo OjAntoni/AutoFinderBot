@@ -3,6 +3,7 @@ package com.example.autofinderbot.service;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.Report;
 import com.example.autofinderbot.parser.CarParserService;
+import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.shared.DateTimeUtil;
 import com.example.autofinderbot.shared.Logger;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +35,13 @@ public class CarScheduledService {
     ReportService reportService;
     DateTimeUtil dateTimeUtil;
     Logger logger;
+    CarRepository carRepository;
 
     @Scheduled(fixedRate = 10, initialDelay = 0, timeUnit = MINUTES)
     void updateCarDatabase() {
         List<Long> newCars = new ArrayList<>();
         int page = 1;
-        while (newCars.size() <= CAR_LIMIT) {
+        while (newCars.size() < CAR_LIMIT) {
 
             List<Car> cars;
 
@@ -53,7 +55,7 @@ public class CarScheduledService {
             logger.debug("Found car responses: %d", cars.size());
             List<Car> filtered = cars.stream()
                     .filter(cr -> !carService.exists(cr.getUrl()))
-                    .limit(newCars.size()+ cars.size() > CAR_LIMIT ? CAR_LIMIT - newCars.size() : cars.size())
+                    .limit(newCars.size() + cars.size() > CAR_LIMIT ? CAR_LIMIT - newCars.size() : cars.size())
                     .toList();
 
             newCars.addAll(carService.saveAll(filtered).stream().map(Car::getId).toList());
