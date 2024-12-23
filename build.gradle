@@ -69,7 +69,6 @@ jacocoTestReport {
                     fileTree(dir: it, exclude: [
                             '**/config/**',
                             '**/domain/**',
-                            '**/repository/**',
                             '**/shared/**'
                     ])
                 })
@@ -81,7 +80,6 @@ jacocoTestReport {
 def exludedPackages = [
         'com.example.autofinderbot.config.*',
         'com.example.autofinderbot.domain.*',
-        'com.example.autofinderbot.repository.*',
         'com.example.autofinderbot.shared.*',
         'com.example.autofinderbot.AutoFinderBotApplication*',
         'com.example.autofinderbot.TelegramBot*'
