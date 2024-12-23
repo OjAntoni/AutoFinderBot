@@ -50,7 +50,6 @@ class CarDetailsExtractor {
             String jsonData = scriptElement.html();
             JsonNode rootNode = objectMapper.readTree(jsonData);
 
-            // Navigate to the "advert" object
             JsonNode advertNode = rootNode.at(CAR_PAGE_ADVERT);
 
             if (advertNode.isMissingNode()) {
