@@ -1,6 +1,8 @@
 package com.example.autofinderbot;
 
 import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.telegram.StrategyContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,9 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     private final String botToken;
     private long chatId;
     private final Logger logger;
+    //todo test purpose
+    @Autowired
+    StrategyContext strategyContext;
 
     public TelegramBot(@Value("${telegram.bot.token}") String token, Logger logger, TelegramClient telegramClient) {
         botToken = token;
@@ -42,19 +47,22 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     public void consume(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String message_text = update.getMessage().getText();
-            long chat_id = update.getMessage().getChatId();
-            chatId = chat_id;
+            //todo test purpose
+            strategyContext.executeStrategy(message_text, message_text);
 
-            SendMessage message = SendMessage // Create a message object
-                    .builder()
-                    .chatId(chat_id)
-                    .text(message_text)
-                    .build();
-            try {
-                telegramClient.execute(message); // Sending our message object to user
-            } catch (TelegramApiException e) {
-                logger.error(e);
-            }
+//            long chat_id = update.getMessage().getChatId();
+//            chatId = chat_id;
+//
+//            SendMessage message = SendMessage // Create a message object
+//                    .builder()
+//                    .chatId(chat_id)
+//                    .text(message_text)
+//                    .build();
+//            try {
+//                telegramClient.execute(message); // Sending our message object to user
+//            } catch (TelegramApiException e) {
+//                logger.error(e);
+//            }
         }
     }
 
