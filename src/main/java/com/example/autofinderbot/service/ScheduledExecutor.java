@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import static com.example.autofinderbot.shared.APIConstants.SEARCH_URL;
 import static lombok.AccessLevel.PRIVATE;
 
+@Profile("!test")
 @Component
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
