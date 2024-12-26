@@ -1,49 +1,46 @@
 package com.example.autofinderbot.telegram;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.telegram.exception.InvalidArgumentsException;
+import com.example.autofinderbot.telegram.exception.TelegramCommandNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.WrongMethodTypeException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class StrategyContext {
 
     private final ApplicationContext applicationContext;
 
     private final Map<String, MethodHandle> strategies = new HashMap<>();
 
-    @Autowired
-    public StrategyContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
+    private final Logger logger;
 
+    @SneakyThrows
     public Object executeStrategy(String strategyName, Object... args) {
+        if(strategies.isEmpty()) {
+            initializeStrategies();
+        }
+
         MethodHandle handle = strategies.get(strategyName);
         if (handle != null) {
             try {
                 return handle.invokeWithArguments(args);
-            } catch (Throwable e) {
-                throw new RuntimeException("Error invoking strategy: " + strategyName, e);
+            } catch (ClassCastException | WrongMethodTypeException e) {
+                throw new InvalidArgumentsException(strategyName);
             }
         }
 
-        // Lazy initialization of strategies
-        initializeStrategies();
-        handle = strategies.get(strategyName);
-        if (handle != null) {
-            try {
-                return handle.invokeWithArguments(args);
-            } catch (Throwable e) {
-                throw new RuntimeException("Error invoking strategy: " + strategyName, e);
-            }
-        }
-
-        throw new IllegalArgumentException("No strategy found for: " + strategyName);
+        throw new TelegramCommandNotFoundException(strategyName);
     }
 
     private synchronized void initializeStrategies() {
@@ -61,7 +58,7 @@ public class StrategyContext {
                         MethodHandle handle = lookup.unreflect(method).bindTo(bean);
                         strategies.put(annotation.value(), handle);
                     } catch (IllegalAccessException e) {
-                        throw new RuntimeException("Failed to bind method: " + method.getName(), e);
+                        logger.error(e);
                     }
                 }
             }

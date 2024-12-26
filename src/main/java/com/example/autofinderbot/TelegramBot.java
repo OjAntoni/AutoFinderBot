@@ -47,7 +47,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
     public void consume(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String message_text = update.getMessage().getText();
-            //todo test purpose
+            //todo test purpose + add catching throwable
             strategyContext.executeStrategy(message_text, message_text);
 
 //            long chat_id = update.getMessage().getChatId();
