@@ -21,9 +21,4 @@ public class BeanConfig {
     ) {
         return new ScheduledExecutor(carParserService, carFileRepository, Mockito.mock(TelegramBot.class), logger);
     }
-
-//    @Bean
-//    TestListenerBean testListenerBean() {
-//        return Mockito.mock(TestListenerBean.class);
-//    }
 }
