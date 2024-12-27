@@ -13,6 +13,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
 
 class StrategyContextTest extends BaseSpringBootTest {
@@ -24,7 +27,7 @@ class StrategyContextTest extends BaseSpringBootTest {
 
     @Test
     void invokeCommand_PosTC() {
-        strategyContext.executeStrategy("test", "arg");
+        strategyContext.executeStrategy("test  arg");
 
         Mockito.verify(testListenerBean).test(ArgumentMatchers.any());
     }
@@ -38,19 +41,28 @@ class StrategyContextTest extends BaseSpringBootTest {
 
     @Test
     void invokeCommandWithReturn_PosTC() {
-        when(testListenerBean.test2(ArgumentMatchers.any())).thenReturn("arg");
+        when(testListenerBean.test2(anyInt())).thenCallRealMethod();
 
-        Object returnObj = strategyContext.executeStrategy("test2", "arg");
+        Object returnObj = strategyContext.executeStrategy("test2 3");
 
-        Mockito.verify(testListenerBean).test2(ArgumentMatchers.any());
+        Mockito.verify(testListenerBean).test2(anyInt());
         assertThat(returnObj)
-            .isEqualTo("arg");
+            .isEqualTo(9.0);
     }
 
     @Test
     void throwOnMissingCommand_NegTC() {
-        assertThatThrownBy(() -> strategyContext.executeStrategy("missing", "arg"))
+        assertThatThrownBy(() -> strategyContext.executeStrategy("missing arg"))
             .isInstanceOf(TelegramCommandNotFoundException.class)
             .hasMessage("Command missing not found.");
+    }
+
+    @Test
+    void catchInnerException_PosTC() {
+        doCallRealMethod().when(testListenerBean).exception();
+
+        assertThatThrownBy(() -> strategyContext.executeStrategy("exception"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("Test exception");
     }
 }

@@ -1,6 +1,9 @@
 package com.example.autofinderbot.telegram;
 
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class TestListenerBean {
     @CommandListener("test")
     public void test(String var) {
@@ -8,7 +11,12 @@ public class TestListenerBean {
     }
 
     @CommandListener("test2")
-    public String test2(String var) {
-        return var;
+    public double test2(int number) {
+        return Math.pow(number, 2);
+    }
+
+    @CommandListener("exception")
+    public void exception() {
+        throw new RuntimeException("Test exception");
     }
 }
