@@ -21,7 +21,7 @@ class DocumentServiceTest extends BaseSpringBootTest {
 
     @Test
     void loadDocument_PosTC() throws IOException {
-        assertThat(documentService.load(SEARCH_URL, 15, (_) -> true))
+        assertThat(documentService.load(SEARCH_URL, 15, (document) -> true))
             .isNotNull();
     }
 
@@ -29,7 +29,7 @@ class DocumentServiceTest extends BaseSpringBootTest {
     void loadDocumentWithRetry_PosTC() throws IOException {
         final AtomicInteger counter = new AtomicInteger(1);
 
-        assertThat(documentService.load(SEARCH_URL, (_) -> counter.getAndIncrement() == 10))
+        assertThat(documentService.load(SEARCH_URL, (document) -> counter.getAndIncrement() == 10))
                 .isNotNull();
     }
 
@@ -37,18 +37,18 @@ class DocumentServiceTest extends BaseSpringBootTest {
     void throwOnExceededRetryCount_NegTC() throws IOException {
         final AtomicInteger counter = new AtomicInteger(1);
 
-        assertThatThrownBy(() -> documentService.load(SEARCH_URL, 5, (_) -> counter.getAndIncrement() == 6))
+        assertThatThrownBy(() -> documentService.load(SEARCH_URL, 5, (document) -> counter.getAndIncrement() == 6))
             .isInstanceOf(IOException.class);
     }
 
     @Test
     void throwOnLoadFileWithNegativeRetries_NegTC() {
-        assertThatThrownBy(() -> documentService.load("", -1, (_) -> true))
+        assertThatThrownBy(() -> documentService.load("", -1, (document) -> true))
             .isInstanceOf(ConstraintViolationException.class);
     }
 
     @RepeatedTest(5)
     void loadDocumentWithDefaultRetryCount_PosTC() {
-        assertDoesNotThrow(() -> documentService.load(SEARCH_URL, (_) -> true));
+        assertDoesNotThrow(() -> documentService.load(SEARCH_URL, (document) -> true));
     }
 }

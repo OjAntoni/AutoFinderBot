@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-boot-app
+    restart: no
+    depends_on:
+      - postgres
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/otomotodb
+      SPRING_DATASOURCE_USERNAME: otomoto-admin
+      SPRING_DATASOURCE_PASSWORD: otomoto-admin
+
+  postgres:
+    image: postgres:15
+    container_name: postgres-otomoto-compose
+    restart: always
+    environment:
+      POSTGRES_USER: otomoto-admin
+      POSTGRES_PASSWORD: otomoto-admin
+      POSTGRES_DB: otomotodb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
