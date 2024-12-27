@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -14,6 +15,7 @@ import java.lang.invoke.WrongMethodTypeException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -26,7 +28,7 @@ public class StrategyContext {
     private final Logger logger;
 
     @SneakyThrows
-    public Object executeStrategy(String input) {
+    public Object executeStrategy(String input, Update update) {
         if (strategies.isEmpty()) {
             initializeStrategies();
         }
@@ -40,7 +42,7 @@ public class StrategyContext {
 
         if (handle != null && method != null) {
             try {
-                Object[] parsedArgs = parseArguments(method, args);
+                Object[] parsedArgs = parseArguments(method, args, update);
                 return handle.invokeWithArguments(parsedArgs);
             } catch (ClassCastException | WrongMethodTypeException | IllegalArgumentException e) {
                 throw new InvalidArgumentsException(strategyName);
@@ -73,14 +75,20 @@ public class StrategyContext {
         }
     }
 
-    private Object[] parseArguments(Method method, String[] args) {
+    private Object[] parseArguments(Method method, String[] args, Update update) {
         Class<?>[] parameterTypes = method.getParameterTypes();
-        if (parameterTypes.length != args.length) {
+        List<Class<?>> nonTelegramParameters = Arrays.stream(parameterTypes).filter(clas -> clas != Update.class).toList();
+
+        if (nonTelegramParameters.size() != args.length) {
             throw new IllegalArgumentException(method.getName());
         }
 
-        Object[] parsedArgs = new Object[args.length];
-        for (int i = 0; i < args.length; i++) {
+        Object[] parsedArgs = new Object[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            if(parameterTypes[i] == Update.class) {
+                parsedArgs[i] = update;
+                continue;
+            }
             parsedArgs[i] = convertArgument(parameterTypes[i], args[i]);
         }
         return parsedArgs;

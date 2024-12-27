@@ -9,14 +9,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class StrategyContextTest extends BaseSpringBootTest {
     @Autowired
@@ -25,16 +25,18 @@ class StrategyContextTest extends BaseSpringBootTest {
     @MockBean
     TestListenerBean testListenerBean;
 
+    Update update = new Update();
+
     @Test
     void invokeCommand_PosTC() {
-        strategyContext.executeStrategy("test  arg");
+        strategyContext.executeStrategy("test  arg", update);
 
         Mockito.verify(testListenerBean).test(ArgumentMatchers.any());
     }
 
     @Test
     void invokeCommandWithMissingArguments_PosTC() {
-        assertThatThrownBy(() -> strategyContext.executeStrategy("test"))
+        assertThatThrownBy(() -> strategyContext.executeStrategy("test", update))
                 .isInstanceOf(InvalidArgumentsException.class)
                 .hasMessage("Invalid arguments for command test.");
     }
@@ -43,7 +45,7 @@ class StrategyContextTest extends BaseSpringBootTest {
     void invokeCommandWithReturn_PosTC() {
         when(testListenerBean.test2(anyInt())).thenCallRealMethod();
 
-        Object returnObj = strategyContext.executeStrategy("test2 3");
+        Object returnObj = strategyContext.executeStrategy("test2 3", update);
 
         Mockito.verify(testListenerBean).test2(anyInt());
         assertThat(returnObj)
@@ -52,7 +54,7 @@ class StrategyContextTest extends BaseSpringBootTest {
 
     @Test
     void throwOnMissingCommand_NegTC() {
-        assertThatThrownBy(() -> strategyContext.executeStrategy("missing arg"))
+        assertThatThrownBy(() -> strategyContext.executeStrategy("missing arg", update))
             .isInstanceOf(TelegramCommandNotFoundException.class)
             .hasMessage("Command missing not found.");
     }
@@ -61,8 +63,17 @@ class StrategyContextTest extends BaseSpringBootTest {
     void catchInnerException_PosTC() {
         doCallRealMethod().when(testListenerBean).exception();
 
-        assertThatThrownBy(() -> strategyContext.executeStrategy("exception"))
+        assertThatThrownBy(() -> strategyContext.executeStrategy("exception", update))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Test exception");
+    }
+
+    @Test
+    void invokeWithUpdateInstance() {
+        doCallRealMethod().when(testListenerBean).update(any());
+
+        strategyContext.executeStrategy("update", update);
+        
+        verify(testListenerBean).update(update);
     }
 }
