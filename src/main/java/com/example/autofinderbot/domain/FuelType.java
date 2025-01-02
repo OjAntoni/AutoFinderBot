@@ -5,15 +5,12 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class CarModel {
+@Entity
+public class FuelType {
     @Id
     long id;
     String searchKey;
     String name;
-    long carBrandId;
 }
