@@ -3,6 +3,7 @@ package com.example.autofinderbot.parser;
 import com.example.autofinderbot.domain.CarBrand;
 import com.example.autofinderbot.domain.CarModel;
 import com.example.autofinderbot.domain.FuelType;
+import com.example.autofinderbot.domain.Generation;
 import com.example.autofinderbot.service.DocumentService;
 import com.example.autofinderbot.shared.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class CarFiltersParser {
@@ -44,6 +47,7 @@ public class CarFiltersParser {
                 // Extract car models
                 List<CarBrand> carBrands = new ArrayList<>();
                 List<CarModel> carModels = new ArrayList<>();
+                Set<Generation> generations = new HashSet<>();
                 JsonNode carBrandsNode = filtersNode.at("/571/_meta/values");
                 JsonNode carModelsNode = rootNode.at("/props/pageProps/filtersValues");
 
@@ -56,12 +60,21 @@ public class CarFiltersParser {
                                 carModel.get("name").asText().replaceAll(" \\(\\d+\\)$", "").trim()
                                 ));
                         for (JsonNode model : carModelsNode.at("/573:571:" + brandId + "/0/group_values")) {
+                            long carModelId = model.get("value_key").asLong();
                             carModels.add(new CarModel(
-                                    model.get("value_key").asLong(),
+                                    carModelId,
                                     model.get("search_key").asText(),
                                     model.get("name").asText().replaceAll(" \\(\\d+\\)$", "").trim(),
                                     brandId
                             ));
+                            for (JsonNode generation : carModelsNode.at("/3018:573:" + carModelId + "/0/group_values")) {
+                                generations.add(new Generation(
+                                        generation.get("value_key").asLong(),
+                                        generation.get("search_key").asText(),
+                                        generation.get("name").asText().replaceAll("\\s*\\(\\d+\\)$", "").trim(),
+                                        carModelId
+                                ));
+                            }
                         }
                     }
                 }
