@@ -1,9 +1,12 @@
-package com.example.autofinderbot.service;
+package com.example.autofinderbot.service.synchronization;
 
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.Report;
 import com.example.autofinderbot.parser.CarParserService;
 import com.example.autofinderbot.repository.CarRepository;
+import com.example.autofinderbot.service.CarService;
+import com.example.autofinderbot.service.DocumentService;
+import com.example.autofinderbot.service.ReportService;
 import com.example.autofinderbot.shared.DateTimeUtil;
 import com.example.autofinderbot.shared.Logger;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +30,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Component
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public class CarScheduledService {
+public class CarSynchronizationService {
     private static final int CAR_LIMIT = 30;
     DocumentService documentService;
     CarParserService carParserService;
@@ -35,9 +38,8 @@ public class CarScheduledService {
     ReportService reportService;
     DateTimeUtil dateTimeUtil;
     Logger logger;
-    CarRepository carRepository;
 
-    @Scheduled(fixedRate = 10, initialDelay = 0, timeUnit = MINUTES)
+    @Scheduled(fixedRate = 10, initialDelay = 1, timeUnit = MINUTES)
     void updateCarDatabase() {
         List<Long> newCars = new ArrayList<>();
         int page = 1;
