@@ -1,6 +1,7 @@
 package com.example.autofinderbot.shared;
 
 public class APIConstants {
+    public static final String OTOMOTO_URL = "https://www.otomoto.pl/";
     public static final String SEARCH_URL = "https://www.otomoto.pl/osobowe/chevrolet--dacia--ford--honda--hyundai--kia--mazda--nissan--peugeot--skoda--toyota--volkswagen/od-2005?search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_fuel_type%5D=petrol&search%5Bfilter_float_mileage%3Ato%5D=200000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Bfilter_float_year%3Ato%5D=2014&search%5Border%5D=created_at_first%3Adesc&search%5Badvanced_search_expanded%5D=true";
     private static final String SEARCH_URL_WITH_PAGE = "https://www.otomoto.pl/osobowe/chevrolet--dacia--ford--honda--hyundai--kia--mazda--nissan--peugeot--skoda--toyota--volkswagen/od-2005?search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_fuel_type%5D=petrol&search%5Bfilter_float_mileage%3Ato%5D=200000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Bfilter_float_year%3Ato%5D=2014&search%5Border%5D=created_at_first%3Adesc&search%5Badvanced_search_expanded%5D=true&page=";
 

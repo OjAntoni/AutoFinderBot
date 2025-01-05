@@ -1,6 +1,7 @@
 package com.example.autofinderbot.service;
 
 import com.example.autofinderbot.domain.CarBrand;
+import com.example.autofinderbot.domain.FuelType;
 import com.example.autofinderbot.repository.CarBrandRepository;
 import com.example.autofinderbot.repository.CarModelRepository;
 import com.example.autofinderbot.repository.FuelTypeRepository;
@@ -24,7 +25,7 @@ public class CarFiltersService {
     FuelTypeRepository fuelTypeRepository;
 
     @Transactional(readOnly = true)
-    public boolean isFiltersValid() {
+    public boolean isBrandFiltersValid() {
         return generationRepository.count() > 0 &&
                 carModelRepository.count() > 0 &&
                 carBrandRepository.count() > 0;
@@ -36,14 +37,24 @@ public class CarFiltersService {
     }
 
     @Transactional
-    public void saveFilters(List<CarBrand> brands) {
+    public void saveBrandFilters(List<CarBrand> brands) {
         carBrandRepository.saveAll(brands);
     }
 
     @Transactional
-    public void deleteFilters() {
+    public void saveFuelTypes(List<FuelType> fuelTypes) {
+        fuelTypeRepository.saveAll(fuelTypes);
+    }
+
+    @Transactional
+    public void deleteBrandFilters() {
         generationRepository.deleteAll();
         carModelRepository.deleteAll();
         carBrandRepository.deleteAll();
+    }
+
+    @Transactional
+    public void deleteFuelTypes() {
+        fuelTypeRepository.deleteAll();
     }
 }
