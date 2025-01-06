@@ -32,7 +32,7 @@ public class CarFiltersSynchronizationService {
     Logger logger;
 
     @EventListener(ApplicationReadyEvent.class)
-    private void updateCarFilters() {
+    void updateCarFilters() {
         Predicate<Document> validator = carFiltersParser.documentValidator();
         AtomicReference<Document> document = new AtomicReference<>();
 
