@@ -1,6 +1,7 @@
 package com.example.autofinderbot.shared;
 
 public class APIConstants {
+    public static final String OTOMOTO_URL = "https://www.otomoto.pl/";
     public static final String SEARCH_URL = "https://www.otomoto.pl/osobowe/chevrolet--dacia--ford--honda--hyundai--kia--mazda--nissan--peugeot--skoda--toyota--volkswagen/od-2005?search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_fuel_type%5D=petrol&search%5Bfilter_float_mileage%3Ato%5D=200000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Bfilter_float_year%3Ato%5D=2014&search%5Border%5D=created_at_first%3Adesc&search%5Badvanced_search_expanded%5D=true";
     private static final String SEARCH_URL_WITH_PAGE = "https://www.otomoto.pl/osobowe/chevrolet--dacia--ford--honda--hyundai--kia--mazda--nissan--peugeot--skoda--toyota--volkswagen/od-2005?search%5Bfilter_enum_damaged%5D=0&search%5Bfilter_enum_fuel_type%5D=petrol&search%5Bfilter_float_mileage%3Ato%5D=200000&search%5Bfilter_float_price%3Ato%5D=20000&search%5Bfilter_float_year%3Ato%5D=2014&search%5Border%5D=created_at_first%3Adesc&search%5Badvanced_search_expanded%5D=true&page=";
 
@@ -36,4 +37,13 @@ public class APIConstants {
     public static final String VALUE = "value";
     public static final String VALUES = VALUE + "s";
     public static final String LABEL = "label";
+
+    public static final String CAR_FILTERS = "/props/pageProps/filters";
+    public static final String CAR_BRANDS = "/571/_meta/values";
+    public static final String CAR_MODELS = "/props/pageProps/filtersValues";
+    public static final String FUEL_TYPES = "/581/_meta/values";
+
+    public static final String GROUP_VALUES = "group_values";
+    public static final String VALUE_KEY = "value_key";
+    public static final String SEARCH_KEY = "search_key";
 }
