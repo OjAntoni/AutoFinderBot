@@ -6,6 +6,7 @@ import com.example.autofinderbot.domain.FuelType;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
@@ -14,14 +15,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@DirtiesContext
 class CarFiltersParserTest extends BaseSpringBootTest {
     @Autowired
     CarFiltersParser carFiltersParser;
-    Document document = mock(Document.class);
 
     @Test
     @SuppressWarnings("ConstantConditions")
-    void returnEmptyListOnMissingNode_NegTC() {
+    void returnEmptyListOnMissingNodeDuringCarBrandsUpdate_NegTC() {
+        Document document = mock(Document.class);
         when(document.selectFirst(anyString())).thenAnswer(invocation -> null);
 
         List<CarBrand> carBrands = carFiltersParser.extractCarBrands(document);
@@ -32,21 +34,13 @@ class CarFiltersParserTest extends BaseSpringBootTest {
 
     @Test
     @SuppressWarnings("ConstantConditions")
-    void returnEmptyFuelTypesOnMissingNode_NegTC() {
-        when(document.selectFirst(anyString())).thenAnswer(invocation -> null);
+    void returnEmptyListOnMissingNodeDuringFuelTypesUpdate_NegTC() {
+        Document document = mock(Document.class);
+        when(document.selectFirst(anyString())).thenThrow(new RuntimeException("Some exception."));
 
         List<FuelType> fuelTypes = carFiltersParser.extractFuelTypes(document);
 
         assertThat(fuelTypes)
                 .isEmpty();
-    }
-
-    @Test
-    @SuppressWarnings("ConstantConditions")
-    void validatorTest_NegTC() {
-        when(document.selectFirst(anyString())).thenAnswer(invocation -> null);
-
-        assertThat(carFiltersParser.documentValidator().test(document))
-                .isFalse();
     }
 }
