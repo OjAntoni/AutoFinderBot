@@ -4,7 +4,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -20,7 +19,6 @@ import java.util.List;
 
 @ActiveProfiles("test")
 @SpringBootTest
-@Import(BeanConfig.class)
 @ExtendWith(MockitoExtension.class)
 @Transactional
 public abstract class BaseSpringBootTest {

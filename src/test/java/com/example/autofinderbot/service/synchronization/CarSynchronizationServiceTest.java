@@ -1,10 +1,11 @@
-package com.example.autofinderbot.service;
+package com.example.autofinderbot.service.synchronization;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.domain.Report;
 import com.example.autofinderbot.repository.CarDetailRepository;
 import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.repository.ReportRepository;
+import com.example.autofinderbot.service.synchronization.CarSynchronizationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +18,9 @@ import static com.example.autofinderbot.domain.Report.Operation.INSERT;
 import static java.util.Comparator.comparing;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CarScheduledServiceTest extends BaseSpringBootTest {
+class CarSynchronizationServiceTest extends BaseSpringBootTest {
     @Autowired
-    CarScheduledService carScheduledService;
+    CarSynchronizationService carSynchronizationService;
 
     @Autowired
     CarRepository carRepository;
@@ -35,7 +36,7 @@ class CarScheduledServiceTest extends BaseSpringBootTest {
     void saveAllCars_PosTC(){
         long count = carRepository.count();
 
-        carScheduledService.updateCarDatabase();
+        carSynchronizationService.updateCarDatabase();
 
         assertThat(carRepository.count())
                 .isEqualTo(count + 30);
@@ -50,7 +51,7 @@ class CarScheduledServiceTest extends BaseSpringBootTest {
 
     @Test
     void deleteExpiredCars_PosTC(){
-        carScheduledService.deleteExpiredCars();
+        carSynchronizationService.deleteExpiredCars();
 
         assertThat(carRepository.findAllById(List.of(4L, 5L, 6L)))
                 .isEmpty();
