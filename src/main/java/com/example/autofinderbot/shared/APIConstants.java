@@ -37,4 +37,13 @@ public class APIConstants {
     public static final String VALUE = "value";
     public static final String VALUES = VALUE + "s";
     public static final String LABEL = "label";
+
+    public static final String CAR_FILTERS = "/props/pageProps/filters";
+    public static final String CAR_BRANDS = "/571/_meta/values";
+    public static final String CAR_MODELS = "/props/pageProps/filtersValues";
+    public static final String FUEL_TYPES = "/581/_meta/values";
+
+    public static final String GROUP_VALUES = "group_values";
+    public static final String VALUE_KEY = "value_key";
+    public static final String SEARCH_KEY = "search_key";
 }

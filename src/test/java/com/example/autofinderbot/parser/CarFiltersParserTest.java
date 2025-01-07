@@ -2,6 +2,7 @@ package com.example.autofinderbot.parser;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.domain.CarBrand;
+import com.example.autofinderbot.domain.FuelType;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +28,25 @@ class CarFiltersParserTest extends BaseSpringBootTest {
 
         assertThat(carBrands)
             .isEmpty();
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void returnEmptyFuelTypesOnMissingNode_NegTC() {
+        when(document.selectFirst(anyString())).thenAnswer(invocation -> null);
+
+        List<FuelType> fuelTypes = carFiltersParser.extractFuelTypes(document);
+
+        assertThat(fuelTypes)
+                .isEmpty();
+    }
+
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    void validatorTest_NegTC() {
+        when(document.selectFirst(anyString())).thenAnswer(invocation -> null);
+
+        assertThat(carFiltersParser.documentValidator().test(document))
+                .isFalse();
     }
 }
