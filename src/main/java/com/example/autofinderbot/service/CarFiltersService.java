@@ -57,4 +57,9 @@ public class CarFiltersService {
     public void deleteFuelTypes() {
         fuelTypeRepository.deleteAll();
     }
+
+    @Transactional(readOnly = true)
+    public List<CarBrand> getBrands() {
+        return carBrandRepository.findAll();
+    }
 }
