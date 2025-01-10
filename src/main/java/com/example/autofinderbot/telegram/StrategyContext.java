@@ -1,5 +1,7 @@
 package com.example.autofinderbot.telegram;
 
+import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.service.UserService;
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.telegram.exception.InvalidArgumentsException;
 import com.example.autofinderbot.telegram.exception.TelegramCommandNotFoundException;
@@ -7,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -18,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.autofinderbot.telegram.CommandPath.START;
+
 @Component
 @RequiredArgsConstructor
 public class StrategyContext {
@@ -26,30 +32,60 @@ public class StrategyContext {
     private final Map<String, Method> methodMap = new HashMap<>();
     private final Map<String, MethodHandle> strategies = new HashMap<>();
     private final Logger logger;
+    private final UserService userService;
+    private final TelegramClient telegramClient;
 
     @SneakyThrows
-    public Object executeStrategy(String input, Update update) {
+    public void executeStrategy(Update update) {
         if (strategies.isEmpty()) {
             initializeStrategies();
         }
 
-        String[] parts = input.split("\\s+");
-        String strategyName = parts[0];
-        String[] args = Arrays.copyOfRange(parts, 1, parts.length);
+        if(update.hasMessage() && update.getMessage().hasText()) {
+            //TODO add automatic user registration if strategy name is not /start and user is null
+            User user = userService.findByChatId(update.getMessage().getChatId());
 
-        MethodHandle handle = strategies.get(strategyName);
-        Method method = methodMap.get(strategyName);
+            String input = update.getMessage().getText();
+            String[] parts = input.split("\\s+");
+            String strategyName;
+            String[] args;
 
-        if (handle != null && method != null) {
-            try {
-                Object[] parsedArgs = parseArguments(method, args, update);
-                return handle.invokeWithArguments(parsedArgs);
-            } catch (ClassCastException | WrongMethodTypeException | IllegalArgumentException e) {
-                throw new InvalidArgumentsException(strategyName);
+            if (user != null && user.getRedirectTo() != null) {
+                strategyName = user.getRedirectTo();
+                args = parts;
+                logger.info(args.length+"");
+            } else {
+                strategyName = parts[0];
+                args = Arrays.copyOfRange(parts, 1, parts.length);
             }
-        }
 
-        throw new TelegramCommandNotFoundException(strategyName);
+            //automatic user registration
+            if (user == null && !START.equals(strategyName)) {
+                user = registerUser(update.getMessage().getChatId());
+            }
+
+            MethodHandle handle = strategies.get(strategyName);
+            Method method = methodMap.get(strategyName);
+
+            if (handle != null && method != null) {
+                try {
+                    Object[] parsedArgs = parseArguments(method, args, update);
+                    handle.invokeWithArguments(parsedArgs);
+                    return;
+                } catch (ClassCastException | WrongMethodTypeException | IllegalArgumentException e) {
+                    logger.error(e);
+                    throw new InvalidArgumentsException(strategyName);
+                }
+            }
+
+            DeleteMessage deleteMessage = DeleteMessage.builder()
+                    .chatId(update.getMessage().getChatId())
+                    .messageId(update.getMessage().getMessageId())
+                    .build();
+            telegramClient.execute(deleteMessage);
+
+            throw new TelegramCommandNotFoundException(strategyName);
+        }
     }
 
     private synchronized void initializeStrategies() {
@@ -80,16 +116,19 @@ public class StrategyContext {
         List<Class<?>> nonTelegramParameters = Arrays.stream(parameterTypes).filter(clas -> clas != Update.class).toList();
 
         if (nonTelegramParameters.size() != args.length) {
+            logger.error("invalid parameters count.");
             throw new IllegalArgumentException(method.getName());
         }
 
+        int argsN = 0;
         Object[] parsedArgs = new Object[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
             if(parameterTypes[i] == Update.class) {
                 parsedArgs[i] = update;
                 continue;
             }
-            parsedArgs[i] = convertArgument(parameterTypes[i], args[i]);
+            parsedArgs[i] = convertArgument(parameterTypes[i], args[argsN]);
+            argsN++;
         }
         return parsedArgs;
     }
@@ -102,6 +141,8 @@ public class StrategyContext {
                 return Double.parseDouble(arg);
             } else if (targetType == boolean.class || targetType == Boolean.class) {
                 return Boolean.parseBoolean(arg);
+            } else if (targetType == long.class || targetType == Long.class) {
+                return Long.parseLong(arg);
             } else {
                 return arg;
             }
@@ -109,5 +150,11 @@ public class StrategyContext {
             logger.error(e);
             throw new IllegalArgumentException("Invalid argument type for: " + arg);
         }
+    }
+
+    private User registerUser(long chatId){
+        User user = new User();
+        user.setChatId(chatId);
+        return userService.save(user);
     }
 }

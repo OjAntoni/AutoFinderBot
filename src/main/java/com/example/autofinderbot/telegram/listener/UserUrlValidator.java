@@ -15,9 +15,6 @@ public class UserUrlValidator {
         if(!url.startsWith("https://www.otomoto.pl/")) {
             throw new InvalidSearchUrlException("url should start with 'https://www.otomoto.pl/'.");
         }
-        if(!url.contains("order%5D=created_at_first")) {
-            throw new InvalidSearchUrlException("cars should be sorted by creation date ascending.");
-        }
         if(url.length() > 2048) {
             throw new InvalidSearchUrlException("url is too long.");
         }

@@ -21,18 +21,18 @@ class UserListenerTest extends BaseTelegramListenerTest {
     //TODO remove when listener logic will be replaced
     UserUrlValidator userUrlValidator;
 
-    @Test
-    void registerUser_PosTC() {
-        Mockito.when(update.getMessage().getChatId()).thenReturn(12345L);
-
-        strategyContext.executeStrategy("/register", update);
-
-        assertThat(findByChatId(12345L))
-                .isPresent()
-                .get()
-                .extracting(User::getSearchUrl)
-                .isEqualTo(SEARCH_URL);
-    }
+//    @Test
+//    void registerUser_PosTC() {
+//        Mockito.when(update.getMessage().getChatId()).thenReturn(12345L);
+//
+//        strategyContext.executeStrategy("/register", update);
+//
+//        assertThat(findByChatId(12345L))
+//                .isPresent()
+//                .get()
+//                .extracting(User::getSearchUrl)
+//                .isEqualTo(SEARCH_URL);
+//    }
 
     @Test
     void throwOnEmptyUrl_NegTC() {
