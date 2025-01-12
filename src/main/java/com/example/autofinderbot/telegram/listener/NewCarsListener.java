@@ -1,0 +1,56 @@
+package com.example.autofinderbot.telegram.listener;
+
+import com.example.autofinderbot.domain.Car;
+import com.example.autofinderbot.domain.UserFilter;
+import com.example.autofinderbot.service.UserService;
+import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.shared.NewCarsEvent;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
+
+import java.util.List;
+
+import static lombok.AccessLevel.PRIVATE;
+
+@Component
+@FieldDefaults(level = PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+public class NewCarsListener {
+    UserService userService;
+    TelegramClient telegramClient;
+    Logger logger;
+
+    @EventListener
+    public void handleEvent(NewCarsEvent event) {
+        List<Car> cars = event.getCars();
+        //TODO refactor when user will be able to have several active filters
+        List<UserFilter> userFilters = userService.findAllUserFilters();
+
+        for (UserFilter filter : userFilters) {
+            List<SendMessage> messages = cars.stream()
+                    .filter(car -> userService.matches(filter, car))
+                    .map(Car::getUrl)
+                    .map(url -> {
+                        SendMessage message = SendMessage.builder()
+                                .text(url)
+                                .chatId(filter.getUser().getChatId())
+                                .build();
+                        return message;
+                    })
+                    .toList();
+            logger.info("Filtered out %s cars for user with id %d.", messages.size(), filter.getUser().getId());
+            for (SendMessage message : messages) {
+                try {
+                    telegramClient.executeAsync(message);
+                } catch (TelegramApiException e) {
+                    logger.error(e);
+                }
+            }
+        }
+    }
+}

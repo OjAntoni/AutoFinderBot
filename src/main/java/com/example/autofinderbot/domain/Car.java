@@ -19,6 +19,7 @@ import static lombok.AccessLevel.PRIVATE;
 @EqualsAndHashCode
 @ToString
 @Builder
+@Setter
 @AllArgsConstructor
 public class Car {
     @Id
@@ -32,13 +33,10 @@ public class Car {
     double price;
     String currency;
     @Exclude
-    @Setter
     String url;
-    @Setter
     @Exclude
     LocalDateTime createdAt;
     @Exclude
-    @Setter
     @OneToMany(mappedBy = "carId", cascade = REMOVE, orphanRemoval = true, fetch = EAGER)
     List<CarDetail> details;
 

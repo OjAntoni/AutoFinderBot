@@ -14,7 +14,7 @@ public class UserFilter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne
+    @OneToOne(fetch = EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

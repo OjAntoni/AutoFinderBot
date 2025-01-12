@@ -9,13 +9,16 @@ import com.example.autofinderbot.service.DocumentService;
 import com.example.autofinderbot.service.ReportService;
 import com.example.autofinderbot.shared.DateTimeUtil;
 import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.shared.NewCarsEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +34,9 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class CarSynchronizationService {
-    private static final int CAR_LIMIT = 30;
+    private static final int CAR_LIMIT = 60;
+
+    ApplicationEventPublisher eventPublisher;
     DocumentService documentService;
     CarParserService carParserService;
     CarService carService;
@@ -41,7 +46,7 @@ public class CarSynchronizationService {
 
     @Scheduled(fixedRate = 10, initialDelay = 1, timeUnit = MINUTES)
     void updateCarDatabase() {
-        List<Long> newCars = new ArrayList<>();
+        List<Car> newCars = new ArrayList<>();
         int page = 1;
         while (newCars.size() < CAR_LIMIT) {
 
@@ -60,18 +65,21 @@ public class CarSynchronizationService {
                     .limit(newCars.size() + cars.size() > CAR_LIMIT ? CAR_LIMIT - newCars.size() : cars.size())
                     .toList();
 
-            newCars.addAll(carService.saveAll(filtered).stream().map(Car::getId).toList());
+            newCars.addAll(carService.saveAll(filtered));
             logger.debug("Added filtered cars: %d", filtered.size());
 
             if(filtered.size() != cars.size()) break;
         }
 
+        logger.info("Sending an event.");
+        Mono.fromRunnable(() -> eventPublisher.publishEvent(new NewCarsEvent(this, newCars))).subscribe();
+//        eventPublisher.publishEvent(new NewCarsEvent(this, newCars));
 
         Report report = new Report();
         report.setAffectedRows(newCars.size());
         report.setCreatedAt(dateTimeUtil.now());
         report.setOperation(INSERT);
-        report.setTargetIds(newCars);
+        report.setTargetIds(newCars.stream().map(Car::getId).toList());
         reportService.save(report);
     }
 

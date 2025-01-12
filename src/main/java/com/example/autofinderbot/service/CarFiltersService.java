@@ -61,11 +61,6 @@ public class CarFiltersService {
     }
 
     @Transactional(readOnly = true)
-    public List<CarBrand> getBrands() {
-        return carBrandRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
     public List<CarBrand> getBrands(List<String> searchKeys) {
         return carBrandRepository.findAllBySearchKeyIn(searchKeys);
     }

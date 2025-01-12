@@ -1,5 +1,8 @@
 package com.example.autofinderbot.telegram;
 
+import lombok.Generated;
+
+@Generated
 public class CommandPath {
     public static final String START = "/start";
 

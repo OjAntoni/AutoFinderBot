@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -52,7 +53,7 @@ public class UrlToFiltersConverter {
             userFilter.setPriceEnd(priceEnd == null ? null : Long.parseLong(priceEnd));
 
             // Extract year range
-            String yearFrom = extractFromQuery(query, "filter_float_year:from");
+            String yearFrom = extractYearFrom(pathSegments);
             result.put("year_from", yearFrom);
             String yearTo = extractFromQuery(query, "filter_float_year:to");
             result.put("year_to", yearTo);
@@ -101,6 +102,16 @@ public class UrlToFiltersConverter {
         return Collections.emptyList();
     }
 
+    private static String extractYearFrom(String[] pathSegments) {
+        if (pathSegments.length > 0) {
+            String lastSegment = pathSegments[pathSegments.length - 1];
+            if (lastSegment.matches("od-\\d{4}")) {
+                return lastSegment.substring(3);
+            }
+        }
+        return null;
+    }
+
     private static String extractFromQuery(String query, String key) {
         try {
             String decodedQuery = URLDecoder.decode(query, StandardCharsets.UTF_8);
@@ -119,7 +130,7 @@ public class UrlToFiltersConverter {
         List<String> values = new ArrayList<>();
         try {
             String decodedQuery = URLDecoder.decode(query, StandardCharsets.UTF_8);
-            Pattern pattern = Pattern.compile("search\\[" + Pattern.quote(key) + "\\]\\[\\d+\\]=([^&]+)");
+            Pattern pattern = Pattern.compile("search\\[" + Pattern.quote(key) + "\\](?:\\[\\d+\\])?=([^&]+)");
             Matcher matcher = pattern.matcher(decodedQuery);
             while (matcher.find()) {
                 values.add(matcher.group(1));
@@ -129,5 +140,4 @@ public class UrlToFiltersConverter {
         }
         return values;
     }
-
 }

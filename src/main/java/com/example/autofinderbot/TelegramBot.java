@@ -45,6 +45,12 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 
     @Override
     public void consume(Update update) {
+        if(update.getMyChatMember() != null ) {
+            //TODO handle blocking bot (status = kicked/member)
+            logger.debug(update.getMyChatMember().getNewChatMember().getStatus());
+
+        }
+
         strategyContext.executeStrategy(update);
 
 //            long chat_id = update.getMessage().getChatId();

@@ -61,6 +61,9 @@ public class UserListener {
         Long chatId = update.getMessage().getChatId();
         User user = userService.findByChatId(chatId);
 
+        user.setRedirectTo(UPLOAD_URL);
+        userService.save(user);
+
         InlineKeyboardButton webAppButton = InlineKeyboardButton.builder()
                 .text("Open otomoto")
                 .url("https://www.otomoto.pl/osobowe?search%5Badvanced_search_expanded%5D=true")
@@ -71,9 +74,6 @@ public class UserListener {
                 .keyboard(List.of(new InlineKeyboardRow(Collections.singletonList(webAppButton))))
                 .build());
         telegramClient.execute(message);
-
-        user.setRedirectTo(UPLOAD_URL);
-        userService.save(user);
     }
 
     @SneakyThrows
@@ -132,6 +132,7 @@ public class UserListener {
             telegramClient.execute(message);
         } else if ("no".equalsIgnoreCase(answer)) {
             user.setRedirectTo(null);
+            user.setSearchUrl(null);
             userService.deleteFilter(userFilter.getId());
             SendMessage message = SendMessage.builder()
                     .chatId(chatId.toString())

@@ -10,13 +10,13 @@ public class UserUrlValidator {
     @SneakyThrows
     public void validate(String url) {
         if(url == null || url.isEmpty()) {
-            throw new InvalidSearchUrlException("url should be present.");
+            throw new InvalidSearchUrlException("Url should be present.");
         }
         if(!url.startsWith("https://www.otomoto.pl/")) {
-            throw new InvalidSearchUrlException("url should start with 'https://www.otomoto.pl/'.");
+            throw new InvalidSearchUrlException("Url should start with 'https://www.otomoto.pl/'.");
         }
         if(url.length() > 2048) {
-            throw new InvalidSearchUrlException("url is too long.");
+            throw new InvalidSearchUrlException("Url is too long.");
         }
     }
 }
