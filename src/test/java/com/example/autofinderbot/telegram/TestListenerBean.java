@@ -2,6 +2,7 @@ package com.example.autofinderbot.telegram;
 
 
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
 public class TestListenerBean {
@@ -18,5 +19,10 @@ public class TestListenerBean {
     @CommandListener("exception")
     public void exception() {
         throw new RuntimeException("Test exception");
+    }
+
+    @CommandListener("update")
+    public void update(Update update) {
+        System.out.println(update);
     }
 }

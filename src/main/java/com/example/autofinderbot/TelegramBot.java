@@ -45,10 +45,13 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 
     @Override
     public void consume(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            String message_text = update.getMessage().getText();
-            //todo test purpose + add catching throwable
-            strategyContext.executeStrategy(message_text);
+        if(update.getMyChatMember() != null ) {
+            //TODO handle blocking bot (status = kicked/member)
+            logger.debug(update.getMyChatMember().getNewChatMember().getStatus());
+
+        }
+
+        strategyContext.executeStrategy(update);
 
 //            long chat_id = update.getMessage().getChatId();
 //            chatId = chat_id;
@@ -63,7 +66,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 //            } catch (TelegramApiException e) {
 //                logger.error(e);
 //            }
-        }
+
     }
 
     public void sendAll(List<String> messages) {

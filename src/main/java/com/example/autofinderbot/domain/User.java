@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -12,12 +13,14 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     long id;
     @Column(nullable = false)
     long chatId;
-    @Column(nullable = false)
+    @Column
     String searchUrl;
+    String redirectTo;
 }
