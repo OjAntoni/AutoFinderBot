@@ -3,6 +3,7 @@ package com.example.autofinderbot.parser;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.service.DocumentService;
+import com.example.autofinderbot.shared.DateTimeUtil;
 import com.example.autofinderbot.shared.Details;
 import com.example.autofinderbot.shared.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,6 +42,7 @@ public class CarParserService {
     CarDetailsExtractor carDetailsExtractor;
     CarValidator carValidator;
     DocumentService documentService;
+    DateTimeUtil dateTimeUtil;
 
     public List<Car> findCars(String url) throws IOException {
         Document document = documentService.load(url, doc -> doc.selectFirst(LISTING_JSON) != null);
@@ -57,7 +59,7 @@ public class CarParserService {
         JsonNode itemList = rootNode.at(ITEM_CAR_LIST_ELEMENT);
 
         List<Car> cars = new ArrayList<>();
-        Map<String, Car> carNameToCars = new ConcurrentHashMap<>(); // Map to store car names and URLs
+        Map<String, Car> carNameToCars = new ConcurrentHashMap<>();
 
         if (itemList.isArray()) {
             for (JsonNode item : itemList) {
@@ -130,8 +132,7 @@ public class CarParserService {
         carDetails.stream().filter(cd -> cd.getDetail().equals(Details.CREATED_AT.name))
                 .findFirst().ifPresent(cd -> {
                     ZonedDateTime zonedDateTime = ZonedDateTime.parse(cd.getValue());
-                    LocalDateTime localDateTime = zonedDateTime.toLocalDateTime();
-                    car.setCreatedAt(localDateTime);
+                    car.setCreatedAt(dateTimeUtil.convert(zonedDateTime));
                     carDetails.remove(cd);
                 });
     }

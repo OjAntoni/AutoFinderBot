@@ -1,6 +1,7 @@
 package com.example.autofinderbot.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -16,19 +17,20 @@ import static jakarta.persistence.CascadeType.ALL;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class CarBrand {
     @Id
     long id;
-    String search_key;
+    String searchKey;
     String name;
     @Setter
     @Getter
-    @OneToMany(mappedBy = "carBrandId", cascade = ALL)
+    @OneToMany(mappedBy = "carBrandId", cascade = ALL, fetch = FetchType.EAGER) //TODO remove eager
     List<CarModel> models;
 
-    public CarBrand(long id, String search_key, String name) {
+    public CarBrand(long id, String searchKey, String name) {
         this.id = id;
-        this.search_key = search_key;
+        this.searchKey = searchKey;
         this.name = name;
         this.models = new ArrayList<>();
     }

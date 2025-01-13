@@ -19,6 +19,8 @@ import static java.util.Comparator.comparing;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CarSynchronizationServiceTest extends BaseSpringBootTest {
+    private static final int CAR_LIMIT = 60;
+
     @Autowired
     CarSynchronizationService carSynchronizationService;
 
@@ -32,21 +34,21 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
     ReportRepository reportRepository;
 
     @Test
-    @Transactional
+//    @Transactional
     void saveAllCars_PosTC(){
         long count = carRepository.count();
 
         carSynchronizationService.updateCarDatabase();
 
         assertThat(carRepository.count())
-                .isEqualTo(count + 30);
+                .isEqualTo(count + CAR_LIMIT);
 
         Optional<Report> report = reportRepository.findAll().stream().max(comparing(Report::getCreatedAt));
 
         assertThat(report)
                 .isPresent()
                 .get()
-                .matches(r -> r.getOperation() == INSERT && r.getAffectedRows() == 30 && r.getTargetIds().size() == 30, "Report should contain car limit values");
+                .matches(r -> r.getOperation() == INSERT && r.getAffectedRows() == CAR_LIMIT && r.getTargetIds().size() == CAR_LIMIT, "Report should contain car limit values");
     }
 
     @Test
