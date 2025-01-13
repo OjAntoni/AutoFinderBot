@@ -36,7 +36,7 @@ public class UserListener {
     TelegramClient telegramClient;
 
     @SneakyThrows
-    @CommandListener("/start")
+    @CommandListener(START)
     public void registerUser(Update update) {
         Long chatId = update.getMessage().getChatId();
 

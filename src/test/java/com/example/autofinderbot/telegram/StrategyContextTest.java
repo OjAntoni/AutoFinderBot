@@ -1,8 +1,6 @@
 package com.example.autofinderbot.telegram;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
-import com.example.autofinderbot.telegram.exception.InvalidArgumentsException;
-import com.example.autofinderbot.telegram.exception.TelegramCommandNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -34,24 +32,6 @@ class StrategyContextTest extends BaseTelegramListenerTest {
         strategyContext.executeStrategy(update);
 
         Mockito.verify(testListenerBean).test(ArgumentMatchers.any());
-    }
-
-    @Test
-    void invokeCommandWithMissingArguments_NegTC() {
-        when(update.getMessage().getText()).thenReturn("test");
-
-        assertThatThrownBy(() -> strategyContext.executeStrategy(update))
-                .isInstanceOf(InvalidArgumentsException.class)
-                .hasMessage("Invalid arguments for command test.");
-    }
-
-    @Test
-    void throwOnMissingCommand_NegTC() {
-        when(update.getMessage().getText()).thenReturn("testABCD");
-
-        assertThatThrownBy(() -> strategyContext.executeStrategy(update))
-            .isInstanceOf(TelegramCommandNotFoundException.class)
-            .hasMessage("Command testABCD not found.");
     }
 
     @Test

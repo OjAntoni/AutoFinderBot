@@ -20,6 +20,6 @@ public abstract class BaseTelegramListenerTest extends BaseSpringBootTest {
 
     @BeforeEach
     void resetMocks() {
-        Mockito.reset(update, telegramClient);
+        Mockito.reset(update);
     }
 }
