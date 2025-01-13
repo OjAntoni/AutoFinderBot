@@ -263,6 +263,33 @@ class UserListenerTest extends BaseTelegramListenerTest {
         }));
     }
 
+    @Test
+    void showExistingFilter_PosTC() throws TelegramApiException {
+        long chatId = 6L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.showFilter(update);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().startsWith("Your current filters are:\n\n") &&
+                    m.getParseMode().equals("Markdown");
+        }));
+    }
+
+    @Test
+    void showNonExistingFilter_PosTC() throws TelegramApiException {
+        long chatId = 1L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.showFilter(update);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("You don't have any filters now.");
+        }));
+    }
+
     private Optional<User> findByChatId(long chatId){
         return userRepository.findAll().stream()
                 .filter(u -> u.getChatId() == chatId)

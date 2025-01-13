@@ -115,6 +115,7 @@ public class UserService {
     }
 
     private boolean yearMatch(UserFilter filter, Map<String, String> details) {
+        if (filter.getYearFrom() == null && filter.getYearTo() == null) return true;
         String yearStr = details.get(Details.YEAR.name);
         if(yearStr == null) return false;
         int carYear = Integer.parseInt(yearStr);

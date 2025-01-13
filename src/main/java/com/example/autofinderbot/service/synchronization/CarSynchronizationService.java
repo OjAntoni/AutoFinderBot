@@ -73,7 +73,6 @@ public class CarSynchronizationService {
 
         logger.info("Sending an event.");
         Mono.fromRunnable(() -> eventPublisher.publishEvent(new NewCarsEvent(this, newCars))).subscribe();
-//        eventPublisher.publishEvent(new NewCarsEvent(this, newCars));
 
         Report report = new Report();
         report.setAffectedRows(newCars.size());

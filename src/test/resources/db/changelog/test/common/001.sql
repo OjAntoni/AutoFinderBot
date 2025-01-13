@@ -31,10 +31,12 @@ insert into users(id, chat_id, search_url, redirect_to) values
 (2, 2, 'https://www.example.com/search-2', NULL),
 (3, 3, 'https://www.example.com/search-3', NULL),
 (4, 4, NULL, '/upload_url'),
-(5, 5, 'https://www.otomoto.pl/osobowe/audi--bmw', '/confirm_filter');
+(5, 5, 'https://www.otomoto.pl/osobowe/audi--bmw', '/confirm_filter'),
+(6, 6, 'https://www.otomoto.pl/osobowe/audi--bmw', NULL);
 
-insert into user_filter(id, user_id, price_start, price_end, year_from, year_to, mileage_from, mileage_to) values
-(1, 5, 10000, NULL, NULL, 2020, 100000, 150000);
+insert into user_filter(id, user_id, price_start, price_end, year_from, year_to, mileage_from, mileage_to, confirmed) values
+(1, 5, 10000, NULL, NULL, 2020, 100000, 150000, false),
+(2, 6, 10000, NULL, NULL, NULL, 100000, 150000, true);
 
 ALTER SEQUENCE car_id_seq RESTART WITH 100;
 ALTER SEQUENCE car_detail_id_seq RESTART WITH 100;

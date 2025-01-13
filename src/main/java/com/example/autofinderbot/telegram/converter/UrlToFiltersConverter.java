@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -29,9 +30,9 @@ public class UrlToFiltersConverter {
         UserFilter userFilter = new UserFilter();
 
         try {
-            URL url = new URL(urlString);
-            String path = url.getPath();
-            String query = url.getQuery();
+            URI uri = new URI(urlString);
+            String path = uri.getPath();
+            String query = uri.getQuery();
 
             // Extract car brands from the path
             List<String> brands = extractBrands(path);
