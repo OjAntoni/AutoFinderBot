@@ -65,7 +65,8 @@ public class DocumentService {
                     .statusCode();
             return code / 100 != 4 && code / 100 != 5;
         } catch (Exception e) {
-            return false;
+            //(exception can be thrown for other reasons e.g. internet issues etc.)
+            return true;
         }
     }
 }

@@ -55,7 +55,7 @@ public class CarSynchronizationService {
             try {
                 cars = carParserService.findCars(SEARCH_URL(page++));
             } catch (IOException e) {
-                logger.error(e);
+                logger.error(e.getMessage());
                 break;
             }
 
