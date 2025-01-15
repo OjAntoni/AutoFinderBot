@@ -6,18 +6,23 @@ import com.example.autofinderbot.parser.CarParserService;
 import com.example.autofinderbot.shared.Details;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.example.autofinderbot.shared.APIConstants.SEARCH_URL;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 class CarParserServiceTest extends BaseSpringBootTest {
     @Autowired
     CarParserService carParserService;
 
-    @Autowired
+    @SpyBean
     DocumentService documentService;
 
     @Test
@@ -31,5 +36,23 @@ class CarParserServiceTest extends BaseSpringBootTest {
                         carResponse.getDetails().stream().noneMatch(cd -> cd.getDetail().equals(Details.CREATED_AT.name)))
                 .allMatch(carResponse -> carResponse.getUrl() != null)
                 .allMatch(carResponse -> !carResponse.getDetails().isEmpty());
+    }
+
+    @Test
+    void findCarsWithExceptionsOccurredDuringLPageLoad_PosTC() throws IOException {
+        AtomicInteger invocationCounter = new AtomicInteger();
+
+        doAnswer(invocation -> {
+            if (invocationCounter.getAndIncrement() == 10) {
+                throw new IOException();
+            }
+            return invocation.callRealMethod();
+        }).when(documentService).load(anyString(), any());
+
+        List<Car> cars = carParserService.findCars(SEARCH_URL);
+
+        assertThat(cars)
+                .isNotEmpty()
+                .allMatch(car -> !car.getDetails().isEmpty() && car.getCreatedAt() != null);
     }
 }
