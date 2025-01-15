@@ -55,3 +55,4 @@ To make database store your data between docker compose restarts just comment ou
 ```
 If you want to run database container separately and for example run application via IDE use:
 `docker run --name postgres-otomoto -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e PGDATA=/var/lib/postgresql/data/pgdata -v otomoto-data:/var/lib/postgresql/data -p 5432:5432 -d postgres`
+In such case of a standaolne application start up remember to set up environment variable `TELEGRAM_BOT_TOKEN` with your token.
