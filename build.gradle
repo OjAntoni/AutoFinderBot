@@ -58,6 +58,15 @@ jacoco {
     toolVersion = "0.8.12"
 }
 
+
+def excludedPackages = [
+        'com.example.autofinderbot.config.*',
+        'com.example.autofinderbot.domain.*',
+        'com.example.autofinderbot.shared.*',
+        'com.example.autofinderbot.AutoFinderBotApplication*',
+        'com.example.autofinderbot.TelegramBot*'
+]
+
 jacocoTestReport {
     dependsOn test
     reports {
@@ -67,24 +76,13 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(
                 files(classDirectories.files.collect {
-                    fileTree(dir: it, exclude: [
-                            '**/config/**',
-                            '**/domain/**',
-                            '**/shared/**'
-                    ])
+                    fileTree(dir: it, exclude: excludedPackages)
                 })
         )
     }
 
 }
 
-def exludedPackages = [
-        'com.example.autofinderbot.config.*',
-        'com.example.autofinderbot.domain.*',
-        'com.example.autofinderbot.shared.*',
-        'com.example.autofinderbot.AutoFinderBotApplication*',
-        'com.example.autofinderbot.TelegramBot*'
-]
 
 jacocoTestCoverageVerification {
     dependsOn jacocoTestReport
@@ -96,7 +94,7 @@ jacocoTestCoverageVerification {
                 value = 'COVEREDRATIO'
                 minimum = 0.8
             }
-            excludes = exludedPackages
+            excludes = excludedPackages
         }
         rule {
             element = 'CLASS'
@@ -105,7 +103,7 @@ jacocoTestCoverageVerification {
                 value = 'COVEREDRATIO'
                 minimum = 0.5
             }
-            excludes = exludedPackages
+            excludes = excludedPackages
         }
         rule {
             element = 'METHOD'
@@ -114,7 +112,7 @@ jacocoTestCoverageVerification {
                 value = 'COVEREDRATIO'
                 minimum = 1
             }
-            excludes = exludedPackages
+            excludes = excludedPackages
         }
     }
 }

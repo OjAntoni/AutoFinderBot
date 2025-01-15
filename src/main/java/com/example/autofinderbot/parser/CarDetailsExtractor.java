@@ -18,6 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.autofinderbot.shared.APIConstants.*;
+import static java.util.Collections.emptyList;
 import static java.util.function.Function.identity;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -30,15 +31,20 @@ class CarDetailsExtractor {
     Logger logger;
     DocumentService documentService;
 
-    @SneakyThrows
     public List<CarDetail> extractCarProperties(String url) {
-        Document document = documentService.load(url, (doc -> doc.selectFirst(CAR_PAGE_JSON_DATA) != null));
+        Document document;
+        //TODO return empty list on exception
+        try {
+            document = documentService.load(url, (doc -> doc.selectFirst(CAR_PAGE_JSON_DATA) != null));
+        } catch (IOException e) {
+            logger.error(e);
+            return emptyList();
+        }
 
         Map<String, String> carProperties = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            // Select the script element with JSON data
             Element scriptElement = document.selectFirst(CAR_PAGE_JSON_DATA);
             if (scriptElement == null) {
                 IllegalArgumentException exception = new IllegalArgumentException(SCRIPT_ERROR_MESSAGE);
@@ -46,7 +52,6 @@ class CarDetailsExtractor {
                 throw exception;
             }
 
-            // Parse the JSON content
             String jsonData = scriptElement.html();
             JsonNode rootNode = objectMapper.readTree(jsonData);
 
@@ -54,9 +59,8 @@ class CarDetailsExtractor {
 
             if (advertNode.isMissingNode()) {
                 IllegalArgumentException exception = new IllegalArgumentException(AVERT_ERROR_MESSAGE);
-                //TODO dont throw excetion
                 logger.error(AVERT_ERROR_MESSAGE, exception);
-                throw exception;
+                return emptyList();
             }
 
             // Extract equipment -> values

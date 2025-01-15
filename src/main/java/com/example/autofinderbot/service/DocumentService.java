@@ -32,7 +32,7 @@ public class DocumentService {
 
     Logger logger;
 
-    public Document load(@NonNull @NotBlank @NotEmpty String url, @PositiveOrZero int retryCount, Predicate<Document> validator) throws IOException {
+    public Document load(String url, @PositiveOrZero int retryCount, Predicate<Document> validator) throws IOException {
         logger.debug("Started loading %s", url);
         Document document = null;
         boolean loadSucceeded = false;
@@ -53,7 +53,7 @@ public class DocumentService {
         return document;
     }
 
-    public Document load(@NonNull @NotBlank @NotEmpty String url, Predicate<Document> validator) throws IOException {
+    public Document load(String url, Predicate<Document> validator) throws IOException {
         return load(url, DEFAULT_RETRY_COUNT, validator);
     }
 
