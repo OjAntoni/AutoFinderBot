@@ -6,6 +6,7 @@ import com.example.autofinderbot.service.DocumentService;
 import com.example.autofinderbot.shared.DateTimeUtil;
 import com.example.autofinderbot.shared.Details;
 import com.example.autofinderbot.shared.Logger;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +17,17 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.example.autofinderbot.shared.APIConstants.*;
 import static lombok.AccessLevel.PRIVATE;
@@ -34,62 +36,90 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @Service
 public class CarParserService {
-    private static final String SCRIPT_ERROR_MESSAGE = "Script element with JSON data not found.";
     private static final String NOT_AN_ARRAY_ERROR_MESSAGE = "Element is not an array.";
     private static final int THREAD_POOL_SIZE = 30;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     Logger logger;
-    ObjectMapper objectMapper;
     CarDetailsExtractor carDetailsExtractor;
     CarValidator carValidator;
     DocumentService documentService;
     DateTimeUtil dateTimeUtil;
 
+    private static final Predicate<Document> validator = (doc) -> {
+        try {
+            Element scriptElement = doc.selectFirst(LISTING_JSON);
+            if (scriptElement == null || scriptElement.html().isBlank()) {
+                return false;
+            }
+
+            String jsonData = scriptElement.html();
+            JsonNode rootNode = OBJECT_MAPPER.readTree(jsonData);
+
+            JsonNode itemList = rootNode.at(ITEM_CAR_LIST_ELEMENT);
+            if (itemList.isMissingNode() || !itemList.isArray()) {
+                return false;
+            }
+
+            return StreamSupport.stream(itemList.spliterator(), false)
+                    .allMatch(item -> {
+                        JsonNode carInfo = item.at(CAR_INFO);
+                        if (carInfo.isMissingNode() || carInfo.isEmpty()) {
+                            return false;
+                        }
+                        return isNonEmptyText(carInfo.path(NAME)) &&
+                                isNonEmptyText(carInfo.path(BRAND)) &&
+                                isNonEmptyText(carInfo.path(FUEL_TYPE)) &&
+                                isNonEmptyText(carInfo.at(MILEAGE_TYPE));
+                    });
+
+        } catch (JsonProcessingException e) {
+            return false;
+        }
+    };
+
+    private static boolean isNonEmptyText(JsonNode node) {
+        return node != null && !node.isNull() && !node.asText().isBlank();
+    }
+
     public List<Car> findCars(String url) throws IOException {
-        Document document = documentService.load(url, doc -> doc.selectFirst(LISTING_JSON) != null);
+        Document document = documentService.load(url, validator);
 
         Element scriptElement = document.selectFirst(LISTING_JSON);
-        if (scriptElement == null) {
-            logger.error(SCRIPT_ERROR_MESSAGE);
-            return List.of();
-        }
 
-        String jsonData = scriptElement.html();
+        String jsonData = Objects.requireNonNull(scriptElement).html();
 
-        JsonNode rootNode = objectMapper.readTree(jsonData);
+        JsonNode rootNode = OBJECT_MAPPER.readTree(jsonData);
 
         JsonNode itemList = rootNode.at(ITEM_CAR_LIST_ELEMENT);
 
         Map<String, Car> carNameToCars = new ConcurrentHashMap<>();
 
-        if (itemList.isArray()) {
-            int counter = 0;
-            for (JsonNode item : itemList) {
-                JsonNode carInfo = carInfo(item);
-                JsonNode priceInfo = priceInfo(item);
+        int counter = 0;
+        for (JsonNode item : itemList) {
+            JsonNode carInfo = carInfo(item);
+            JsonNode priceInfo = priceInfo(item);
 
-                Car car = convert(carInfo, priceInfo);
+            Car car = convert(carInfo, priceInfo);
 
-                String carKey = carKey(counter++, car.getTitle());
-                carNameToCars.put(carKey, car);
-            }
-
-            Elements links = document.select(LINKS);
-            counter = 0;
-            for (Element link : links) {
-                String text = link.text().trim();
-                String carKey = carKey(counter, text);
-                if (carNameToCars.containsKey(carKey)) {
-                    String carUrl = link.attr(LINK_URL);
-                    carNameToCars.get(carKey).setUrl(carUrl);
-                    counter++;
-                }
-            }
-        } else {
-            logger.error(NOT_AN_ARRAY_ERROR_MESSAGE);
+            String carKey = carKey(counter++, car.getTitle());
+            carNameToCars.put(carKey, car);
         }
 
-        //TODO this code sometimes throw NullPointer (entry.getKey() == null)
+        Elements links = document.select(LINKS);
+        counter = 0;
+        for (Element link : links) {
+            String text = link.text().trim();
+            String carKey = carKey(counter, text);
+            if (carNameToCars.containsKey(carKey)) {
+                String carUrl = link.attr(LINK_URL);
+                carNameToCars.get(carKey).setUrl(carUrl);
+                counter++;
+            }
+        }
+
         Map<String, String> carNamesToUrls = carNameToCars.entrySet().stream()
+                .filter(entry -> entry.getKey() != null)
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUrl()));
 
         try(ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE)) {
@@ -106,6 +136,8 @@ public class CarParserService {
                     .toList();
 
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        } catch (Throwable e) {
+            logger.error(e.getMessage());
         }
 
         return carNameToCars.values().stream()

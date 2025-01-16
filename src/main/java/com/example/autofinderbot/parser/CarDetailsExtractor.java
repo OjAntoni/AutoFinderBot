@@ -5,7 +5,6 @@ import com.example.autofinderbot.service.DocumentService;
 import com.example.autofinderbot.shared.Details;
 import com.example.autofinderbot.shared.Logger;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -33,11 +32,10 @@ class CarDetailsExtractor {
 
     public List<CarDetail> extractCarProperties(String url) {
         Document document;
-        //TODO return empty list on exception
         try {
             document = documentService.load(url, (doc -> doc.selectFirst(CAR_PAGE_JSON_DATA) != null));
-        } catch (IOException e) {
-            logger.error(e);
+        } catch (Throwable e) {
+            logger.error(e.getMessage());
             return emptyList();
         }
 
