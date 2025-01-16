@@ -136,7 +136,7 @@ public class CarParserService {
                     .toList();
 
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
 
