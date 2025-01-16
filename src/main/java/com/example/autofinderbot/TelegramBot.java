@@ -2,6 +2,7 @@ package com.example.autofinderbot;
 
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.telegram.StrategyContext;
+import com.example.autofinderbot.telegram.exception.TelegramBotException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -48,39 +49,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         if(update.getMyChatMember() != null ) {
             //TODO handle blocking bot (status = kicked/member)
             logger.debug(update.getMyChatMember().getNewChatMember().getStatus());
-
         }
-
         strategyContext.executeStrategy(update);
-
-//            long chat_id = update.getMessage().getChatId();
-//            chatId = chat_id;
-//
-//            SendMessage message = SendMessage // Create a message object
-//                    .builder()
-//                    .chatId(chat_id)
-//                    .text(message_text)
-//                    .build();
-//            try {
-//                telegramClient.execute(message); // Sending our message object to user
-//            } catch (TelegramApiException e) {
-//                logger.error(e);
-//            }
-
-    }
-
-    public void sendAll(List<String> messages) {
-        for (String m : messages) {
-            SendMessage message = SendMessage // Create a message object
-                    .builder()
-                    .text(m)
-                    .chatId(chatId)
-                    .build();
-            try {
-                telegramClient.execute(message); // Sending our message object to user
-            } catch (TelegramApiException e) {
-                logger.error(e);
-            }
-        }
     }
 }
