@@ -34,7 +34,7 @@ class CarDetailsExtractor {
         Document document;
         try {
             document = documentService.load(url, (doc -> doc.selectFirst(CAR_PAGE_JSON_DATA) != null));
-        } catch (Throwable e) {
+        } catch (IOException e) {
             logger.error(e.getMessage());
             return emptyList();
         }
