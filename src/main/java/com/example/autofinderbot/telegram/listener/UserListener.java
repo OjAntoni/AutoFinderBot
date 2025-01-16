@@ -69,7 +69,7 @@ public class UserListener {
                 .url("https://www.otomoto.pl/osobowe?search%5Badvanced_search_expanded%5D=true")
                 .build();
 
-        SendMessage message = new SendMessage(chatId.toString(), "Click the button below to open otomoto page:");
+        SendMessage message = new SendMessage(chatId.toString(), "Click the button below to open otomoto page and then copy and set your search url here.");
         message.setReplyMarkup(InlineKeyboardMarkup.builder()
                 .keyboard(List.of(new InlineKeyboardRow(Collections.singletonList(webAppButton))))
                 .build());
