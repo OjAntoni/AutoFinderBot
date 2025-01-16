@@ -92,7 +92,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
         Mockito.verify(telegramClient).execute((SendMessage) argThat(message -> {
             SendMessage m = (SendMessage) message;
             List<InlineKeyboardRow> replyKeyboard = ((InlineKeyboardMarkup) m.getReplyMarkup()).getKeyboard();
-            return m.getText().equals("Click the button below to open otomoto page:") &&
+            return m.getText().equals("Click the button below to open otomoto page, then copy and send your search url here.") &&
                     replyKeyboard.size() == 1 && replyKeyboard.getFirst().size() == 1 &&
                     replyKeyboard.getFirst().getFirst().getText().equals("Open otomoto") &&
                     replyKeyboard.getFirst().getFirst().getUrl().equals("https://www.otomoto.pl/osobowe?search%5Badvanced_search_expanded%5D=true");
