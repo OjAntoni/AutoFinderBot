@@ -46,6 +46,9 @@ public class CarSynchronizationService {
 
     @Scheduled(fixedRate = 10, initialDelay = 1, timeUnit = MINUTES)
     void updateCarDatabase() {
+        Report report = new Report();
+        report.setStartedAt(dateTimeUtil.now());
+
         List<Car> newCars = new ArrayList<>();
         int page = 1;
         while (newCars.size() < CAR_LIMIT && page <= MAX_PAGE_SIZE) {
@@ -73,16 +76,19 @@ public class CarSynchronizationService {
 
         Mono.fromRunnable(() -> eventPublisher.publishEvent(new NewCarsEvent(this, newCars))).subscribe();
 
-        Report report = new Report();
+
         report.setAffectedRows(newCars.size());
-        report.setCreatedAt(dateTimeUtil.now());
+        report.setFinishedAt(dateTimeUtil.now());
         report.setOperation(INSERT);
         report.setTargetIds(newCars.stream().map(Car::getId).toList());
         reportService.save(report);
     }
 
-    @Scheduled(fixedRate = 60, initialDelay = 30, timeUnit = MINUTES)
+    @Scheduled(fixedRate = 60, initialDelay = 2, timeUnit = MINUTES)
     void deleteExpiredCars() {
+        Report report = new Report();
+        report.setStartedAt(dateTimeUtil.now());
+
         Sort sort = Sort.by(Sort.Order.asc("createdAt"));
         int pageSize = 50;
         int page = 0;
@@ -102,9 +108,8 @@ public class CarSynchronizationService {
             cars = carService.findAll(PageRequest.of(++page, pageSize, sort));
         }
 
-        Report report = new Report();
         report.setAffectedRows(deletedCars);
-        report.setCreatedAt(dateTimeUtil.now());
+        report.setFinishedAt(dateTimeUtil.now());
         report.setOperation(DELETE);
         reportService.save(report);
     }
