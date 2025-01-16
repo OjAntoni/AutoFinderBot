@@ -42,7 +42,6 @@ public class StrategyContext {
         }
 
         if(update.hasMessage() && update.getMessage().hasText()) {
-            //TODO add automatic user registration if strategy name is not /start and user is null
             User user = userService.findByChatId(update.getMessage().getChatId());
 
             String input = update.getMessage().getText();
