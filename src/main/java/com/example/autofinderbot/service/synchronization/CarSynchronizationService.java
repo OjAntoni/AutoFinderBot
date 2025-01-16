@@ -84,7 +84,7 @@ public class CarSynchronizationService {
         reportService.save(report);
     }
 
-    @Scheduled(fixedRate = 60, initialDelay = 2, timeUnit = MINUTES)
+    @Scheduled(fixedRate = 60, initialDelay = 30, timeUnit = MINUTES)
     void deleteExpiredCars() {
         Report report = new Report();
         report.setStartedAt(dateTimeUtil.now());
