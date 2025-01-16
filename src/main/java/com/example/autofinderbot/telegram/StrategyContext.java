@@ -104,7 +104,7 @@ public class StrategyContext {
                         strategies.put(annotation.value(), handle);
                         methodMap.put(annotation.value(), method);
                     } catch (IllegalAccessException e) {
-                        logger.error(e);
+                        logger.error(e.getMessage());
                     }
                 }
             }
