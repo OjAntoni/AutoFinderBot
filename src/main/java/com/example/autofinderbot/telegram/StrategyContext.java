@@ -3,12 +3,13 @@ package com.example.autofinderbot.telegram;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.service.UserService;
 import com.example.autofinderbot.shared.Logger;
-import com.example.autofinderbot.telegram.exception.InvalidArgumentsException;
-import com.example.autofinderbot.telegram.exception.TelegramCommandNotFoundException;
+import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
+import com.example.autofinderbot.telegram.exception.TelegramBotException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
@@ -52,7 +53,6 @@ public class StrategyContext {
             if (user != null && user.getRedirectTo() != null) {
                 strategyName = user.getRedirectTo();
                 args = parts;
-                logger.info(args.length+"");
             } else {
                 strategyName = parts[0];
                 args = Arrays.copyOfRange(parts, 1, parts.length);
@@ -65,6 +65,7 @@ public class StrategyContext {
 
             MethodHandle handle = strategies.get(strategyName);
             Method method = methodMap.get(strategyName);
+            boolean telegramBotExceptionOccurred = false;
 
             if (handle != null && method != null) {
                 try {
@@ -73,17 +74,29 @@ public class StrategyContext {
                     return;
                 } catch (ClassCastException | WrongMethodTypeException | IllegalArgumentException e) {
                     logger.error(e);
-                    throw new InvalidArgumentsException(strategyName);
+                } catch (TelegramBotException e) {
+                    telegramBotExceptionOccurred = true;
+                    if(user != null) {
+                        SendMessage sendMessage = SendMessage.builder()
+                            .chatId(user.getChatId())
+                            .text(e.getMessage())
+                            .disableWebPagePreview(true)
+                            .build();
+                        telegramClient.execute(sendMessage);
+                    } else {
+                        logger.error(e);
+                    }
                 }
             }
 
-            DeleteMessage deleteMessage = DeleteMessage.builder()
-                    .chatId(update.getMessage().getChatId())
-                    .messageId(update.getMessage().getMessageId())
-                    .build();
-            telegramClient.execute(deleteMessage);
-
-            throw new TelegramCommandNotFoundException(strategyName);
+            if(!telegramBotExceptionOccurred) {
+                logger.debug("Telegram command not found: " + strategyName);
+                DeleteMessage deleteMessage = DeleteMessage.builder()
+                        .chatId(update.getMessage().getChatId())
+                        .messageId(update.getMessage().getMessageId())
+                        .build();
+                telegramClient.execute(deleteMessage);
+            }
         }
     }
 
@@ -114,9 +127,8 @@ public class StrategyContext {
         Class<?>[] parameterTypes = method.getParameterTypes();
         List<Class<?>> nonTelegramParameters = Arrays.stream(parameterTypes).filter(clas -> clas != Update.class).toList();
 
-        if (nonTelegramParameters.size() != args.length) {
-            logger.error("invalid parameters count.");
-            throw new IllegalArgumentException(method.getName());
+        if (nonTelegramParameters.size() > args.length) {
+            throw new InvalidCommandParameters();
         }
 
         int argsN = 0;

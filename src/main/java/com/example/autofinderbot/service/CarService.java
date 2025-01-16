@@ -34,7 +34,6 @@ public class CarService {
 
     @Transactional
     public List<Car> saveAll(@NotNull Collection<@Valid Car> cars) {
-        logger.debug("Saving all %d cars", cars.size());
         List<Car> savedCars = carRepository.saveAll(cars);
         List<CarDetail> carDetails = savedCars.stream()
                 .peek(car -> car.getDetails().forEach(cd -> cd.setCarId(car.getId())))

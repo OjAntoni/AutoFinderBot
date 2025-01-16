@@ -1,6 +1,7 @@
 package com.example.autofinderbot.telegram;
 
 
+import com.example.autofinderbot.telegram.exception.TelegramBotException;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -19,6 +20,11 @@ public class TestListenerBean {
     @CommandListener("exception")
     public void exception() {
         throw new RuntimeException("Test exception");
+    }
+
+    @CommandListener("telegramException")
+    public void telegramException() {
+        throw new TelegramBotException("Error occurred.") {};
     }
 
     @CommandListener("update")
