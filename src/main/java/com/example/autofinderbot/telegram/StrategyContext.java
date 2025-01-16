@@ -3,6 +3,7 @@ package com.example.autofinderbot.telegram;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.service.UserService;
 import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
 import com.example.autofinderbot.telegram.exception.TelegramBotException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -42,7 +43,6 @@ public class StrategyContext {
         }
 
         if(update.hasMessage() && update.getMessage().hasText()) {
-            //TODO add automatic user registration if strategy name is not /start and user is null
             User user = userService.findByChatId(update.getMessage().getChatId());
 
             String input = update.getMessage().getText();
@@ -127,9 +127,8 @@ public class StrategyContext {
         Class<?>[] parameterTypes = method.getParameterTypes();
         List<Class<?>> nonTelegramParameters = Arrays.stream(parameterTypes).filter(clas -> clas != Update.class).toList();
 
-        if (nonTelegramParameters.size() != args.length) {
-            logger.error("invalid parameters count.");
-            throw new IllegalArgumentException(method.getName());
+        if (nonTelegramParameters.size() > args.length) {
+            throw new InvalidCommandParameters();
         }
 
         int argsN = 0;
