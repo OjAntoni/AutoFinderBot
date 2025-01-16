@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class LoggerTest extends BaseSpringBootTest {
     @Autowired
@@ -27,7 +28,12 @@ class LoggerTest extends BaseSpringBootTest {
         ILoggingEvent logEvent = listAppender.list.getFirst();
         String formattedMessage = logEvent.getFormattedMessage();
 
-        assertThat(formattedMessage).isEqualTo("[com.example.autofinderbot.shared.LoggerTest:25] - Test message");
+        assertThat(formattedMessage).isEqualTo("[com.example.autofinderbot.shared.LoggerTest:26] - Test message");
         assertThat(logEvent.getLevel().toString()).isEqualTo("INFO");
+    }
+
+    @Test
+    void logUrl_PosTC() {
+        assertDoesNotThrow(() -> logger.info("https://www.otomoto.pl/osobowe/audi/seg-mini?search%5Bfilter_float_price%3Ato%5D=2000"));
     }
 }

@@ -3,7 +3,6 @@ package com.example.autofinderbot.service.synchronization;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.Report;
 import com.example.autofinderbot.parser.CarParserService;
-import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.service.CarService;
 import com.example.autofinderbot.service.DocumentService;
 import com.example.autofinderbot.service.ReportService;
@@ -35,6 +34,7 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor
 public class CarSynchronizationService {
     private static final int CAR_LIMIT = 60;
+    private static final int MAX_PAGE_SIZE = CAR_LIMIT / 30 + 1;
 
     ApplicationEventPublisher eventPublisher;
     DocumentService documentService;
@@ -48,7 +48,7 @@ public class CarSynchronizationService {
     void updateCarDatabase() {
         List<Car> newCars = new ArrayList<>();
         int page = 1;
-        while (newCars.size() < CAR_LIMIT) {
+        while (newCars.size() < CAR_LIMIT && page <= MAX_PAGE_SIZE) {
 
             List<Car> cars;
 
@@ -59,19 +59,18 @@ public class CarSynchronizationService {
                 break;
             }
 
-            logger.debug("Found car responses: %d", cars.size());
+            logger.debug("Found cars on page %d: %d", page-1, cars.size());
             List<Car> filtered = cars.stream()
                     .filter(cr -> !carService.exists(cr.getUrl()))
                     .limit(newCars.size() + cars.size() > CAR_LIMIT ? CAR_LIMIT - newCars.size() : cars.size())
                     .toList();
 
             newCars.addAll(carService.saveAll(filtered));
-            logger.debug("Added filtered cars: %d", filtered.size());
+            logger.debug("Filtered out %d cars from page %d", filtered.size(), page-1);
 
             if(filtered.size() != cars.size()) break;
         }
 
-        logger.info("Sending an event.");
         Mono.fromRunnable(() -> eventPublisher.publishEvent(new NewCarsEvent(this, newCars))).subscribe();
 
         Report report = new Report();

@@ -46,6 +46,7 @@ public class CarParserService {
 
     public List<Car> findCars(String url) throws IOException {
         Document document = documentService.load(url, doc -> doc.selectFirst(LISTING_JSON) != null);
+
         Element scriptElement = document.selectFirst(LISTING_JSON);
         if (scriptElement == null) {
             logger.error(SCRIPT_ERROR_MESSAGE);
@@ -58,54 +59,62 @@ public class CarParserService {
 
         JsonNode itemList = rootNode.at(ITEM_CAR_LIST_ELEMENT);
 
-        List<Car> cars = new ArrayList<>();
         Map<String, Car> carNameToCars = new ConcurrentHashMap<>();
 
         if (itemList.isArray()) {
+            int counter = 0;
             for (JsonNode item : itemList) {
                 JsonNode carInfo = carInfo(item);
                 JsonNode priceInfo = priceInfo(item);
 
                 Car car = convert(carInfo, priceInfo);
 
-                cars.add(car);
-                carNameToCars.put(car.getTitle(), car);
+                String carKey = carKey(counter++, car.getTitle());
+                carNameToCars.put(carKey, car);
             }
 
             Elements links = document.select(LINKS);
+            counter = 0;
             for (Element link : links) {
                 String text = link.text().trim();
-                if (carNameToCars.containsKey(text)) {
+                String carKey = carKey(counter, text);
+                if (carNameToCars.containsKey(carKey)) {
                     String carUrl = link.attr(LINK_URL);
-                    carNameToCars.get(text).setUrl(carUrl);
+                    carNameToCars.get(carKey).setUrl(carUrl);
+                    counter++;
                 }
             }
         } else {
             logger.error(NOT_AN_ARRAY_ERROR_MESSAGE);
         }
 
+        //TODO this code sometimes throw NullPointer (entry.getKey() == null)
         Map<String, String> carNamesToUrls = carNameToCars.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUrl()));
 
         try(ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE)) {
             List<CompletableFuture<Void>> futures = carNamesToUrls.entrySet().stream()
                     .map(entry -> CompletableFuture.runAsync(() -> {
-                        String carName = entry.getKey();
+                        String carKey = entry.getKey();
                         String carUrl = entry.getValue();
 
                         List<CarDetail> carDetails = carDetailsExtractor.extractCarProperties(carUrl);
 
-                        extractCreationDate(carDetails, carNameToCars.get(carName));
-                        carNameToCars.get(carName).setDetails(carDetails);
+                        extractCreationDate(carDetails, carNameToCars.get(carKey));
+                        carNameToCars.get(carKey).setDetails(carDetails);
                     }, executor))
                     .toList();
 
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         }
 
-        return cars.stream()
+        return carNameToCars.values().stream()
                 .filter(carValidator::isValid)
                 .collect(Collectors.toList());
+    }
+
+    private String carKey(int i, String title) {
+        return title + "|" + i;
     }
 
     private JsonNode carInfo(JsonNode node) {
