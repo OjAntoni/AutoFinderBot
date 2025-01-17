@@ -52,7 +52,7 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
                 .isEqualTo(count + CAR_LIMIT);
 
         Optional<Report> report = reportRepository.findAll().stream()
-                .max(comparing(Report::getCreatedAt));
+                .max(comparing(Report::getStartedAt));
 
         assertThat(report)
                 .isPresent()
@@ -91,7 +91,7 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
                 .isEmpty();
 
         Optional<Report> report = reportRepository.findAll().stream()
-                .max(comparing(Report::getCreatedAt));
+                .max(comparing(Report::getStartedAt));
 
         assertThat(report)
                 .isPresent()
