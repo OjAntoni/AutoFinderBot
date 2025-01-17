@@ -21,7 +21,8 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     long affectedRows;
-    LocalDateTime createdAt;
+    LocalDateTime startedAt;
+    LocalDateTime finishedAt;
     @Column(name = "target_id")
     @ElementCollection
     @CollectionTable(name = "target_ids_2_report", joinColumns = @JoinColumn(name = "report_id"))
