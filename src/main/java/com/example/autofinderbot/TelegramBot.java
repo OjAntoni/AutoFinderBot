@@ -44,6 +44,8 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         return this;
     }
 
+
+
     @Override
     public void consume(Update update) {
         if(update.getMyChatMember() != null ) {

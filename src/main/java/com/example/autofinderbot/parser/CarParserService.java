@@ -36,7 +36,6 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @Service
 public class CarParserService {
-    private static final String NOT_AN_ARRAY_ERROR_MESSAGE = "Element is not an array.";
     private static final int THREAD_POOL_SIZE = 30;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -119,7 +118,7 @@ public class CarParserService {
         }
 
         Map<String, String> carNamesToUrls = carNameToCars.entrySet().stream()
-                .filter(entry -> entry.getKey() != null)
+                .filter(entry -> entry.getKey() != null && entry.getValue() != null && entry.getValue().getUrl() != null)
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getUrl()));
 
         try(ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE)) {

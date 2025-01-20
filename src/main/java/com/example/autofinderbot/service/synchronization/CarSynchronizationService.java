@@ -4,7 +4,6 @@ import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.Report;
 import com.example.autofinderbot.parser.CarParserService;
 import com.example.autofinderbot.service.CarService;
-import com.example.autofinderbot.service.DocumentService;
 import com.example.autofinderbot.service.ReportService;
 import com.example.autofinderbot.shared.DateTimeUtil;
 import com.example.autofinderbot.shared.Logger;
@@ -12,9 +11,6 @@ import com.example.autofinderbot.shared.NewCarsEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -22,6 +18,7 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.autofinderbot.domain.Report.Operation.DELETE;
 import static com.example.autofinderbot.domain.Report.Operation.INSERT;
@@ -37,7 +34,6 @@ public class CarSynchronizationService {
     private static final int MAX_PAGE_SIZE = CAR_LIMIT / 30 + 1;
 
     ApplicationEventPublisher eventPublisher;
-    DocumentService documentService;
     CarParserService carParserService;
     CarService carService;
     ReportService reportService;
@@ -64,7 +60,13 @@ public class CarSynchronizationService {
 
             logger.debug("Found cars on page %d: %d", page-1, cars.size());
             List<Car> filtered = cars.stream()
-                    .filter(cr -> !carService.exists(cr.getUrl()))
+                    .collect(Collectors.toMap(
+                            Car::getUrl,
+                            car -> car
+                    ))
+                    .values()
+                    .stream()
+                    .filter(car -> !carService.exists(car.getUrl()))
                     .limit(newCars.size() + cars.size() > CAR_LIMIT ? CAR_LIMIT - newCars.size() : cars.size())
                     .toList();
 
@@ -76,7 +78,6 @@ public class CarSynchronizationService {
 
         Mono.fromRunnable(() -> eventPublisher.publishEvent(new NewCarsEvent(this, newCars))).subscribe();
 
-
         report.setAffectedRows(newCars.size());
         report.setFinishedAt(dateTimeUtil.now());
         report.setOperation(INSERT);
@@ -84,31 +85,16 @@ public class CarSynchronizationService {
         reportService.save(report);
     }
 
-    @Scheduled(fixedRate = 60, initialDelay = 30, timeUnit = MINUTES)
+    @Scheduled(fixedRate = 60, initialDelay = 1, timeUnit = MINUTES)
     void deleteExpiredCars() {
         Report report = new Report();
         report.setStartedAt(dateTimeUtil.now());
 
-        Sort sort = Sort.by(Sort.Order.asc("createdAt"));
-        int pageSize = 50;
-        int page = 0;
-        long deletedCars = 0;
+        List<Car> expiredCars = carService.findExpired();
+        List<Long> expiredCarIds = expiredCars.stream().map(Car::getId).toList();
+        carService.deleteAll(expiredCarIds);
 
-        Page<Car> cars = carService.findAll(PageRequest.of(page, pageSize, sort));
-        while (cars.hasContent()) {
-            List<Long> expiredCarIds = cars.stream()
-                    .parallel()
-                    .filter(car -> !documentService.isValid(car.getUrl()))
-                    .map(Car::getId)
-                    .toList();
-
-            carService.deleteAll(expiredCarIds);
-            deletedCars += expiredCarIds.size();
-
-            cars = carService.findAll(PageRequest.of(++page, pageSize, sort));
-        }
-
-        report.setAffectedRows(deletedCars);
+        report.setAffectedRows(expiredCars.size());
         report.setFinishedAt(dateTimeUtil.now());
         report.setOperation(DELETE);
         reportService.save(report);

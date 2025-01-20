@@ -31,9 +31,6 @@ public abstract class BaseSpringBootTest {
     static final String POSTGRES_USERNAME = "postgres";
     static final String POSTGRES_PASSWORD = "postgres";
 
-    @TempDir
-    static Path tempDir;
-
     private static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>(
             DockerImageName.parse(POSTGRES_IMAGE))
             .withDatabaseName(POSTGRES_DB)
@@ -48,10 +45,6 @@ public abstract class BaseSpringBootTest {
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) throws IOException {
-        Path tempFilePath = tempDir.resolve("old-test.txt");
-        Files.copy(Paths.get("src/test/resources/old"), tempFilePath);
-
-        registry.add("telegram.bot.storage.file", tempFilePath::toString);
         registry.add("telegram.bot.token", () -> "token");
 
         registry.add("spring.datasource.url", POSTGRES_CONTAINER::getJdbcUrl);
