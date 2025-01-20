@@ -1,0 +1,46 @@
+categories:
+  - title: 🚀 New Features
+    labels:
+      - enhancement
+      - feature
+      - feat
+  - title: 🐛 Bug Fixes
+    labels:
+      - bug
+      - bugfix
+      - fix
+  - title: 💥 Breaking Changes
+    labels:
+      - breaking change
+      - breaking
+  - title: 🧹 Maintenance and Chores
+    labels:
+      - 'code enhancement'
+      - chore
+      - maintenance
+      - refactor
+  - title: 📖 Documentation Updates
+    labels:
+      - documentation
+      - docs
+  - title: 🛠️ Miscellaneous
+    labels:
+      - other
+      - misc
+
+uncategorized:
+  title: 🌟 Uncategorized Changes
+
+change-template: '- $TITLE (#$NUMBER by @$AUTHOR)'
+
+sort:
+  categories:
+    - Breaking Changes
+    - New Features
+    - Bug Fixes
+    - Maintenance and Chores
+    - Documentation Updates
+    - Miscellaneous
+    - Uncategorized Changes
+
+grouped: true
