@@ -38,6 +38,18 @@ insert into user_filter(id, user_id, price_start, price_end, year_from, year_to,
 (1, 5, 10000, NULL, NULL, 2020, 100000, 150000, false),
 (2, 6, 10000, NULL, NULL, NULL, 100000, 150000, true);
 
+insert into notification(id, title, description, state) values
+(1, 'Title 1', 'Description 1', 'PROCESSED'),
+(2, 'Title 2', 'Description 2', 'NEW');
+
+insert into notification_2_user(notification_id, user_id) values
+(1, 1),
+(1, 2),
+(1, 3),
+(2, 4),
+(2, 5),
+(2, 6);
+
 ALTER SEQUENCE car_id_seq RESTART WITH 100;
 ALTER SEQUENCE car_detail_id_seq RESTART WITH 100;
 ALTER SEQUENCE report_id_seq RESTART WITH 100;
