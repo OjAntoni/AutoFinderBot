@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.function.Predicate;
 
@@ -55,18 +57,5 @@ public class DocumentService {
 
     public Document load(String url, Predicate<Document> validator) throws IOException {
         return load(url, DEFAULT_RETRY_COUNT, validator);
-    }
-
-    public boolean isValid(String url) {
-        try {
-            int code = connect(url)
-                    .ignoreHttpErrors(true)
-                    .execute()
-                    .statusCode();
-            return code / 100 != 4 && code / 100 != 5;
-        } catch (Exception e) {
-            //(exception can be thrown for other reasons e.g. internet issues etc.)
-            return true;
-        }
     }
 }

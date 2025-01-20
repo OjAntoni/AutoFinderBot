@@ -34,7 +34,7 @@ class CarServiceTest extends BaseSpringBootTest {
     void saveAll_PosTC() {
         List<Car> cars = List.of(
                 Car.builder()
-                        .url("https://example.com")
+                        .url("https://example1.com")
                         .brand("brand")
                         .price(1000)
                         .title("title")
@@ -45,7 +45,7 @@ class CarServiceTest extends BaseSpringBootTest {
                         .details(List.of(new CarDetail("key", "value")))
                         .build(),
                 Car.builder()
-                        .url("https://example.com")
+                        .url("https://example2.com")
                         .brand("brand")
                         .price(1000)
                         .title("title")
@@ -62,7 +62,7 @@ class CarServiceTest extends BaseSpringBootTest {
         assertThat(carsReturned)
                 .allMatch(c -> !c.getDetails().isEmpty() && c.getDetails().stream().allMatch(detail -> detail.getCarId() > 0));
 
-        assertThat(carRepository.findAll().stream().filter(c -> c.getUrl().equals("https://example.com")))
+        assertThat(carRepository.findAll().stream().filter(c -> c.getUrl().startsWith("https://example")))
                 .allMatch(c -> c.getDetails().size() == 1)
                 .hasSize(2);
 
