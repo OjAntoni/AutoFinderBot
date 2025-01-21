@@ -86,6 +86,14 @@ public class UrlToFiltersConverter {
             result.put("gearboxes", gearboxTypes);
             userFilter.setGearboxes(gearboxTypes);
 
+            String damagedValue = extractFromQuery(query, "filter_enum_damaged");
+            Boolean damaged = null;
+            if (damagedValue != null) {
+                damaged = damagedValue.equals("1");
+            }
+            result.put("damaged", damaged);
+            userFilter.setDamaged(damaged);
+
         } catch (Exception e) {
             logger.error(e);
         }

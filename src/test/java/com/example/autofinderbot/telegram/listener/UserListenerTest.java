@@ -104,10 +104,11 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void uploadUrl_PosTC() throws TelegramApiException {
         long chatId = 4L;
-        String url = "https://www.otomoto.pl/osobowe/audi--bmw/od-2015?search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search" +
-                "%5Bfilter_enum_gearbox%5D%5B1%5D=manual&search%5Bfilter_float_mileage%3Afrom%5D=75000&search%5Bfilter_float_mileage" +
-                "%3Ato%5D=170000&search%5Bfilter_float_price%3Afrom%5D=2000&search%5Bfilter_float_price%3Ato%5D=35000&search%5Bfilter_float_year" +
-                "%3Ato%5D=2020&search%5Badvanced_search_expanded%5D=true";
+        String url = "https://www.otomoto.pl/osobowe/audi--bmw/od-2015?search%5Bfilter_enum_damaged%5D=0&search" +
+                "%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=manual&search%5Bfil" +
+                "ter_float_mileage%3Afrom%5D=75000&search%5Bfilter_float_mileage%3Ato%5D=170000&search%5Bfilter_float_pr" +
+                "ice%3Afrom%5D=2000&search%5Bfilter_float_price%3Ato%5D=35000&search%5Bfilter_float_year%3Ato%5D=2020&sea" +
+                "rch%5Badvanced_search_expanded%5D=true";
         Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
         userListener.uploadUrl(url, update);
@@ -131,6 +132,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                     UserFilter::getYearTo,
                     UserFilter::getPriceStart,
                     UserFilter::getPriceEnd,
+                    UserFilter::getDamaged,
                     filter -> filter.getCarBrands().stream().map(CarBrand::getName).toList(),
                     filter -> filter.getCarModels().stream().map(CarModel::getName).toList(),
                     filter -> filter.getGenerations().stream().map(Generation::getName).toList(),
@@ -144,6 +146,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                     2020,
                     2000L,
                     35000L,
+                    false,
                     List.of("BMW", "Audi"),
                     emptyList(),
                     emptyList(),
