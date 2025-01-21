@@ -1,5 +1,6 @@
 package com.example.autofinderbot.telegram.converter;
 
+import com.example.autofinderbot.domain.GearboxType;
 import com.example.autofinderbot.domain.UserFilter;
 import com.example.autofinderbot.service.CarFiltersService;
 import com.example.autofinderbot.shared.Logger;
@@ -78,6 +79,20 @@ public class UrlToFiltersConverter {
             List<String> generations = extractMultipleFromQuery(query, "filter_enum_generation");
             result.put("generations", generations);
             userFilter.setGenerations(carFiltersService.getGenerations(generations));
+
+            //extract gearbox
+            List<String> gearboxes = extractMultipleFromQuery(query, "filter_enum_gearbox");
+            List<GearboxType> gearboxTypes = gearboxes.stream().map(GearboxType::fromSearchKey).toList();
+            result.put("gearboxes", gearboxTypes);
+            userFilter.setGearboxes(gearboxTypes);
+
+            String damagedValue = extractFromQuery(query, "filter_enum_damaged");
+            Boolean damaged = null;
+            if (damagedValue != null) {
+                damaged = damagedValue.equals("1");
+            }
+            result.put("damaged", damaged);
+            userFilter.setDamaged(damaged);
 
         } catch (Exception e) {
             logger.error(e);
