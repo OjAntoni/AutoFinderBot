@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.util.List;
 
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 
 @Entity
@@ -69,6 +70,12 @@ public class UserFilter {
     @Column(name = "fuel_type")
     private List<FuelType> fuelTypes;
 
+    @Column(name = "gearbox_type")
+    @ElementCollection(fetch = EAGER)
+    @Enumerated(STRING)
+    @CollectionTable(name = "user_filter_2_gearbox", joinColumns = @JoinColumn(name = "user_filter_id"))
+    private List<GearboxType> gearboxes;
+
     private boolean confirmed;
 
     @Override
@@ -120,6 +127,14 @@ public class UserFilter {
         sb.append("⛽ *Fuel Types*: ");
         if (fuelTypes != null && !fuelTypes.isEmpty()) {
             sb.append(String.join(", ", fuelTypes.stream().map(FuelType::getName).toList()));
+        } else {
+            sb.append("All");
+        }
+        sb.append("\n");
+
+        sb.append("🚦 *Gearbox*: ");
+        if (gearboxes != null && !gearboxes.isEmpty()) {
+            sb.append(String.join(", ", gearboxes.stream().map(GearboxType::getName).toList()));
         } else {
             sb.append("All");
         }

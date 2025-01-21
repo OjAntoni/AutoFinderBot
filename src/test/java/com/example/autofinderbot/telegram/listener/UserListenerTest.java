@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Optional;
 
 
+import static com.example.autofinderbot.domain.GearboxType.AUTOMATIC;
+import static com.example.autofinderbot.domain.GearboxType.MANUAL;
 import static com.example.autofinderbot.telegram.CommandPath.CONFIRM_FILTER;
 import static com.example.autofinderbot.telegram.CommandPath.UPLOAD_URL;
 import static java.util.Collections.emptyList;
@@ -102,9 +104,10 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void uploadUrl_PosTC() throws TelegramApiException {
         long chatId = 4L;
-        String url = "https://www.otomoto.pl/osobowe/audi--bmw/od-2015?search%5Bfilter_float_mileage%3Afrom%5D=75000&search%5Bfilter_float_mileage" +
-                "%3Ato%5D=170000&search%5Bfilter_float_price%3Afrom%5D=2000&search%5Bfilter_float_price%3Ato%5D=35000&search%5Bfilter_float_year%3At" +
-                "o%5D=2020&search%5Badvanced_search_expanded%5D=true";
+        String url = "https://www.otomoto.pl/osobowe/audi--bmw/od-2015?search%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search" +
+                "%5Bfilter_enum_gearbox%5D%5B1%5D=manual&search%5Bfilter_float_mileage%3Afrom%5D=75000&search%5Bfilter_float_mileage" +
+                "%3Ato%5D=170000&search%5Bfilter_float_price%3Afrom%5D=2000&search%5Bfilter_float_price%3Ato%5D=35000&search%5Bfilter_float_year" +
+                "%3Ato%5D=2020&search%5Badvanced_search_expanded%5D=true";
         Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
         userListener.uploadUrl(url, update);
@@ -131,7 +134,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
                     filter -> filter.getCarBrands().stream().map(CarBrand::getName).toList(),
                     filter -> filter.getCarModels().stream().map(CarModel::getName).toList(),
                     filter -> filter.getGenerations().stream().map(Generation::getName).toList(),
-                    filter -> filter.getFuelTypes().stream().map(FuelType::getName).toList()
+                    filter -> filter.getFuelTypes().stream().map(FuelType::getName).toList(),
+                    filter -> filter.getGearboxes().stream().toList()
                 ).containsExactly(
                 false,
                     75000,
@@ -143,7 +147,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
                     List.of("BMW", "Audi"),
                     emptyList(),
                     emptyList(),
-                    emptyList()
+                    emptyList(),
+                    List.of(AUTOMATIC, MANUAL)
                 );
 
         verify(telegramClient).execute((SendMessage) argThat(message -> {
