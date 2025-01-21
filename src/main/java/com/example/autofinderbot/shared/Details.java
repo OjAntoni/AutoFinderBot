@@ -20,13 +20,14 @@ public enum Details {
     MILEAGE("mileage", "Mileage"),
     GEARBOX("gearbox", "Gearbox"),
     URBAN_CONSUMPTION("urban_consumption", "Urban consumption"),
-    EXTRA_URBAN_CONSUMPTION("extra_urban_consumption", "Extra urban consumption");
+    EXTRA_URBAN_CONSUMPTION("extra_urban_consumption", "Extra urban consumption"),
+    DAMAGED("damaged", "Damaged");
 
     @Getter
     public final String attribute;
     public final String name;
 
-    private Details(String attribute, String name) {
+    Details(String attribute, String name) {
         this.attribute = attribute;
         this.name = name;
     }

@@ -58,7 +58,8 @@ class UserServiceTest extends BaseSpringBootTest {
             new CarDetail(YEAR.name, "2018"),
             new CarDetail(FUEL_TYPE.name, "Petrol"),
             new CarDetail(GENERATION.name, "e15"),
-            new CarDetail(GEARBOX.name, "Automatyczna")
+            new CarDetail(GEARBOX.name, "Automatyczna"),
+            new CarDetail(DAMAGED.name, "Tak")
         ));
 
         UserFilter filter = new UserFilter();
@@ -73,6 +74,7 @@ class UserServiceTest extends BaseSpringBootTest {
         filter.setFuelTypes(List.of(new FuelType(1L, "Petrol", "Petrol")));
         filter.setGenerations(List.of(new Generation(1L, "e15", "e15", 1L)));
         filter.setGearboxes(List.of(AUTOMATIC));
+        filter.setDamaged(true);
 
         boolean isMatch = userService.matches(filter, car);
 

@@ -92,6 +92,23 @@ class CarDetailsExtractor {
                 carProperties.put(CAR_PAGE_ADVERT_CREATED_AT, creationDate);
             }
 
+            JsonNode extraParameters = advertNode.at("/parametersDict");
+            Iterator<Map.Entry<String, JsonNode>> fields = extraParameters.fields();
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> entry = fields.next();
+                JsonNode currentNode = entry.getValue();
+
+                String label = currentNode.get("label").asText();
+                if(carProperties.containsKey(label)) {
+                    continue;
+                }
+                JsonNode valuesNode = currentNode.get("values");
+                if (valuesNode != null && valuesNode.isArray() && valuesNode.size() == 1) {
+                    String value = valuesNode.get(0).get("label").asText();
+                    carProperties.put(label, value);
+                }
+            }
+
         } catch (IOException e) {
             logger.error(e);
         }

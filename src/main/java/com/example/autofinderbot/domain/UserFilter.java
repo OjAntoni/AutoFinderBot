@@ -2,6 +2,7 @@ package com.example.autofinderbot.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -76,6 +77,8 @@ public class UserFilter {
     @CollectionTable(name = "user_filter_2_gearbox", joinColumns = @JoinColumn(name = "user_filter_id"))
     private List<GearboxType> gearboxes;
 
+    private Boolean damaged;
+
     private boolean confirmed;
 
     @Override
@@ -138,6 +141,10 @@ public class UserFilter {
         } else {
             sb.append("All");
         }
+        sb.append("\n");
+
+        sb.append(" \uD83D\uDEA7 *Damaged*: ");
+        sb.append(damaged != null ? (damaged ? "Yes" : "No") : "N/A");
         sb.append("\n");
 
         return sb.toString();
