@@ -11,8 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import static com.example.autofinderbot.shared.Answer.NO_PL;
+import static com.example.autofinderbot.shared.Answer.YES_PL;
 import static java.util.stream.Collectors.toMap;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -78,7 +79,9 @@ public class UserService {
                 priceMatch(filter, car) &&
                 yearMatch(filter, details) &&
                 mileageMatch(filter, car) &&
-                fuelTypeMatch(filter, details);
+                fuelTypeMatch(filter, details) &&
+                gearboxTypeMatch(filter, details) &&
+                damagedMatch(filter, details);
     }
 
     private boolean brandMatch(UserFilter filter, Car car) {
@@ -138,5 +141,21 @@ public class UserService {
         return carFuelType != null && filterFuelTypes.stream()
                 .map(FuelType::getName)
                 .anyMatch(fuelType -> fuelType.equals(carFuelType));
+    }
+
+    private boolean gearboxTypeMatch(UserFilter filter, Map<String, String> details) {
+        String carGearboxType = details.get(Details.GEARBOX.name);
+        if (filter.getGearboxes() == null) return true;
+        List<String> filterGearboxTypes = filter.getGearboxes().stream().map(GearboxType::getName).toList();
+        if(filterGearboxTypes.isEmpty()) return true;
+        return carGearboxType != null && filterGearboxTypes.stream()
+                .anyMatch(gearboxType -> gearboxType.equals(carGearboxType));
+    }
+
+    private boolean damagedMatch(UserFilter filter, Map<String, String> details) {
+        String carDamaged = details.get(Details.DAMAGED.name);
+        Boolean filterDamaged = filter.getDamaged();
+        if(filterDamaged == null) return true;
+        return carDamaged != null && carDamaged.equals(filterDamaged ? YES_PL.getValue() : NO_PL.getValue());
     }
 }
