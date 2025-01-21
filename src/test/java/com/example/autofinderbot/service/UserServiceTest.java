@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static com.example.autofinderbot.domain.GearboxType.AUTOMATIC;
+import static com.example.autofinderbot.shared.Details.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UserServiceTest extends BaseSpringBootTest {
@@ -52,10 +54,11 @@ class UserServiceTest extends BaseSpringBootTest {
         car.setPrice(15000);
         car.setMileage(50000);
         car.setDetails(List.of(
-            new CarDetail(Details.MODEL.name, "Corolla"),
-            new CarDetail(Details.YEAR.name, "2018"),
-            new CarDetail(Details.FUEL_TYPE.name, "Petrol"),
-            new CarDetail(Details.GENERATION.name, "e15")
+            new CarDetail(MODEL.name, "Corolla"),
+            new CarDetail(YEAR.name, "2018"),
+            new CarDetail(FUEL_TYPE.name, "Petrol"),
+            new CarDetail(GENERATION.name, "e15"),
+            new CarDetail(GEARBOX.name, "Automatyczna")
         ));
 
         UserFilter filter = new UserFilter();
@@ -69,6 +72,7 @@ class UserServiceTest extends BaseSpringBootTest {
         filter.setCarModels(List.of(new CarModel(1L, "Corolla", "Corolla", 1L)));
         filter.setFuelTypes(List.of(new FuelType(1L, "Petrol", "Petrol")));
         filter.setGenerations(List.of(new Generation(1L, "e15", "e15", 1L)));
+        filter.setGearboxes(List.of(AUTOMATIC));
 
         boolean isMatch = userService.matches(filter, car);
 
