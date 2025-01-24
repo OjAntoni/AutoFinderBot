@@ -2,7 +2,6 @@ package com.example.autofinderbot.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class UserFilter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne(fetch = EAGER)
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -80,6 +79,14 @@ public class UserFilter {
     private Boolean damaged;
 
     private boolean confirmed;
+
+    @Enumerated(STRING)
+    private State state;
+
+    public enum State {
+        NEW,
+        OLD
+    }
 
     @Override
     public String toString() {
