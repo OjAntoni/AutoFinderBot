@@ -8,10 +8,17 @@ import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.repository.ReportRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.cache.CacheManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
+import static com.example.autofinderbot.config.CacheConfig.CAR_URLS_CACHE;
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CarServiceTest extends BaseSpringBootTest {
@@ -23,6 +30,8 @@ class CarServiceTest extends BaseSpringBootTest {
     CarDetailRepository carDetailRepository;
     @Autowired
     ReportRepository reportRepository;
+    @Autowired
+    CacheManager cacheManager;
 
     @Test
     void existsByUrl_PosTC() {
@@ -32,6 +41,9 @@ class CarServiceTest extends BaseSpringBootTest {
 
     @Test
     void saveAll_PosTC() {
+        Cache cache = cacheManager.getCache(CAR_URLS_CACHE);
+        requireNonNull(cache);
+
         List<Car> cars = List.of(
                 Car.builder()
                         .url("https://example1.com")
@@ -68,17 +80,31 @@ class CarServiceTest extends BaseSpringBootTest {
 
         assertThat(carDetailRepository.findAllByCarIdIn(carsReturned.stream().map(Car::getId).toList()))
                 .hasSize(2);
+
+        assertThat(cars.stream().map(Car::getUrl))
+                .allMatch(url -> Objects.equals(requireNonNull(cache.get(url)).get(), true));
     }
 
     @Test
     void deleteAll_PosTC(){
-        carService.deleteAll(List.of(1L, 2L));
+        Cache cache = cacheManager.getCache(CAR_URLS_CACHE);
+        requireNonNull(cache).put("https://www.example.com/audi-a4", true);
+
+        carService.deleteAll(carRepository.findAllById(List.of(1L, 2L)));
 
         assertThat(carRepository.findAllById(List.of(1L, 2L)))
                 .isEmpty();
 
         assertThat(carDetailRepository.findAllByCarIdIn(List.of(1L, 2L)))
                 .isEmpty();
+
+        assertThat(cache.get("https://www.example.com/audi-a4"))
+                .isNotNull()
+                .extracting(ValueWrapper::get)
+                .isEqualTo(false);
+
+        assertThat(cache.get("https://www.example.com/bmw-3"))
+                .isNull();
     }
 
 }
