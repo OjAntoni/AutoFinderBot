@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.autofinderbot.domain.UserFilter.State.NEW;
+import static com.example.autofinderbot.domain.UserFilter.State.OLD;
 import static com.example.autofinderbot.shared.Answer.NO_PL;
 import static com.example.autofinderbot.shared.Answer.YES_PL;
 import static java.util.stream.Collectors.toMap;
@@ -41,22 +43,31 @@ public class UserService {
 
     @Transactional
     public UserFilter save(UserFilter userFilter) {
-        //TODO add validation on non null user in filter
-        if (userFilterRepository.existsByUser_Id(userFilter.getUser().getId())) {
-            userFilter.setId(userFilterRepository.findByUser_Id(userFilter.getUser().getId()).getId());
+        if (userFilterRepository.findById(userFilter.getId()).isEmpty() && userFilterRepository.existsByUser_IdAndState(userFilter.getUser().getId(), NEW)) {
+            UserFilter oldFilter = userFilterRepository.findByUser_Id(userFilter.getUser().getId());
+            oldFilter.setState(OLD);
         }
-
+        userFilter.setState(NEW);
         return userFilterRepository.save(userFilter);
+    }
+
+    @Transactional
+    public void removeOldFilter(User user) {
+        userFilterRepository.deleteByUser_IdAndState(user.getId(), OLD);
+    }
+
+    @Transactional
+    public void rollbackToOldFilter(User user) {
+        UserFilter newFilter = userFilterRepository.findByUser_IdAndState(user.getId(), NEW);
+        userFilterRepository.deleteById(newFilter.getId());
+        UserFilter oldFilter = userFilterRepository.findByUser_IdAndState(user.getId(), OLD);
+        if (oldFilter == null) return;
+        oldFilter.setState(NEW);
     }
 
     @Transactional(readOnly = true)
     public UserFilter findUserFilter(long userId) {
-        return userFilterRepository.findByUser_Id(userId);
-    }
-
-    @Transactional
-    public void deleteFilter(long id) {
-        userFilterRepository.deleteById(id);
+        return userFilterRepository.findByUser_IdAndState(userId, NEW);
     }
 
     @Transactional(readOnly = true)

@@ -2,6 +2,7 @@ package com.example.autofinderbot.telegram.listener;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.domain.*;
+import com.example.autofinderbot.domain.UserFilter.State;
 import com.example.autofinderbot.repository.UserFilterRepository;
 import com.example.autofinderbot.repository.UserRepository;
 import com.example.autofinderbot.service.UserService;
@@ -28,6 +29,7 @@ import java.util.Optional;
 
 import static com.example.autofinderbot.domain.GearboxType.AUTOMATIC;
 import static com.example.autofinderbot.domain.GearboxType.MANUAL;
+import static com.example.autofinderbot.domain.UserFilter.State.NEW;
 import static com.example.autofinderbot.telegram.CommandPath.CONFIRM_FILTER;
 import static com.example.autofinderbot.telegram.CommandPath.UPLOAD_URL;
 import static java.util.Collections.emptyList;
@@ -121,7 +123,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                 .extracting(User::getSearchUrl, User::getRedirectTo)
                 .containsExactly(url, CONFIRM_FILTER);
 
-        assertThat(findByUserId(user.get().getId()))
+        assertThat(findByUserId(user.get().getId(), NEW))
                 .isPresent()
                 .get()
                 .extracting(
@@ -208,7 +210,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                 .extracting(User::getRedirectTo)
                 .isNull();
 
-        assertThat(findByUserId(user.get().getId()))
+        assertThat(findByUserId(user.get().getId(), NEW))
                 .isPresent()
                 .get()
                 .extracting(UserFilter::isConfirmed)
@@ -235,7 +237,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                 .extracting(User::getRedirectTo, User::getSearchUrl)
                 .containsExactly(null, null);
 
-        assertThat(findByUserId(user.get().getId()))
+        assertThat(findByUserId(user.get().getId(), NEW))
                 .isEmpty();
 
         verify(telegramClient).execute((SendMessage) argThat(message -> {
@@ -259,7 +261,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                 .extracting(User::getRedirectTo)
                 .isEqualTo("/confirm_filter");
 
-        assertThat(findByUserId(user.get().getId()))
+        assertThat(findByUserId(user.get().getId(), NEW))
                 .isPresent()
                 .get()
                 .extracting(UserFilter::isConfirmed)
@@ -304,7 +306,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                 .findFirst();
     }
 
-    private Optional<UserFilter> findByUserId(long userId) {
-        return Optional.ofNullable(userFilterRepository.findByUser_Id(userId));
+    private Optional<UserFilter> findByUserId(long userId, State state) {
+        return Optional.ofNullable(userFilterRepository.findByUser_IdAndState(userId, state));
     }
 }

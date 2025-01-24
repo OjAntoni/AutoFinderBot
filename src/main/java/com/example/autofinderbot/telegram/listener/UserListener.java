@@ -120,6 +120,7 @@ public class UserListener {
         ReplyKeyboardRemove removeReplyKeyboard = ReplyKeyboardRemove.builder().removeKeyboard(true).build();
 
         if ("yes".equalsIgnoreCase(answer)) {
+            userService.removeOldFilter(user);
             user.setRedirectTo(null);
             userFilter.setConfirmed(true);
             userService.save(userFilter);
@@ -133,7 +134,7 @@ public class UserListener {
         } else if ("no".equalsIgnoreCase(answer)) {
             user.setRedirectTo(null);
             user.setSearchUrl(null);
-            userService.deleteFilter(userFilter.getId());
+            userService.rollbackToOldFilter(user);
             SendMessage message = SendMessage.builder()
                     .chatId(chatId.toString())
                     .text("Sorry, our app is in development now. Try again.")
