@@ -10,7 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @Configuration
 @EnableScheduling
 @Profile("!test")
-public class AppConfig {
+public class SchedulingConfig {
 
     @Bean
     TaskScheduler taskScheduler() {
