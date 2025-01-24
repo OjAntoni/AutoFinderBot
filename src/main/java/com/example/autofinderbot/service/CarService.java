@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +29,9 @@ public class CarService {
     CarRepository carRepository;
     CarDetailRepository carDetailRepository;
     DateTimeUtil dateTimeUtil;
+    @NonFinal
+    @Value("${synchronization.cars.expired-after.days:14}")
+    int intervalDays;
 
     @Transactional
     public List<Car> saveAll(@NotNull Collection<@Valid Car> cars) {
@@ -47,8 +52,8 @@ public class CarService {
 
     @Transactional(readOnly = true)
     public List<Car> findExpired() {
-        LocalDateTime monthAgo = dateTimeUtil.now().minusMonths(1);
-        return carRepository.findAllByCreatedAtBefore(monthAgo);
+        LocalDateTime daysAgo = dateTimeUtil.now().minusDays(intervalDays);
+        return carRepository.findAllByCreatedAtBefore(daysAgo);
     }
 
     @Transactional
