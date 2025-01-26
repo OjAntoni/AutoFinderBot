@@ -29,7 +29,7 @@ public class NewCarsListener {
     public void handleEvent(NewCarsEvent event) {
         List<Car> cars = event.getCars();
         //TODO refactor when user will be able to have several active filters
-        List<UserFilter> userFilters = userService.findAllUserFilters();
+        List<UserFilter> userFilters = userService.findAllActiveUserFilters();
 
         for (UserFilter filter : userFilters) {
             List<SendMessage> messages = cars.stream()

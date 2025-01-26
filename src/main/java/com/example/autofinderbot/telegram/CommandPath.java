@@ -10,6 +10,7 @@ public class CommandPath {
     public static final String SET_FILTER = "/set_" + FILTER;
     public static final String CONFIRM_FILTER = "/confirm_" + FILTER;
     public static final String SHOW_FILTER = "/show_" + FILTER;
+    public static final String STOP_FILTER = "/stop_" + FILTER;
 
     public static final String UPLOAD_URL = "/upload_url";
 }

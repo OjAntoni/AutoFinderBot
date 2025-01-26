@@ -300,6 +300,56 @@ class UserListenerTest extends BaseTelegramListenerTest {
         }));
     }
 
+    @Test
+    void stopFilter_PosTC() throws TelegramApiException {
+        long chatId = 6L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.stopFilter(update);
+
+        Optional<User> user = findByChatId(chatId);
+
+        assertThat(user)
+                .isPresent();
+
+        assertThat(findByUserId(user.get().getId(), NEW))
+                .isPresent()
+                .get()
+                .extracting(UserFilter::isActive)
+                .isEqualTo(false);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("Your filter was stopped. From now you will not receive any notifications. You can start it again at any time.");
+        }));
+    }
+
+    @Test
+    void stopMissingFilter_PosTC() throws TelegramApiException {
+        long chatId = 1L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.stopFilter(update);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("You don't have any filters now.");
+        }));
+    }
+
+    @Test
+    void stopAlreadyStoppedFilter_PosTC() throws TelegramApiException {
+        long chatId = 3L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.stopFilter(update);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("Your filter is already stopped.");
+        }));
+    }
+
     private Optional<User> findByChatId(long chatId){
         return userRepository.findAll().stream()
                 .filter(u -> u.getChatId() == chatId)

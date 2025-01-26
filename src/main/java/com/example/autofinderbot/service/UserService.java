@@ -76,8 +76,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserFilter> findAllUserFilters() {
-        return userFilterRepository.findAllByConfirmedIs(true);
+    public List<UserFilter> findAllActiveUserFilters() {
+        return userFilterRepository.findAllByConfirmedIsAndActive(true, true);
     }
 
     public boolean matches(UserFilter filter, Car car) {
@@ -168,5 +168,12 @@ public class UserService {
         Boolean filterDamaged = filter.getDamaged();
         if(filterDamaged == null) return true;
         return carDamaged != null && carDamaged.equals(filterDamaged ? YES_PL.getValue() : NO_PL.getValue());
+    }
+
+    @Transactional
+    public void stopFilter(User user) {
+        UserFilter filter = userFilterRepository.findActiveFilter(user.getId());
+        if (filter == null) return;
+        filter.setActive(false);
     }
 }

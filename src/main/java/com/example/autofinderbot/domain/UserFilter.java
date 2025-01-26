@@ -80,6 +80,8 @@ public class UserFilter {
 
     private boolean confirmed;
 
+    private boolean active;
+
     @Enumerated(STRING)
     private State state;
 
@@ -91,6 +93,10 @@ public class UserFilter {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+
+        sb.append("\uD83D\uDCA1 *Status*: ");
+        sb.append(active ? "Active ✅" : "Stopped ❌");
+        sb.append("\n");
 
         sb.append("🚗 *Car Brands*: ");
         if (carBrands != null && !carBrands.isEmpty()) {
