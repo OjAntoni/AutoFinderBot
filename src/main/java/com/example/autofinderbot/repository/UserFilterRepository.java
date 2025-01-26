@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.example.autofinderbot.domain.UserFilter.State.NEW;
+
 @Repository
 public interface UserFilterRepository extends JpaRepository<UserFilter, Long> {
     UserFilter findByUser_Id(long userId);
@@ -15,12 +17,14 @@ public interface UserFilterRepository extends JpaRepository<UserFilter, Long> {
     List<UserFilter> findAllByConfirmedIsAndActive(boolean confirmed, boolean active);
     void deleteByUser_IdAndState(long userId, State state);
     UserFilter findByUser_IdAndState(long userId, State state);
-    @Query("""
-        SELECT uf FROM UserFilter uf
-        WHERE uf.state = 'NEW'
-        AND uf.confirmed = true
-        AND uf.active = true
-        AND uf.user.id = :userId
-    """)
-    UserFilter findActiveFilter(long userId);
+
+    default UserFilter findActiveFilter(long userId) {
+        return findByUser_IdAndStateAndConfirmedAndActive(userId, NEW, true, true);
+    }
+
+    default UserFilter findStoppedFilter(long userId) {
+        return findByUser_IdAndStateAndConfirmedAndActive(userId, NEW, true, false);
+    }
+
+    UserFilter findByUser_IdAndStateAndConfirmedAndActive(long userId, State state, boolean confirmed, boolean active);
 }

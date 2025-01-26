@@ -176,4 +176,11 @@ public class UserService {
         if (filter == null) return;
         filter.setActive(false);
     }
+
+    @Transactional
+    public void activateFilter(User user) {
+        UserFilter filter = userFilterRepository.findStoppedFilter(user.getId());
+        if (filter == null) return;
+        filter.setActive(true);
+    }
 }
