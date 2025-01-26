@@ -34,9 +34,10 @@ insert into users(id, chat_id, search_url, redirect_to) values
 (5, 5, 'https://www.otomoto.pl/osobowe/audi--bmw', '/confirm_filter'),
 (6, 6, 'https://www.otomoto.pl/osobowe/audi--bmw', NULL);
 
-insert into user_filter(id, user_id, price_start, price_end, year_from, year_to, mileage_from, mileage_to, confirmed) values
-(1, 5, 10000, NULL, NULL, 2020, 100000, 150000, false),
-(2, 6, 10000, NULL, NULL, NULL, 100000, 150000, true);
+insert into user_filter(id, user_id, price_start, price_end, year_from, year_to, mileage_from, mileage_to, confirmed, active) values
+(1, 5, 10000, NULL, NULL, 2020, 100000, 150000, false, true),
+(2, 6, 10000, NULL, NULL, NULL, 100000, 150000, true, true),
+(3, 3, 50000, NULL, 2016, NULL, 10453, 444000, true, false);
 
 insert into notification(id, title, description, state) values
 (1, 'Title 1', 'Description 1', 'PROCESSED'),
