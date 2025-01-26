@@ -350,6 +350,56 @@ class UserListenerTest extends BaseTelegramListenerTest {
         }));
     }
 
+    @Test
+    void activateFilter_PosTC() throws TelegramApiException {
+        long chatId = 3L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.activateFilter(update);
+
+        Optional<User> user = findByChatId(chatId);
+
+        assertThat(user)
+                .isPresent();
+
+        assertThat(findByUserId(user.get().getId(), NEW))
+                .isPresent()
+                .get()
+                .extracting(UserFilter::isActive)
+                .isEqualTo(true);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("Your filter was activated. From now you will receive notifications about new cars.");
+        }));
+    }
+
+    @Test
+    void activateMissingFilter_PosTC() throws TelegramApiException {
+        long chatId = 1L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.activateFilter(update);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("You don't have any filters now.");
+        }));
+    }
+
+    @Test
+    void activateAlreadyActiveFilter_PosTC() throws TelegramApiException {
+        long chatId = 6L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.activateFilter(update);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("Your filter is already active.");
+        }));
+    }
+
     private Optional<User> findByChatId(long chatId){
         return userRepository.findAll().stream()
                 .filter(u -> u.getChatId() == chatId)

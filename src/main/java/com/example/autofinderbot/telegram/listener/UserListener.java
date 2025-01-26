@@ -197,4 +197,29 @@ public class UserListener {
         SendMessage message = new SendMessage(chatId.toString(), "Your filter was stopped. From now you will not receive any notifications. You can start it again at any time.");
         telegramClient.execute(message);
     }
+
+    @SneakyThrows
+    @CommandListener(ACTIVATE_FILTER)
+    public void activateFilter(Update update) {
+        Long chatId = update.getMessage().getChatId();
+        User user = userService.findByChatId(chatId);
+        UserFilter userFilter = userService.findUserFilter(user.getId());
+
+        if(userFilter == null) {
+            SendMessage message = new SendMessage(chatId.toString(), "You don't have any filters now.");
+            telegramClient.execute(message);
+            return;
+        }
+
+        if(userFilter.isActive()) {
+            SendMessage message = new SendMessage(chatId.toString(), "Your filter is already active.");
+            telegramClient.execute(message);
+            return;
+        }
+
+        userService.activateFilter(user);
+
+        SendMessage message = new SendMessage(chatId.toString(), "Your filter was activated. From now you will receive notifications about new cars.");
+        telegramClient.execute(message);
+    }
 }
