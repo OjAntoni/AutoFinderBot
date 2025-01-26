@@ -101,7 +101,7 @@ public class UserListener {
         SendMessage message = SendMessage.builder()
                 .parseMode("Markdown")
                 .chatId(chatId.toString())
-                .text("You selected the following filters for yourself, are they right? Please type 'yes' or 'no' in the response.\n\n" + userFilter)
+                .text("You selected the following filters for yourself, are they right? Please type 'yes' or 'no' in the response.\n\n" + userFilter.filterParametersOnly())
                 .replyMarkup(replyMarkup)
                 .build();
 

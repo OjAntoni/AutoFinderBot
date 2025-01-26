@@ -98,6 +98,14 @@ public class UserFilter {
         sb.append(active ? "Active ✅" : "Stopped ❌");
         sb.append("\n");
 
+        sb.append(filterParametersOnly());
+
+        return sb.toString();
+    }
+
+    public String filterParametersOnly() {
+        StringBuilder sb = new StringBuilder();
+
         sb.append("🚗 *Car Brands*: ");
         if (carBrands != null && !carBrands.isEmpty()) {
             sb.append(String.join(", ", carBrands.stream().map(CarBrand::getName).toList()));
