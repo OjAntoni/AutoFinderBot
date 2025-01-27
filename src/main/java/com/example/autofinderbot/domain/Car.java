@@ -40,7 +40,7 @@ public class Car {
     @Exclude
     @OneToMany(mappedBy = "carId", cascade = REMOVE, orphanRemoval = true, fetch = EAGER)
     List<CarDetail> details;
-    @OneToOne(cascade = ALL)
+    @OneToOne(cascade = ALL, fetch = EAGER)
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
     Seller seller;
 

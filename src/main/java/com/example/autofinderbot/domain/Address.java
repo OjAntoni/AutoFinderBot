@@ -16,10 +16,10 @@ import static lombok.AccessLevel.PRIVATE;
 public class Address {
     String address;
     String city;
-    long cityId;
+    Long cityId;
     String region;
-    long regionId;
+    Long regionId;
     String shortAddress;
-    double latitude;
-    double longitude;
+    Double latitude;
+    Double longitude;
 }

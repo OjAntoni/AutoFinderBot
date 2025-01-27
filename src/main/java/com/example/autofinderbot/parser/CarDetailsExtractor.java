@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.example.autofinderbot.shared.APIConstants.*;
 import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -143,14 +144,14 @@ class CarDetailsExtractor {
                 .name(sellerNode.get("name").asText())
                 .address(
                     Address.builder()
-                        .address(location.get("address").asText())
-                        .city(location.get("city").asText())
-                        .cityId(location.get("cityId").asLong())
-                        .region(location.get("region").asText())
-                        .regionId(location.get("regionId").asLong())
-                        .shortAddress(location.get("shortAddress").asText())
-                        .latitude(location.at("/map/latitude").asDouble())
-                        .longitude(location.at("/map/longitude").asDouble())
+                        .address(ofNullable(location.get("address")).map(JsonNode::asText).orElse(null))
+                        .city(ofNullable(location.get("city")).map(JsonNode::asText).orElse(null))
+                        .cityId(ofNullable(location.get("cityId")).map(JsonNode::asLong).orElse(null))
+                        .region(ofNullable(location.get("region")).map(JsonNode::asText).orElse(null))
+                        .regionId(ofNullable(location.get("regionId")).map(JsonNode::asLong).orElse(null))
+                        .shortAddress(ofNullable(location.get("shortAddress")).map(JsonNode::asText).orElse(null))
+                        .latitude(ofNullable(location.at("/map/latitude")).map(JsonNode::asDouble).orElse(null))
+                        .longitude(ofNullable(location.at("/map/longitude")).map(JsonNode::asDouble).orElse(null))
                         .build()
                 ).build();
     }

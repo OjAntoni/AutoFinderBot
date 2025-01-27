@@ -2,6 +2,7 @@ package com.example.autofinderbot.telegram.listener;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.domain.Car;
+import com.example.autofinderbot.domain.Seller;
 import com.example.autofinderbot.service.DocumentService;
 import com.example.autofinderbot.shared.NewCarsEvent;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,6 +17,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.IOException;
 import java.util.List;
 
+import static com.example.autofinderbot.domain.Seller.SellerType.PROFESSIONAL;
 import static com.example.autofinderbot.shared.APIConstants.CAR_PAGE_JSON_DATA;
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,6 +65,11 @@ class NewCarsListenerTest extends BaseTelegramListenerTest {
         event.getCars().forEach(car -> {
             car.setDetails(emptyList());
             car.setUrl("some-url");
+            car.setSeller(
+                Seller.builder()
+                    .type(PROFESSIONAL)
+                    .build()
+            );
         });
 
         newCarsListener.handleEvent(event);
