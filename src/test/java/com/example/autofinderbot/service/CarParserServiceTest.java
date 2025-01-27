@@ -35,7 +35,8 @@ class CarParserServiceTest extends BaseSpringBootTest {
                 .anyMatch(carResponse -> carResponse.getCreatedAt() != null &&
                         carResponse.getDetails().stream().noneMatch(cd -> cd.getDetail().equals(Details.CREATED_AT.name)))
                 .allMatch(carResponse -> carResponse.getUrl() != null)
-                .allMatch(carResponse -> !carResponse.getDetails().isEmpty());
+                .allMatch(carResponse -> !carResponse.getDetails().isEmpty())
+                .allMatch(carResponse -> carResponse.getSeller() != null);
     }
 
     @Test
@@ -53,6 +54,7 @@ class CarParserServiceTest extends BaseSpringBootTest {
 
         assertThat(cars)
                 .isNotEmpty()
-                .allMatch(car -> !car.getDetails().isEmpty() && car.getCreatedAt() != null);
+                .allMatch(car -> !car.getDetails().isEmpty() && car.getCreatedAt() != null)
+                .allMatch(car -> car.getSeller() != null);
     }
 }

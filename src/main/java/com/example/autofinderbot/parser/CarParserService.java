@@ -127,10 +127,12 @@ public class CarParserService {
                         String carKey = entry.getKey();
                         String carUrl = entry.getValue();
 
-                        List<CarDetail> carDetails = carDetailsExtractor.extractCarProperties(carUrl);
+                        CarDetailsResponse response = carDetailsExtractor.extract(carUrl);
+                        List<CarDetail> carDetails = response.getCarDetails();
 
                         extractCreationDate(carDetails, carNameToCars.get(carKey));
                         carNameToCars.get(carKey).setDetails(carDetails);
+                        carNameToCars.get(carKey).setSeller(response.getSeller());
                     }, executor))
                     .toList();
 
