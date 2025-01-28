@@ -2,10 +2,10 @@ package com.example.autofinderbot.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.List;
 
+import static com.example.autofinderbot.domain.Seller.SellerType.fromSearchKey;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 
@@ -16,7 +16,7 @@ public class UserFilter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne(fetch = EAGER)
+    @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -79,10 +79,34 @@ public class UserFilter {
 
     private Boolean damaged;
 
+    private String sellerType;
+
     private boolean confirmed;
+
+    private boolean active;
+
+    @Enumerated(STRING)
+    private State state;
+
+    public enum State {
+        NEW,
+        OLD
+    }
 
     @Override
     public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\uD83D\uDCA1 *Status*: ");
+        sb.append(active ? "Active ✅" : "Stopped ❌");
+        sb.append("\n");
+
+        sb.append(filterParametersOnly());
+
+        return sb.toString();
+    }
+
+    public String filterParametersOnly() {
         StringBuilder sb = new StringBuilder();
 
         sb.append("🚗 *Car Brands*: ");
@@ -145,6 +169,10 @@ public class UserFilter {
 
         sb.append(" \uD83D\uDEA7 *Damaged*: ");
         sb.append(damaged != null ? (damaged ? "Yes" : "No") : "N/A");
+        sb.append("\n");
+
+        sb.append(" \uD83D\uDCBC *Seller Type*: ");
+        sb.append(sellerType != null ? fromSearchKey(sellerType) : "N/A");
         sb.append("\n");
 
         return sb.toString();

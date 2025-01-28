@@ -101,7 +101,7 @@ public class UserListener {
         SendMessage message = SendMessage.builder()
                 .parseMode("Markdown")
                 .chatId(chatId.toString())
-                .text("You selected the following filters for yourself, are they right? Please type 'yes' or 'no' in the response.\n\n" + userFilter)
+                .text("You selected the following filters for yourself, are they right? Please type 'yes' or 'no' in the response.\n\n" + userFilter.filterParametersOnly())
                 .replyMarkup(replyMarkup)
                 .build();
 
@@ -120,8 +120,10 @@ public class UserListener {
         ReplyKeyboardRemove removeReplyKeyboard = ReplyKeyboardRemove.builder().removeKeyboard(true).build();
 
         if ("yes".equalsIgnoreCase(answer)) {
+            userService.removeOldFilter(user);
             user.setRedirectTo(null);
             userFilter.setConfirmed(true);
+            userFilter.setActive(true);
             userService.save(userFilter);
 
             SendMessage message = SendMessage.builder()
@@ -133,7 +135,7 @@ public class UserListener {
         } else if ("no".equalsIgnoreCase(answer)) {
             user.setRedirectTo(null);
             user.setSearchUrl(null);
-            userService.deleteFilter(userFilter.getId());
+            userService.rollbackToOldFilter(user);
             SendMessage message = SendMessage.builder()
                     .chatId(chatId.toString())
                     .text("Sorry, our app is in development now. Try again.")
@@ -168,6 +170,56 @@ public class UserListener {
         SendMessage message = new SendMessage(chatId.toString(), textMessage);
         message.setParseMode("Markdown");
 
+        telegramClient.execute(message);
+    }
+
+    @SneakyThrows
+    @CommandListener(STOP_FILTER)
+    public void stopFilter(Update update){
+        Long chatId = update.getMessage().getChatId();
+        User user = userService.findByChatId(chatId);
+        UserFilter userFilter = userService.findUserFilter(user.getId());
+
+        if(userFilter == null) {
+            SendMessage message = new SendMessage(chatId.toString(), "You don't have any filters now.");
+            telegramClient.execute(message);
+            return;
+        }
+
+        if(!userFilter.isActive()) {
+            SendMessage message = new SendMessage(chatId.toString(), "Your filter is already stopped.");
+            telegramClient.execute(message);
+            return;
+        }
+
+        userService.stopFilter(user);
+
+        SendMessage message = new SendMessage(chatId.toString(), "Your filter was stopped. From now you will not receive any notifications. You can start it again at any time.");
+        telegramClient.execute(message);
+    }
+
+    @SneakyThrows
+    @CommandListener(ACTIVATE_FILTER)
+    public void activateFilter(Update update) {
+        Long chatId = update.getMessage().getChatId();
+        User user = userService.findByChatId(chatId);
+        UserFilter userFilter = userService.findUserFilter(user.getId());
+
+        if(userFilter == null) {
+            SendMessage message = new SendMessage(chatId.toString(), "You don't have any filters now.");
+            telegramClient.execute(message);
+            return;
+        }
+
+        if(userFilter.isActive()) {
+            SendMessage message = new SendMessage(chatId.toString(), "Your filter is already active.");
+            telegramClient.execute(message);
+            return;
+        }
+
+        userService.activateFilter(user);
+
+        SendMessage message = new SendMessage(chatId.toString(), "Your filter was activated. From now you will receive notifications about new cars.");
         telegramClient.execute(message);
     }
 }

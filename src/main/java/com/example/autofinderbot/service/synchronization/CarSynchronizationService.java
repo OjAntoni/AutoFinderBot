@@ -91,8 +91,7 @@ public class CarSynchronizationService {
         report.setStartedAt(dateTimeUtil.now());
 
         List<Car> expiredCars = carService.findExpired();
-        List<Long> expiredCarIds = expiredCars.stream().map(Car::getId).toList();
-        carService.deleteAll(expiredCarIds);
+        carService.deleteAll(expiredCars);
 
         report.setAffectedRows(expiredCars.size());
         report.setFinishedAt(dateTimeUtil.now());

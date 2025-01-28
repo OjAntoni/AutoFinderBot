@@ -80,12 +80,13 @@ public class UrlToFiltersConverter {
             result.put("generations", generations);
             userFilter.setGenerations(carFiltersService.getGenerations(generations));
 
-            //extract gearbox
+            // Extract gearbox
             List<String> gearboxes = extractMultipleFromQuery(query, "filter_enum_gearbox");
             List<GearboxType> gearboxTypes = gearboxes.stream().map(GearboxType::fromSearchKey).toList();
             result.put("gearboxes", gearboxTypes);
             userFilter.setGearboxes(gearboxTypes);
 
+            // Extract damaged state
             String damagedValue = extractFromQuery(query, "filter_enum_damaged");
             Boolean damaged = null;
             if (damagedValue != null) {
@@ -93,6 +94,11 @@ public class UrlToFiltersConverter {
             }
             result.put("damaged", damaged);
             userFilter.setDamaged(damaged);
+
+            // Extract seller type
+            String sellerType = extractFromQuery(query, "private_business");
+            result.put("seller_type", sellerType);
+            userFilter.setSellerType(sellerType);
 
         } catch (Exception e) {
             logger.error(e);
@@ -119,10 +125,9 @@ public class UrlToFiltersConverter {
     }
 
     private static String extractYearFrom(String[] pathSegments) {
-        if (pathSegments.length > 0) {
-            String lastSegment = pathSegments[pathSegments.length - 1];
-            if (lastSegment.matches("od-\\d{4}")) {
-                return lastSegment.substring(3);
+        for (String pathSegment : pathSegments) {
+            if (pathSegment.matches("od-\\d{4}")) {
+                return pathSegment.substring(3);
             }
         }
         return null;

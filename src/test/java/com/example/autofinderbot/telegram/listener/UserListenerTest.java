@@ -2,6 +2,7 @@ package com.example.autofinderbot.telegram.listener;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.domain.*;
+import com.example.autofinderbot.domain.UserFilter.State;
 import com.example.autofinderbot.repository.UserFilterRepository;
 import com.example.autofinderbot.repository.UserRepository;
 import com.example.autofinderbot.service.UserService;
@@ -28,6 +29,7 @@ import java.util.Optional;
 
 import static com.example.autofinderbot.domain.GearboxType.AUTOMATIC;
 import static com.example.autofinderbot.domain.GearboxType.MANUAL;
+import static com.example.autofinderbot.domain.UserFilter.State.NEW;
 import static com.example.autofinderbot.telegram.CommandPath.CONFIRM_FILTER;
 import static com.example.autofinderbot.telegram.CommandPath.UPLOAD_URL;
 import static java.util.Collections.emptyList;
@@ -104,11 +106,11 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void uploadUrl_PosTC() throws TelegramApiException {
         long chatId = 4L;
-        String url = "https://www.otomoto.pl/osobowe/audi--bmw/od-2015?search%5Bfilter_enum_damaged%5D=0&search" +
-                "%5Bfilter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=manual&search%5Bfil" +
-                "ter_float_mileage%3Afrom%5D=75000&search%5Bfilter_float_mileage%3Ato%5D=170000&search%5Bfilter_float_pr" +
-                "ice%3Afrom%5D=2000&search%5Bfilter_float_price%3Ato%5D=35000&search%5Bfilter_float_year%3Ato%5D=2020&sea" +
-                "rch%5Badvanced_search_expanded%5D=true";
+        String url = "https://www.otomoto.pl/osobowe/audi--bmw/od-2015?search%5Bfilter_enum_damaged%5D=0&search%5B" +
+                "filter_enum_gearbox%5D%5B0%5D=automatic&search%5Bfilter_enum_gearbox%5D%5B1%5D=manual&search%5Bfilt" +
+                "er_float_mileage%3Afrom%5D=75000&search%5Bfilter_float_mileage%3Ato%5D=170000&search%5Bfilter_float" +
+                "_price%3Afrom%5D=2000&search%5Bfilter_float_price%3Ato%5D=35000&search%5Bfilter_float_year%3Ato%5D=2" +
+                "020&search%5Bprivate_business%5D=private&search%5Badvanced_search_expanded%5D=true";
         Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
         userListener.uploadUrl(url, update);
@@ -121,7 +123,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                 .extracting(User::getSearchUrl, User::getRedirectTo)
                 .containsExactly(url, CONFIRM_FILTER);
 
-        assertThat(findByUserId(user.get().getId()))
+        assertThat(findByUserId(user.get().getId(), NEW))
                 .isPresent()
                 .get()
                 .extracting(
@@ -133,6 +135,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                     UserFilter::getPriceStart,
                     UserFilter::getPriceEnd,
                     UserFilter::getDamaged,
+                    UserFilter::getSellerType,
                     filter -> filter.getCarBrands().stream().map(CarBrand::getName).toList(),
                     filter -> filter.getCarModels().stream().map(CarModel::getName).toList(),
                     filter -> filter.getGenerations().stream().map(Generation::getName).toList(),
@@ -147,6 +150,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                     2000L,
                     35000L,
                     false,
+                    "private",
                     List.of("BMW", "Audi"),
                     emptyList(),
                     emptyList(),
@@ -208,7 +212,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                 .extracting(User::getRedirectTo)
                 .isNull();
 
-        assertThat(findByUserId(user.get().getId()))
+        assertThat(findByUserId(user.get().getId(), NEW))
                 .isPresent()
                 .get()
                 .extracting(UserFilter::isConfirmed)
@@ -235,7 +239,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                 .extracting(User::getRedirectTo, User::getSearchUrl)
                 .containsExactly(null, null);
 
-        assertThat(findByUserId(user.get().getId()))
+        assertThat(findByUserId(user.get().getId(), NEW))
                 .isEmpty();
 
         verify(telegramClient).execute((SendMessage) argThat(message -> {
@@ -259,7 +263,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
                 .extracting(User::getRedirectTo)
                 .isEqualTo("/confirm_filter");
 
-        assertThat(findByUserId(user.get().getId()))
+        assertThat(findByUserId(user.get().getId(), NEW))
                 .isPresent()
                 .get()
                 .extracting(UserFilter::isConfirmed)
@@ -298,13 +302,113 @@ class UserListenerTest extends BaseTelegramListenerTest {
         }));
     }
 
+    @Test
+    void stopFilter_PosTC() throws TelegramApiException {
+        long chatId = 6L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.stopFilter(update);
+
+        Optional<User> user = findByChatId(chatId);
+
+        assertThat(user)
+                .isPresent();
+
+        assertThat(findByUserId(user.get().getId(), NEW))
+                .isPresent()
+                .get()
+                .extracting(UserFilter::isActive)
+                .isEqualTo(false);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("Your filter was stopped. From now you will not receive any notifications. You can start it again at any time.");
+        }));
+    }
+
+    @Test
+    void stopMissingFilter_PosTC() throws TelegramApiException {
+        long chatId = 1L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.stopFilter(update);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("You don't have any filters now.");
+        }));
+    }
+
+    @Test
+    void stopAlreadyStoppedFilter_PosTC() throws TelegramApiException {
+        long chatId = 3L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.stopFilter(update);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("Your filter is already stopped.");
+        }));
+    }
+
+    @Test
+    void activateFilter_PosTC() throws TelegramApiException {
+        long chatId = 3L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.activateFilter(update);
+
+        Optional<User> user = findByChatId(chatId);
+
+        assertThat(user)
+                .isPresent();
+
+        assertThat(findByUserId(user.get().getId(), NEW))
+                .isPresent()
+                .get()
+                .extracting(UserFilter::isActive)
+                .isEqualTo(true);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("Your filter was activated. From now you will receive notifications about new cars.");
+        }));
+    }
+
+    @Test
+    void activateMissingFilter_PosTC() throws TelegramApiException {
+        long chatId = 1L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.activateFilter(update);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("You don't have any filters now.");
+        }));
+    }
+
+    @Test
+    void activateAlreadyActiveFilter_PosTC() throws TelegramApiException {
+        long chatId = 6L;
+        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
+
+        userListener.activateFilter(update);
+
+        verify(telegramClient).execute((SendMessage) argThat(message -> {
+            SendMessage m = (SendMessage) message;
+            return m.getText().equals("Your filter is already active.");
+        }));
+    }
+
     private Optional<User> findByChatId(long chatId){
         return userRepository.findAll().stream()
                 .filter(u -> u.getChatId() == chatId)
                 .findFirst();
     }
 
-    private Optional<UserFilter> findByUserId(long userId) {
-        return Optional.ofNullable(userFilterRepository.findByUser_Id(userId));
+    private Optional<UserFilter> findByUserId(long userId, State state) {
+        return Optional.ofNullable(userFilterRepository.findByUser_IdAndState(userId, state));
     }
 }
