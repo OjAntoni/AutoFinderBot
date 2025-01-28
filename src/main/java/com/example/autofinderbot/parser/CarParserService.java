@@ -127,16 +127,18 @@ public class CarParserService {
                         String carKey = entry.getKey();
                         String carUrl = entry.getValue();
 
-                        List<CarDetail> carDetails = carDetailsExtractor.extractCarProperties(carUrl);
+                        CarDetailsResponse response = carDetailsExtractor.extract(carUrl);
+                        List<CarDetail> carDetails = response.getCarDetails();
 
                         extractCreationDate(carDetails, carNameToCars.get(carKey));
                         carNameToCars.get(carKey).setDetails(carDetails);
+                        carNameToCars.get(carKey).setSeller(response.getSeller());
                     }, executor))
                     .toList();
 
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e);
         }
 
         return carNameToCars.values().stream()

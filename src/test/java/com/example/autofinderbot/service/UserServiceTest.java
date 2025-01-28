@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import static com.example.autofinderbot.domain.GearboxType.AUTOMATIC;
+import static com.example.autofinderbot.domain.Seller.SellerType.PRIVATE;
 import static com.example.autofinderbot.shared.Details.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,6 +62,7 @@ class UserServiceTest extends BaseSpringBootTest {
             new CarDetail(GEARBOX.name, "Automatyczna"),
             new CarDetail(DAMAGED.name, "Tak")
         ));
+        car.setSeller(Seller.builder().type(PRIVATE).build());
 
         UserFilter filter = new UserFilter();
         filter.setCarBrands(List.of(new CarBrand(1L, "Toyota", "Toyota")));
@@ -75,6 +77,7 @@ class UserServiceTest extends BaseSpringBootTest {
         filter.setGenerations(List.of(new Generation(1L, "e15", "e15", 1L)));
         filter.setGearboxes(List.of(AUTOMATIC));
         filter.setDamaged(true);
+        filter.setSellerType("private");
 
         boolean isMatch = userService.matches(filter, car);
 

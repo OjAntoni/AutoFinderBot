@@ -92,7 +92,8 @@ public class UserService {
                 mileageMatch(filter, car) &&
                 fuelTypeMatch(filter, details) &&
                 gearboxTypeMatch(filter, details) &&
-                damagedMatch(filter, details);
+                damagedMatch(filter, details) &&
+                sellerTypeMatch(filter, car);
     }
 
     private boolean brandMatch(UserFilter filter, Car car) {
@@ -168,6 +169,13 @@ public class UserService {
         Boolean filterDamaged = filter.getDamaged();
         if(filterDamaged == null) return true;
         return carDamaged != null && carDamaged.equals(filterDamaged ? YES_PL.getValue() : NO_PL.getValue());
+    }
+
+    private boolean sellerTypeMatch(UserFilter filter, Car car) {
+        String carSellerType = car.getSeller().getType().getSearchKey();
+        String filterSellerType = filter.getSellerType();
+        if(filterSellerType == null) return true;
+        return carSellerType != null && carSellerType.equals(filterSellerType);
     }
 
     @Transactional

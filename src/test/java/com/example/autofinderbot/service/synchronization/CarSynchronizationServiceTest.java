@@ -6,6 +6,7 @@ import com.example.autofinderbot.domain.Report;
 import com.example.autofinderbot.repository.CarDetailRepository;
 import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.repository.ReportRepository;
+import com.example.autofinderbot.repository.SellerRepository;
 import com.example.autofinderbot.service.CarService;
 import com.example.autofinderbot.service.DocumentService;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,9 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
     ReportRepository reportRepository;
 
     @Autowired
+    SellerRepository sellerRepository;
+
+    @Autowired
     CacheManager cacheManager;
 
     @SpyBean
@@ -76,6 +80,11 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
 
         assertThat(carRepository.findAllById(report.get().getTargetIds()).stream().map(Car::getUrl).toList())
                 .allMatch(url -> requireNonNull(cache).get(url) != null);
+
+        assertThat(carRepository.findAllById(report.get().getTargetIds()).stream().map(Car::getSeller).toList())
+                .allMatch(seller -> sellerRepository.existsById(seller.getId()))
+                .allMatch(seller -> seller.getAddress() != null)
+                .allMatch(seller -> seller.getAddress().getLatitude() != 0 && seller.getAddress().getLongitude() != 0);
     }
 
     @Test

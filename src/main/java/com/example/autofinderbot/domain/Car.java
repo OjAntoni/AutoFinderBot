@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.EAGER;
 import static lombok.AccessLevel.PRIVATE;
@@ -17,7 +18,6 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor
 @FieldDefaults(level = PRIVATE)
 @Getter
-//@EqualsAndHashCode
 @ToString
 @Builder
 @Setter
@@ -40,6 +40,9 @@ public class Car {
     @Exclude
     @OneToMany(mappedBy = "carId", cascade = REMOVE, orphanRemoval = true, fetch = EAGER)
     List<CarDetail> details;
+    @OneToOne(cascade = ALL, fetch = EAGER)
+    @JoinColumn(name = "seller_id", referencedColumnName = "id")
+    Seller seller;
 
     public Car(String title, String brand, String fuelType, long mileage, String mileageUnit, double price, String currency) {
         this.title = title;

@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.util.List;
 
+import static com.example.autofinderbot.domain.Seller.SellerType.fromSearchKey;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 
@@ -77,6 +78,8 @@ public class UserFilter {
     private List<GearboxType> gearboxes;
 
     private Boolean damaged;
+
+    private String sellerType;
 
     private boolean confirmed;
 
@@ -166,6 +169,10 @@ public class UserFilter {
 
         sb.append(" \uD83D\uDEA7 *Damaged*: ");
         sb.append(damaged != null ? (damaged ? "Yes" : "No") : "N/A");
+        sb.append("\n");
+
+        sb.append(" \uD83D\uDCBC *Seller Type*: ");
+        sb.append(sellerType != null ? fromSearchKey(sellerType) : "N/A");
         sb.append("\n");
 
         return sb.toString();
