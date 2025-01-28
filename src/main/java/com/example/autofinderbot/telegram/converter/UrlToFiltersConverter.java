@@ -125,10 +125,9 @@ public class UrlToFiltersConverter {
     }
 
     private static String extractYearFrom(String[] pathSegments) {
-        if (pathSegments.length > 0) {
-            String lastSegment = pathSegments[pathSegments.length - 1];
-            if (lastSegment.matches("od-\\d{4}")) {
-                return lastSegment.substring(3);
+        for (String pathSegment : pathSegments) {
+            if (pathSegment.matches("od-\\d{4}")) {
+                return pathSegment.substring(3);
             }
         }
         return null;
