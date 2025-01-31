@@ -8,6 +8,7 @@ import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.shared.RemoveSelectedCarEvent;
 import com.example.autofinderbot.telegram.CommandListener;
 import com.example.autofinderbot.telegram.converter.CallbackDataConverter;
+import com.example.autofinderbot.telegram.converter.CarMenuKeyboardConverter;
 import com.example.autofinderbot.telegram.converter.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -42,6 +43,7 @@ public class CarListener {
     Logger logger;
     CallbackDataConverter callbackConverter;
     DocumentService documentService;
+    CarMenuKeyboardConverter carMenuKeyboardConverter;
 
     @SneakyThrows
     @CommandListener("/car_like")
@@ -64,12 +66,8 @@ public class CarListener {
         EditMessageReplyMarkup editMessage = EditMessageReplyMarkup.builder()
             .messageId(update.getCallbackQuery().getMessage().getMessageId())
             .chatId(update.getCallbackQuery().getMessage().getChatId())
-            .replyMarkup(InlineKeyboardMarkup.builder().keyboardRow(new InlineKeyboardRow(
-                InlineKeyboardButton.builder()
-                    .text("\uD83D\uDC4E")
-                    .callbackData(callbackConverter.convert("/car_dislike", Parameter.of("car", car)))
-                    .build())
-            ).build()).build();
+            .replyMarkup(carMenuKeyboardConverter.menuKeyboard(user, car))
+            .build();
         AnswerCallbackQuery answer = AnswerCallbackQuery.builder()
             .callbackQueryId(update.getCallbackQuery().getId())
             .text("Car was added to favorites ✅")
@@ -81,15 +79,13 @@ public class CarListener {
 
     @EventListener
     public void dislikeOutboundCar(RemoveSelectedCarEvent event) {
+        User user = userService.findByChatId(event.getChatId());
+
         EditMessageReplyMarkup editMessage = EditMessageReplyMarkup.builder()
             .messageId(event.getMessageId())
             .chatId(event.getChatId())
-            .replyMarkup(InlineKeyboardMarkup.builder().keyboardRow(new InlineKeyboardRow(
-                InlineKeyboardButton.builder()
-                    .text("❤")
-                    .callbackData(callbackConverter.convert("/car_like", Parameter.of("car", event.getCarId())))
-                    .build())
-            ).build()).build();
+            .replyMarkup(carMenuKeyboardConverter.menuKeyboard(user, event.getCarId()))
+            .build();
         try {
             telegramClient.execute(editMessage);
         } catch (TelegramApiException e) {
@@ -117,12 +113,8 @@ public class CarListener {
         EditMessageReplyMarkup editMessage = EditMessageReplyMarkup.builder()
             .messageId(update.getCallbackQuery().getMessage().getMessageId())
             .chatId(update.getCallbackQuery().getMessage().getChatId())
-            .replyMarkup(InlineKeyboardMarkup.builder().keyboardRow(new InlineKeyboardRow(
-                InlineKeyboardButton.builder()
-                    .text("❤")
-                    .callbackData(callbackConverter.convert("/car_like", Parameter.of("car", car)))
-                    .build())
-            ).build()).build();
+            .replyMarkup(carMenuKeyboardConverter.menuKeyboard(user, car))
+            .build();
         AnswerCallbackQuery answer = AnswerCallbackQuery.builder()
             .callbackQueryId(update.getCallbackQuery().getId())
             .text("Car was removed from favorites ✅")
