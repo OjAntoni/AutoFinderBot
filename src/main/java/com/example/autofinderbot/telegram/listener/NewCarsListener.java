@@ -5,22 +5,17 @@ import com.example.autofinderbot.domain.UserFilter;
 import com.example.autofinderbot.service.UserService;
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.shared.NewCarsEvent;
-import com.example.autofinderbot.telegram.converter.CallbackDataConverter;
-import com.example.autofinderbot.telegram.converter.Parameter;
+import com.example.autofinderbot.telegram.converter.CarMenuKeyboardConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.List;
 
-import static com.example.autofinderbot.telegram.converter.Parameter.of;
 import static lombok.AccessLevel.PRIVATE;
 
 @Component
@@ -30,7 +25,7 @@ public class NewCarsListener {
     UserService userService;
     TelegramClient telegramClient;
     Logger logger;
-    CallbackDataConverter callbackConverter;
+    CarMenuKeyboardConverter carMenuKeyboardConverter;
 
     @EventListener
     public void handleEvent(NewCarsEvent event) {
@@ -59,15 +54,7 @@ public class NewCarsListener {
             .text(car.getUrl())
             .chatId(filter.getUser().getChatId())
             .replyMarkup(
-                InlineKeyboardMarkup.builder()
-                    .keyboardRow(
-                        new InlineKeyboardRow(
-                            InlineKeyboardButton.builder()
-                                .text("❤")
-                                .callbackData(callbackConverter.convert("/car_like", of("car", car.getId())))
-                                .build()
-                        )
-                    ).build())
+                carMenuKeyboardConverter.menuKeyboard(filter.getUser(), car))
             .build();
     }
 }
