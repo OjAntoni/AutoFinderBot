@@ -39,6 +39,14 @@ insert into user_filter(id, user_id, price_start, price_end, year_from, year_to,
 (2, 6, 10000, NULL, NULL, NULL, 100000, 150000, true, true),
 (3, 3, 50000, NULL, 2016, NULL, 10453, 444000, true, false);
 
+insert into selected_car(id, user_id, url, car_id, created_at, name, message_id) values
+(1, 1, 'https://www.example.com/audi-a4', 1, now() - interval '1 day', 'Audi A4', 1),
+(2, 1, 'https://www.example.com/bmw-3', 2, now() - interval '2 day', 'BMW 3', 2),
+(3, 1, 'https://www.example.com/mercedes-c', 3, now() - interval '3 day', 'Mercedes C', 3),
+(4, 1, 'https://www.otomoto.pl/osobowe/oferta/invalid-url-1', 4, now() - interval '32 day', 'Toyota Corolla expired 1', 4),
+(5, 1, 'https://www.otomoto.pl/osobowe/oferta/invalid-url-2', 5, now() - interval '33 day', 'Toyota Corolla expired 2', 5),
+(6, 6, 'https://www.otomoto.pl/osobowe/oferta/invalid-url-3', 6, now() - interval '34 day', 'Toyota Corolla expired 3', 6);
+
 insert into notification(id, title, description, state) values
 (1, 'Title 1', 'Description 1', 'PROCESSED'),
 (2, 'Title 2', 'Description 2', 'NEW');
@@ -56,3 +64,4 @@ ALTER SEQUENCE car_detail_id_seq RESTART WITH 100;
 ALTER SEQUENCE report_id_seq RESTART WITH 100;
 ALTER SEQUENCE users_id_seq RESTART WITH 100;
 ALTER SEQUENCE user_filter_id_seq RESTART WITH 100;
+ALTER SEQUENCE selected_car_id_seq RESTART WITH 100;

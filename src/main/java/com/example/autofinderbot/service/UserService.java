@@ -1,11 +1,16 @@
 package com.example.autofinderbot.service;
 
 import com.example.autofinderbot.domain.*;
+import com.example.autofinderbot.repository.CarRepository;
+import com.example.autofinderbot.repository.SelectedCarRepository;
 import com.example.autofinderbot.repository.UserFilterRepository;
 import com.example.autofinderbot.repository.UserRepository;
+import com.example.autofinderbot.shared.DateTimeUtil;
 import com.example.autofinderbot.shared.Details;
+import com.example.autofinderbot.shared.RemoveSelectedCarEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +28,14 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class UserService {
+    private static final int SELECTED_CARS_LIMIT = 5;
+
+    ApplicationEventPublisher eventPublisher;
     UserRepository userRepository;
     UserFilterRepository userFilterRepository;
+    SelectedCarRepository selectedCarRepository;
+    CarRepository carRepository;
+    DateTimeUtil dateTimeUtil;
 
     @Transactional
     public User save(User user){
@@ -190,5 +201,45 @@ public class UserService {
         UserFilter filter = userFilterRepository.findStoppedFilter(user.getId());
         if (filter == null) return;
         filter.setActive(true);
+    }
+
+    @Transactional
+    public void likeCar(User user, long carId, int messageId) throws Exception {
+        Car car = carRepository.findById(carId).orElseThrow(() -> new Exception("Car with id %s not found".formatted(carId)));
+
+        List<SelectedCar> selectedCars = selectedCarRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId());
+        if(selectedCars.size() >= SELECTED_CARS_LIMIT) {
+            SelectedCar lastCar = selectedCars.removeLast();
+            eventPublisher.publishEvent(new RemoveSelectedCarEvent(this, lastCar.getMessageId(), user.getChatId(), lastCar.getCarId()));
+            selectedCarRepository.delete(lastCar);
+        }
+
+        SelectedCar selectedCar = SelectedCar.builder()
+            .userId(user.getId())
+            .url(car.getUrl())
+            .carId(carId)
+            .createdAt(dateTimeUtil.now())
+            .carName(car.getTitle())
+            .messageId(messageId)
+            .build();
+
+        selectedCarRepository.save(selectedCar);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void dislikeCar(User user, long carId) throws Exception {
+        List<SelectedCar> selectedCars = selectedCarRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId());
+        SelectedCar selectedCar = selectedCars.stream()
+            .filter(sc -> sc.getCarId() == carId)
+            .findFirst()
+            .orElseThrow(() -> new Exception("Car with id %s not found".formatted(carId)));
+
+        selectedCarRepository.delete(selectedCar);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SelectedCar> findSelectedCars(User user) {
+        return selectedCarRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId());
     }
 }

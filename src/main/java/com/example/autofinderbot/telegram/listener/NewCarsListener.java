@@ -5,16 +5,22 @@ import com.example.autofinderbot.domain.UserFilter;
 import com.example.autofinderbot.service.UserService;
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.shared.NewCarsEvent;
+import com.example.autofinderbot.telegram.converter.CallbackDataConverter;
+import com.example.autofinderbot.telegram.converter.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.List;
 
+import static com.example.autofinderbot.telegram.converter.Parameter.of;
 import static lombok.AccessLevel.PRIVATE;
 
 @Component
@@ -24,6 +30,7 @@ public class NewCarsListener {
     UserService userService;
     TelegramClient telegramClient;
     Logger logger;
+    CallbackDataConverter callbackConverter;
 
     @EventListener
     public void handleEvent(NewCarsEvent event) {
@@ -34,14 +41,7 @@ public class NewCarsListener {
         for (UserFilter filter : userFilters) {
             List<SendMessage> messages = cars.stream()
                     .filter(car -> userService.matches(filter, car))
-                    .map(Car::getUrl)
-                    .map(url -> {
-                        SendMessage message = SendMessage.builder()
-                                .text(url)
-                                .chatId(filter.getUser().getChatId())
-                                .build();
-                        return message;
-                    })
+                    .map(car -> convert(car, filter))
                     .toList();
             logger.info("Filtered out %s cars for user with id %d.", messages.size(), filter.getUser().getId());
             for (SendMessage message : messages) {
@@ -52,5 +52,22 @@ public class NewCarsListener {
                 }
             }
         }
+    }
+
+    private SendMessage convert(Car car, UserFilter filter) {
+        return SendMessage.builder()
+            .text(car.getUrl())
+            .chatId(filter.getUser().getChatId())
+            .replyMarkup(
+                InlineKeyboardMarkup.builder()
+                    .keyboardRow(
+                        new InlineKeyboardRow(
+                            InlineKeyboardButton.builder()
+                                .text("❤")
+                                .callbackData(callbackConverter.convert("/car_like", of("car", car.getId())))
+                                .build()
+                        )
+                    ).build())
+            .build();
     }
 }
