@@ -54,12 +54,6 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
             //TODO handle blocking bot (status = kicked/member)
             logger.debug(update.getMyChatMember().getNewChatMember().getStatus());
         }
-        if(update.hasCallbackQuery()) {
-            logger.debug(update.getCallbackQuery().getData());
-            logger.debug(update.hasMessage()+"");
-            logger.debug(update.getCallbackQuery().getMessage().getMessageId()+"");
-            logger.debug(update.getCallbackQuery().getMessage().getChatId()+"");
-        }
         strategyContext.executeStrategy(update);
     }
 }
