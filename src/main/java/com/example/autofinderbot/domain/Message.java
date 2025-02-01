@@ -19,10 +19,15 @@ public class Message {
     @Setter
     @Getter
     @Enumerated(STRING)
-    State state;
+    State descriptionState;
+    @Setter
+    @Getter
+    @Enumerated(STRING)
+    State detailsState;
     
     public enum State {
         DEFAULT,
-        DESCRIPTION
+        DESCRIPTION,
+        DETAILS
     }
 }

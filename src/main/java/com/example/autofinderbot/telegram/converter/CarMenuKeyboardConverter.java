@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.autofinderbot.domain.Message.State.DESCRIPTION;
+import static com.example.autofinderbot.domain.Message.State.DETAILS;
 import static com.example.autofinderbot.telegram.converter.Parameter.of;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -38,7 +39,7 @@ public class CarMenuKeyboardConverter {
         return menuKeyboard(user, car);
     }
 
-    public InlineKeyboardMarkup menuKeyboard(User user, Car car) {
+    public InlineKeyboardMarkup menuKeyboard(User user,  Car car) {
         if(car == null) {
             return InlineKeyboardMarkup.builder()
                 .keyboardRow(new InlineKeyboardRow())
@@ -56,8 +57,8 @@ public class CarMenuKeyboardConverter {
             buttons.add(mapsButton);
         }
 
-        State messageState = messageService.getMessageState(user.getChatId(), car.getId());
-        if (messageState == DESCRIPTION) {
+        State messageDescriptionState = messageService.getMessageDescriptionState(user.getChatId(), car.getId());
+        if (messageDescriptionState == DESCRIPTION) {
             InlineKeyboardButton hideDescriptionButton = InlineKeyboardButton.builder()
                 .text("\uD83D\uDE48")
                 .callbackData(callbackDataConverter.convert("/hide_description", of("car", car.getId())))
@@ -69,6 +70,21 @@ public class CarMenuKeyboardConverter {
                 .callbackData(callbackDataConverter.convert("/show_description", of("car", car.getId())))
                 .build();
             buttons.add(showDescriptionButton);
+        }
+
+        State messageDetailsState = messageService.getMessageDetailsState(user.getChatId(), car.getId());
+        if (messageDetailsState == DETAILS) {
+            InlineKeyboardButton hideDescriptionButton = InlineKeyboardButton.builder()
+                .text("✏️")
+                .callbackData(callbackDataConverter.convert("/hide_details", of("car", car.getId())))
+                .build();
+            buttons.add(hideDescriptionButton);
+        } else {
+            InlineKeyboardButton hideDescriptionButton = InlineKeyboardButton.builder()
+                .text("\uD83D\uDCCA")
+                .callbackData(callbackDataConverter.convert("/show_details", of("car", car.getId())))
+                .build();
+            buttons.add(hideDescriptionButton);
         }
 
         boolean isLiked = userService.findSelectedCars(user).stream().anyMatch(sc -> sc.getCarId() == car.getId());
