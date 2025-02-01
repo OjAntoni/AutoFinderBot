@@ -16,4 +16,5 @@ import static lombok.AccessLevel.PRIVATE;
 public class CarDetailsResponse {
     List<CarDetail> carDetails;
     Seller seller;
+    String description;
 }

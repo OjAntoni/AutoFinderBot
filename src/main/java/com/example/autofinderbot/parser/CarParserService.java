@@ -132,6 +132,7 @@ public class CarParserService {
 
                         extractCreationDate(carDetails, carNameToCars.get(carKey));
                         carNameToCars.get(carKey).setDetails(carDetails);
+                        carNameToCars.get(carKey).setDescription(response.getDescription());
                         carNameToCars.get(carKey).setSeller(response.getSeller());
                     }, executor))
                     .toList();
