@@ -59,8 +59,9 @@ insert into notification_2_user(notification_id, user_id) values
 (2, 5),
 (2, 6);
 
-insert into message(id, chat_id, car_id, state) values
-(1, 2, 1, 'DESCRIPTION');
+insert into message(id, chat_id, car_id, description_state, details_state) values
+(1, 2, 1, 'DESCRIPTION', 'DEFAULT'),
+(2, 3, 1, 'DEFAULT', 'DETAILS');
 
 ALTER SEQUENCE car_id_seq RESTART WITH 100;
 ALTER SEQUENCE car_detail_id_seq RESTART WITH 100;

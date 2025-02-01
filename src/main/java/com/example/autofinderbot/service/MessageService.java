@@ -9,8 +9,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.example.autofinderbot.domain.Message.State.DEFAULT;
-import static com.example.autofinderbot.domain.Message.State.DESCRIPTION;
+import static com.example.autofinderbot.domain.Message.State.*;
 import static lombok.AccessLevel.PRIVATE;
 
 @Service
@@ -26,16 +25,40 @@ public class MessageService {
             message = Message.builder()
                 .chatId(user.getChatId())
                 .carId(carId)
-                .state(DEFAULT)
+                .descriptionState(DEFAULT)
+                .detailsState(DEFAULT)
                 .build();
         }
-        message.setState(message.getState() == DEFAULT ? DESCRIPTION : DEFAULT);
+        message.setDescriptionState(message.getDescriptionState() == DEFAULT ? DESCRIPTION : DEFAULT);
+        message.setDetailsState(DEFAULT);
+        messageRepository.save(message);
+    }
+
+    @Transactional
+    public void triggerDetails(User user, long carId) {
+        Message message = messageRepository.findByChatIdAndCarId(user.getChatId(), carId);
+        if(message == null) {
+            message = Message.builder()
+                .chatId(user.getChatId())
+                .carId(carId)
+                .detailsState(DEFAULT)
+                .descriptionState(DEFAULT)
+                .build();
+        }
+        message.setDetailsState(message.getDetailsState() == DEFAULT ? DETAILS : DEFAULT);
+        message.setDescriptionState(DEFAULT);
         messageRepository.save(message);
     }
 
     @Transactional(readOnly = true)
-    public State getMessageState(long chatId, long carId) {
+    public State getMessageDescriptionState(long chatId, long carId) {
         Message message = messageRepository.findByChatIdAndCarId(chatId, carId);
-        return message != null ? message.getState() : DEFAULT;
+        return message != null ? message.getDescriptionState() : DEFAULT;
+    }
+
+    @Transactional(readOnly = true)
+    public State getMessageDetailsState(long chatId, long carId) {
+        Message message = messageRepository.findByChatIdAndCarId(chatId, carId);
+        return message != null ? message.getDetailsState() : DEFAULT;
     }
 }

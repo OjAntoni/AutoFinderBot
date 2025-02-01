@@ -11,41 +11,40 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import static com.example.autofinderbot.domain.Message.State.DEFAULT;
-import static com.example.autofinderbot.domain.Message.State.DESCRIPTION;
+import static com.example.autofinderbot.domain.Message.State.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class CarDescriptionListenerTest extends BaseTelegramListenerTest {
+class CarDetailsListenerTest extends BaseTelegramListenerTest {
     @SpyBean
     UserService userService;
     @Autowired
     MessageRepository messageRepository;
     @Autowired
-    CarDescriptionListener carDescriptionListener;
+    CarDetailsListener carDetailsListener;
 
     @Test
-    void showDescription_PosTC() throws TelegramApiException {
+    void showDetails_PosTC() throws TelegramApiException {
         when(update.getCallbackQuery().getMessage().getChatId()).thenReturn(1L);
         when(update.getCallbackQuery().getMessage().getMessageId()).thenReturn(1001);
 
-        carDescriptionListener.showDescription(update, 1L);
+        carDetailsListener.showDetails(update, 1L);
 
         assertThat(messageRepository.findByChatIdAndCarId(1L, 1L))
-            .extracting(Message::getDescriptionState)
-            .isEqualTo(DESCRIPTION);
+            .extracting(Message::getDetailsState)
+            .isEqualTo(DETAILS);
 
         verify(telegramClient).execute(any(EditMessageText.class));
     }
 
     @Test
-    void throwOnMissingCarDuringShowDescription_NegTC() throws TelegramApiException {
+    void throwOnMissingCarDuringShowDetails_NegTC() throws TelegramApiException {
         when(update.getCallbackQuery().getMessage().getChatId()).thenReturn(1L);
         when(update.getCallbackQuery().getMessage().getMessageId()).thenReturn(1001);
         when(update.getCallbackQuery().getId()).thenReturn("1");
 
-        carDescriptionListener.showDescription(update, 12345L);
+        carDetailsListener.showDetails(update, 12345L);
 
         assertThat(messageRepository.findByChatIdAndCarId(1L, 12345L))
             .isNull();
@@ -55,33 +54,32 @@ class CarDescriptionListenerTest extends BaseTelegramListenerTest {
     }
 
     @Test
-    void hideDescription_PosTC() throws TelegramApiException {
-        when(update.getCallbackQuery().getMessage().getChatId()).thenReturn(2L);
+    void hideDetails_PosTC() throws TelegramApiException {
+        when(update.getCallbackQuery().getMessage().getChatId()).thenReturn(3L);
         when(update.getCallbackQuery().getMessage().getMessageId()).thenReturn(1001);
 
-        carDescriptionListener.hideDescription(update, 1L);
+        carDetailsListener.hideDetails(update, 1L);
 
-        assertThat(messageRepository.findByChatIdAndCarId(2L, 1L))
-            .extracting(Message::getDescriptionState)
+        assertThat(messageRepository.findByChatIdAndCarId(3L, 1L))
+            .extracting(Message::getDetailsState)
             .isEqualTo(DEFAULT);
 
         verify(telegramClient).execute(any(EditMessageText.class));
     }
 
     @Test
-    void throwOnMissingCarDuringHideDescription_NegTC() throws TelegramApiException {
+    void throwOnMissingCarDuringHideDetails_NegTC() throws TelegramApiException {
         when(update.getCallbackQuery().getMessage().getChatId()).thenReturn(2L);
         when(update.getCallbackQuery().getMessage().getMessageId()).thenReturn(1001);
         when(update.getCallbackQuery().getId()).thenReturn("1");
 
-        carDescriptionListener.hideDescription(update, 12345L);
+        carDetailsListener.hideDetails(update, 12345L);
 
-        assertThat(messageRepository.findByChatIdAndCarId(2L, 1L))
-            .extracting(Message::getDescriptionState)
-            .isEqualTo(DESCRIPTION);
+        assertThat(messageRepository.findByChatIdAndCarId(3L, 1L))
+            .extracting(Message::getDetailsState)
+            .isEqualTo(DETAILS);
 
         verify(telegramClient).execute(any(AnswerCallbackQuery.class));
         verify(telegramClient, never()).execute(any(EditMessageText.class));
     }
-
 }
