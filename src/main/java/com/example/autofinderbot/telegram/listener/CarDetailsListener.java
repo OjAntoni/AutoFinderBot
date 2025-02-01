@@ -6,6 +6,7 @@ import com.example.autofinderbot.service.CarService;
 import com.example.autofinderbot.service.MessageService;
 import com.example.autofinderbot.service.UserService;
 import com.example.autofinderbot.telegram.CommandListener;
+import com.example.autofinderbot.telegram.CommandPath;
 import com.example.autofinderbot.telegram.converter.CarDetailsConverter;
 import com.example.autofinderbot.telegram.converter.CarMenuKeyboardConverter;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
+import static com.example.autofinderbot.telegram.CommandPath.HIDE_DETAILS;
+import static com.example.autofinderbot.telegram.CommandPath.SHOW_DETAILS;
 import static lombok.AccessLevel.PRIVATE;
 
 @Component
@@ -31,7 +34,7 @@ public class CarDetailsListener {
     CarService carService;
 
     @SneakyThrows
-    @CommandListener("/show_details")
+    @CommandListener(SHOW_DETAILS)
     public void showDetails(Update update, long car) {
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         int messageId = update.getCallbackQuery().getMessage().getMessageId();
@@ -60,7 +63,7 @@ public class CarDetailsListener {
     }
 
     @SneakyThrows
-    @CommandListener("/hide_details")
+    @CommandListener(HIDE_DETAILS)
     public void hideDetails(Update update, long car) {
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         int messageId = update.getCallbackQuery().getMessage().getMessageId();
