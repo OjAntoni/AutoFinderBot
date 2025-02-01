@@ -43,6 +43,7 @@ public class Car {
     @OneToOne(cascade = ALL, fetch = EAGER)
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
     Seller seller;
+    String description;
 
     public Car(String title, String brand, String fuelType, long mileage, String mileageUnit, double price, String currency) {
         this.title = title;
