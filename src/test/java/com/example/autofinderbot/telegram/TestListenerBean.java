@@ -31,4 +31,14 @@ public class TestListenerBean {
     public void update(Update update) {
         System.out.println(update);
     }
+
+    @CommandListener("callback")
+    public void callback(long id, Update update) {
+        System.out.println(update);
+    }
+
+    @CommandListener("callback2")
+    public void callback(long id, Update update, String text) {
+        System.out.println(update);
+    }
 }

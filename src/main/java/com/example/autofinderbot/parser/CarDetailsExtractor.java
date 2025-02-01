@@ -9,10 +9,14 @@ import com.example.autofinderbot.shared.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.parser.Parser;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -41,7 +45,7 @@ class CarDetailsExtractor {
             document = documentService.load(url, (doc -> doc.selectFirst(CAR_PAGE_JSON_DATA) != null));
         } catch (IOException e) {
             logger.error(e.getMessage());
-            return new CarDetailsResponse(emptyList(), null);
+            return new CarDetailsResponse(emptyList(), null, "");
         }
         Element scriptElement = document.selectFirst(CAR_PAGE_JSON_DATA);
         if (scriptElement == null) {
@@ -56,14 +60,15 @@ class CarDetailsExtractor {
             rootNode = objectMapper.readTree(jsonData);
         } catch (JsonProcessingException e) {
             logger.error(e);
-            return new CarDetailsResponse(emptyList(), null);
+            return new CarDetailsResponse(emptyList(), null, "");
         }
 
         JsonNode advertNode = rootNode.at(CAR_PAGE_ADVERT);
 
         List<CarDetail> carDetails = extractCarProperties(advertNode);
         Seller seller = extractSeller(advertNode);
-        return new CarDetailsResponse(carDetails, seller);
+        String description = extractDescription(advertNode);
+        return new CarDetailsResponse(carDetails, seller, description);
     }
 
     private List<CarDetail> extractCarProperties(JsonNode advertNode) {
@@ -154,6 +159,36 @@ class CarDetailsExtractor {
                         .longitude(ofNullable(location.at("/map/longitude")).map(JsonNode::asDouble).orElse(null))
                         .build()
                 ).build();
+    }
+
+
+    private String extractDescription(JsonNode advertNode) {
+        String descriptionHtml = advertNode.get("description").asText();
+        Document doc = Jsoup.parse("<body>" + descriptionHtml + "</body>");
+        return buildStringFromNode(doc.childNode(0)).toString();
+    }
+
+    private static StringBuffer buildStringFromNode(Node node) {
+        StringBuffer buffer = new StringBuffer();
+
+        if (node instanceof TextNode) {
+            TextNode textNode = (TextNode) node;
+            buffer.append(textNode.text().trim());
+        }
+
+        for (Node childNode : node.childNodes()) {
+            buffer.append(buildStringFromNode(childNode));
+        }
+
+        if (node instanceof Element) {
+            Element element = (Element) node;
+            String tagName = element.tagName();
+            if ("p".equals(tagName) || "br".equals(tagName)) {
+                buffer.append("\n");
+            }
+        }
+
+        return buffer;
     }
 }
 
