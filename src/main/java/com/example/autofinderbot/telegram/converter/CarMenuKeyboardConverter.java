@@ -8,6 +8,7 @@ import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.service.CarService;
 import com.example.autofinderbot.service.MessageService;
 import com.example.autofinderbot.service.UserService;
+import com.example.autofinderbot.telegram.CommandPath;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import static com.example.autofinderbot.domain.Message.State.DESCRIPTION;
 import static com.example.autofinderbot.domain.Message.State.DETAILS;
+import static com.example.autofinderbot.telegram.CommandPath.*;
 import static com.example.autofinderbot.telegram.converter.Parameter.of;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -61,13 +63,13 @@ public class CarMenuKeyboardConverter {
         if (messageDescriptionState == DESCRIPTION) {
             InlineKeyboardButton hideDescriptionButton = InlineKeyboardButton.builder()
                 .text("\uD83D\uDE48")
-                .callbackData(callbackDataConverter.convert("/hide_description", of("car", car.getId())))
+                .callbackData(callbackDataConverter.convert(HIDE_DESCRIPTION, of("car", car.getId())))
                 .build();
             buttons.add(hideDescriptionButton);
         } else {
             InlineKeyboardButton showDescriptionButton = InlineKeyboardButton.builder()
                 .text("\uD83E\uDDD0")
-                .callbackData(callbackDataConverter.convert("/show_description", of("car", car.getId())))
+                .callbackData(callbackDataConverter.convert(SHOW_DESCRIPTION, of("car", car.getId())))
                 .build();
             buttons.add(showDescriptionButton);
         }
@@ -76,13 +78,13 @@ public class CarMenuKeyboardConverter {
         if (messageDetailsState == DETAILS) {
             InlineKeyboardButton hideDescriptionButton = InlineKeyboardButton.builder()
                 .text("✏️")
-                .callbackData(callbackDataConverter.convert("/hide_details", of("car", car.getId())))
+                .callbackData(callbackDataConverter.convert(HIDE_DETAILS, of("car", car.getId())))
                 .build();
             buttons.add(hideDescriptionButton);
         } else {
             InlineKeyboardButton hideDescriptionButton = InlineKeyboardButton.builder()
                 .text("\uD83D\uDCCA")
-                .callbackData(callbackDataConverter.convert("/show_details", of("car", car.getId())))
+                .callbackData(callbackDataConverter.convert(SHOW_DETAILS, of("car", car.getId())))
                 .build();
             buttons.add(hideDescriptionButton);
         }
@@ -90,7 +92,7 @@ public class CarMenuKeyboardConverter {
         boolean isLiked = userService.findSelectedCars(user).stream().anyMatch(sc -> sc.getCarId() == car.getId());
         InlineKeyboardButton likeButton = InlineKeyboardButton.builder()
             .text(isLiked ? "\uD83D\uDC4E" : "❤")
-            .callbackData(callbackDataConverter.convert(isLiked ? "/car_dislike" : "/car_like", of("car", car.getId())))
+            .callbackData(callbackDataConverter.convert(isLiked ? DISLIKE_CAR : LIKE_CAR, of("car", car.getId())))
             .build();
         buttons.add(likeButton);
 

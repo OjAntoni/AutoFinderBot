@@ -7,9 +7,7 @@ import com.example.autofinderbot.service.UserService;
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.shared.RemoveSelectedCarEvent;
 import com.example.autofinderbot.telegram.CommandListener;
-import com.example.autofinderbot.telegram.converter.CallbackDataConverter;
 import com.example.autofinderbot.telegram.converter.CarMenuKeyboardConverter;
-import com.example.autofinderbot.telegram.converter.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
@@ -19,9 +17,6 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
@@ -32,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.example.autofinderbot.telegram.CommandPath.*;
 import static lombok.AccessLevel.PRIVATE;
 
 @Component
@@ -41,12 +37,11 @@ public class CarListener {
     UserService userService;
     TelegramClient telegramClient;
     Logger logger;
-    CallbackDataConverter callbackConverter;
     DocumentService documentService;
     CarMenuKeyboardConverter carMenuKeyboardConverter;
 
     @SneakyThrows
-    @CommandListener("/car_like")
+    @CommandListener(LIKE_CAR)
     public void likeCar(Update update, long car) {
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         int messageId = update.getCallbackQuery().getMessage().getMessageId();
@@ -94,7 +89,7 @@ public class CarListener {
     }
 
     @SneakyThrows
-    @CommandListener("/car_dislike")
+    @CommandListener(DISLIKE_CAR)
     public void dislikeCar(Update update, long car) {
         long chatId = update.getCallbackQuery().getMessage().getChatId();
         User user = userService.findByChatId(chatId);
@@ -125,7 +120,7 @@ public class CarListener {
     }
 
     @SneakyThrows
-    @CommandListener("/car_selected")
+    @CommandListener(SELECTED_CARS)
     public void showSelectedCars(Update update) {
         long chatId = update.getMessage().getChatId();
         User user = userService.findByChatId(chatId);
