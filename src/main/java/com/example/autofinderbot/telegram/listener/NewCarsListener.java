@@ -5,6 +5,7 @@ import com.example.autofinderbot.domain.UserFilter;
 import com.example.autofinderbot.service.UserService;
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.shared.NewCarsEvent;
+import com.example.autofinderbot.telegram.converter.CarMenuKeyboardConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.event.EventListener;
@@ -24,6 +25,7 @@ public class NewCarsListener {
     UserService userService;
     TelegramClient telegramClient;
     Logger logger;
+    CarMenuKeyboardConverter carMenuKeyboardConverter;
 
     @EventListener
     public void handleEvent(NewCarsEvent event) {
@@ -34,14 +36,7 @@ public class NewCarsListener {
         for (UserFilter filter : userFilters) {
             List<SendMessage> messages = cars.stream()
                     .filter(car -> userService.matches(filter, car))
-                    .map(Car::getUrl)
-                    .map(url -> {
-                        SendMessage message = SendMessage.builder()
-                                .text(url)
-                                .chatId(filter.getUser().getChatId())
-                                .build();
-                        return message;
-                    })
+                    .map(car -> convert(car, filter))
                     .toList();
             logger.info("Filtered out %s cars for user with id %d.", messages.size(), filter.getUser().getId());
             for (SendMessage message : messages) {
@@ -52,5 +47,14 @@ public class NewCarsListener {
                 }
             }
         }
+    }
+
+    private SendMessage convert(Car car, UserFilter filter) {
+        return SendMessage.builder()
+            .text(car.getUrl())
+            .chatId(filter.getUser().getChatId())
+            .replyMarkup(
+                carMenuKeyboardConverter.menuKeyboard(filter.getUser(), car))
+            .build();
     }
 }

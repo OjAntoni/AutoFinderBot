@@ -5,16 +5,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
 class StrategyContextTest extends BaseTelegramListenerTest {
     @Autowired
     StrategyContext strategyContext;
@@ -109,5 +113,25 @@ class StrategyContextTest extends BaseTelegramListenerTest {
             SendMessage m = (SendMessage) message;
             return m.getText().equals("Invalid command parameters.");
         }));
+    }
+
+    @Test
+    void invokeForCallback_PostTC() {
+        when(update.hasCallbackQuery()).thenReturn(true);
+        when(update.getCallbackQuery().getData()).thenReturn("tg_c=callback;id=1");
+
+        strategyContext.executeStrategy(update);
+
+        Mockito.verify(testListenerBean).callback(eq(1L), any(Update.class));
+    }
+
+    @Test
+    void invokeForCallbackWithSeveralParameters_PostTC() {
+        when(update.hasCallbackQuery()).thenReturn(true);
+        when(update.getCallbackQuery().getData()).thenReturn("tg_c=callback2;text=example;id=1");
+
+        strategyContext.executeStrategy(update);
+
+        Mockito.verify(testListenerBean).callback(eq(1L), any(Update.class), eq("example"));
     }
 }
