@@ -39,18 +39,10 @@ public class UserListener {
     @CommandListener(START)
     public void registerUser(Update update) {
         Long chatId = update.getMessage().getChatId();
-
-        if (userService.existsByChatId(chatId)) {
-            return;
-        }
-
-        User user = new User();
-        user.setChatId(chatId);
-
-        userService.save(user);
+        User user = userService.findByChatId(chatId);
 
         SendMessage message = new SendMessage(chatId.toString(),
-                "Hi, %s! I am you car assistant that will help you to find your dream car ".formatted(update.getMessage().getFrom().getUserName()) +
+                "Hi, %s! I am you car assistant that will help you to find your dream car ".formatted(user.getFirstname()) +
                 "in the fastest way possible. Just set up filter for yourself. That's all :)");
         telegramClient.execute(message);
     }

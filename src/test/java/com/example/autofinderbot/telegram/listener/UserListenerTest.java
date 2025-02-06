@@ -59,26 +59,21 @@ class UserListenerTest extends BaseTelegramListenerTest {
 
         userListener.registerUser(update);
 
-        Mockito.verify(userService, never()).save(ArgumentMatchers.any(User.class));
-        Mockito.verify(telegramClient, never()).execute(any(SendMessage.class));
+        Mockito.verify(telegramClient).execute(any(SendMessage.class));
     }
 
     @Test
     void startBotWithUnregisteredUser_PosTC() throws TelegramApiException {
-        Mockito.when(update.getMessage().getChatId()).thenReturn(12345L);
-        Mockito.when(update.getMessage().getFrom().getUserName()).thenReturn("Username");
+        Mockito.when(update.getMessage().getChatId()).thenReturn(1L);
 
         userListener.registerUser(update);
 
-        Mockito.verify(userService).save(ArgumentMatchers.any(User.class));
+        Mockito.verify(userService, never()).save(ArgumentMatchers.any(User.class));
         Mockito.verify(telegramClient).execute((SendMessage) argThat(message -> {
             SendMessage m = (SendMessage) message;
-            return m.getText().equals("Hi, Username! I am you car assistant that will help you to find your dream car " +
+            return m.getText().equals("Hi, John! I am you car assistant that will help you to find your dream car " +
                     "in the fastest way possible. Just set up filter for yourself. That's all :)");
         }));
-
-        assertThat(findByChatId(12345L))
-                .isPresent();
     }
 
     @Test

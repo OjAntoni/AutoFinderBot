@@ -37,7 +37,7 @@ Follow these steps to set up the project locally:
    
 4. Create `.env` file containig telegram token:
    ```bash
-   echo "TELEGRAM_BOT_TOKEN={Your token here}" > .env
+   echo "TELEGRAM_BOT_TOKEN={Your token here}" > .env.dev
 
 5. Run docker compose to start application in development mode:
    ```bash
@@ -58,5 +58,5 @@ volumes:
   postgres-data:
 ```
 If you want to run database container separately and for example run application via IDE use:
-`docker run --name postgres-otomoto -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e PGDATA=/var/lib/postgresql/data/pgdata -v otomoto-data:/var/lib/postgresql/data -p 5432:5432 -d postgres`
+`docker run --name postgres-otomoto -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e PGDATA=/var/lib/postgresql/data/pgdata -v otomoto-data:/var/lib/postgresql/data -p 5435:5432 -d postgres`
 In such case of a standalone application start up remember to set up environment variable `TELEGRAM_BOT_TOKEN` with your token.

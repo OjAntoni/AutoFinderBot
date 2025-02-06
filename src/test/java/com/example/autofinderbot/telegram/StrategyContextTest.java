@@ -1,6 +1,8 @@
 package com.example.autofinderbot.telegram;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
+import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -14,6 +16,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -26,6 +29,9 @@ class StrategyContextTest extends BaseTelegramListenerTest {
     @MockBean
     TestListenerBean testListenerBean;
 
+    @Autowired
+    UserRepository userRepository;
+
     @BeforeEach
     void setUp() {
         when(update.hasMessage()).thenReturn(true);
@@ -34,11 +40,28 @@ class StrategyContextTest extends BaseTelegramListenerTest {
 
     @Test
     void invokeCommand_PosTC() {
-        when(update.getMessage().getText()).thenReturn("test  arg");
+        when(update.getMessage().getChatId()).thenReturn(35L);
+        when(update.getMessage().getText()).thenReturn("test arg");
+        when(update.getMessage().getFrom().getUserName()).thenReturn("username");
+        when(update.getMessage().getFrom().getFirstName()).thenReturn("firstname");
+        when(update.getMessage().getFrom().getLastName()).thenReturn("lastname");
+        when(update.getMessage().getFrom().getLanguageCode()).thenReturn("en");
 
         strategyContext.executeStrategy(update);
 
         Mockito.verify(testListenerBean).test(ArgumentMatchers.any());
+
+        assertThat(userRepository.getByChatId(35L))
+            .extracting(
+                User::getFirstname,
+                User::getLastname,
+                User::getUsername,
+                User::getLanguageCode
+            ).containsExactly(
+                "firstname",
+                "lastname",
+                "username",
+                "en");
     }
 
     @Test

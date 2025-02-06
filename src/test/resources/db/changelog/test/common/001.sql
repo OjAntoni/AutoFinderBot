@@ -26,13 +26,13 @@ insert into car_detail (id, car_id, detail, value) values
 (14, 6, 'color', 'green'),
 (15, 6, 'year', '2018');
 
-insert into users(id, chat_id, search_url, redirect_to) values
-(1, 1, 'https://www.example.com/search-1', NULL),
-(2, 2, 'https://www.example.com/search-2', NULL),
-(3, 3, 'https://www.example.com/search-3', NULL),
-(4, 4, NULL, '/upload_url'),
-(5, 5, 'https://www.otomoto.pl/osobowe/audi--bmw', '/confirm_filter'),
-(6, 6, 'https://www.otomoto.pl/osobowe/audi--bmw', NULL);
+insert into users(id, chat_id, search_url, redirect_to, firstname) values
+(1, 1, 'https://www.example.com/search-1', NULL, 'John'),
+(2, 2, 'https://www.example.com/search-2', NULL, 'Alice'),
+(3, 3, 'https://www.example.com/search-3', NULL, 'Bob'),
+(4, 4, NULL, '/upload_url', 'Charlie'),
+(5, 5, 'https://www.otomoto.pl/osobowe/audi--bmw', '/confirm_filter', 'David'),
+(6, 6, 'https://www.otomoto.pl/osobowe/audi--bmw', NULL, 'Eve');
 
 insert into user_filter(id, user_id, price_start, price_end, year_from, year_to, mileage_from, mileage_to, confirmed, active) values
 (1, 5, 10000, NULL, NULL, 2020, 100000, 150000, false, true),
