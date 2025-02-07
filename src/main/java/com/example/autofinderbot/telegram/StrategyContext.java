@@ -2,6 +2,7 @@ package com.example.autofinderbot.telegram;
 
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.service.UserService;
+import com.example.autofinderbot.shared.DateTimeUtil;
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.telegram.converter.CallbackDataConverter;
 import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
@@ -12,7 +13,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.lang.invoke.MethodHandle;
@@ -25,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.autofinderbot.telegram.CommandPath.START;
 
 @Component
 @RequiredArgsConstructor
@@ -38,6 +40,7 @@ public class StrategyContext {
     private final UserService userService;
     private final TelegramClient telegramClient;
     private final CallbackDataConverter callbackDataConverter;
+    private final DateTimeUtil dateTimeUtil;
 
     @SneakyThrows
     public void executeStrategy(Update update) {
@@ -77,10 +80,7 @@ public class StrategyContext {
             return;
         }
 
-        //automatic user registration
-        if (user == null && !START.equals(strategyName)) {
-            user = registerUser(chatId);
-        }
+        user = getUser(user, update, chatId);
 
         MethodHandle handle = strategies.get(strategyName);
         Method method = methodMap.get(strategyName);
@@ -126,7 +126,6 @@ public class StrategyContext {
                     .build();
             telegramClient.execute(deleteMessage);
         }
-
     }
 
     private synchronized void initializeStrategies() {
@@ -182,7 +181,6 @@ public class StrategyContext {
             throw new InvalidCommandParameters();
         }
 
-        int argsN = 0;
         Object[] parsedArgs = new Object[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
             if(parameterTypes[i] == Update.class) {
@@ -190,7 +188,6 @@ public class StrategyContext {
                 continue;
             }
             parsedArgs[i] = convertArgument(parameterTypes[i], params.get(parameterNames.get(i)).toString());
-            argsN++;
         }
         return parsedArgs;
     }
@@ -214,9 +211,31 @@ public class StrategyContext {
         }
     }
 
-    private User registerUser(long chatId){
-        User user = new User();
-        user.setChatId(chatId);
+    private User getUser(User user, Update update, long chatId) {
+        if (user == null) {
+            user = new User();
+            user.setChatId(chatId);
+        }
+        if (update.hasCallbackQuery()) {
+            populateUserData(update.getCallbackQuery(), user);
+        } else if (update.hasMessage()) {
+            populateUserData(update.getMessage(), user);
+        }
+        user.setLastActive(dateTimeUtil.now());
         return userService.save(user);
+    }
+
+    private void populateUserData(CallbackQuery callbackQuery, User user) {
+        user.setFirstname(callbackQuery.getFrom().getFirstName());
+        user.setLastname(callbackQuery.getFrom().getLastName());
+        user.setUsername(callbackQuery.getFrom().getUserName());
+        user.setLanguageCode(callbackQuery.getFrom().getLanguageCode());
+    }
+
+    private void populateUserData(Message message, User user) {
+        user.setFirstname(message.getFrom().getFirstName());
+        user.setLastname(message.getFrom().getLastName());
+        user.setUsername(message.getFrom().getUserName());
+        user.setLanguageCode(message.getFrom().getLanguageCode());
     }
 }

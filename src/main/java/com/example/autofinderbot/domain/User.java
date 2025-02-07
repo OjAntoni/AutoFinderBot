@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Setter
@@ -23,4 +25,9 @@ public class User {
     @Column
     String searchUrl;
     String redirectTo;
+    String firstname;
+    String lastname;
+    String username;
+    String languageCode;
+    LocalDateTime lastActive;
 }
