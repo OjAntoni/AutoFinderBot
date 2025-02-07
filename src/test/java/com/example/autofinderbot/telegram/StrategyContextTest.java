@@ -3,6 +3,7 @@ package com.example.autofinderbot.telegram;
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.repository.UserRepository;
+import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -18,6 +19,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -69,9 +71,7 @@ class StrategyContextTest extends BaseTelegramListenerTest {
         when(update.getMessage().getText()).thenReturn("exception");
         doCallRealMethod().when(testListenerBean).exception();
 
-        assertThatThrownBy(() -> strategyContext.executeStrategy(update))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Test exception");
+        assertDoesNotThrow(() -> strategyContext.executeStrategy(update));
     }
 
     @Test
@@ -124,18 +124,14 @@ class StrategyContextTest extends BaseTelegramListenerTest {
     }
 
     @Test
-    void invokeWithLessArguments_NegTC() throws TelegramApiException {
+    void invokeWithLessArguments_NegTC(){
         when(update.getMessage().getText()).thenReturn("test2");
 
         doCallRealMethod().when(testListenerBean).test2(anyInt());
 
-        strategyContext.executeStrategy(update);
-
         verify(testListenerBean, never()).test2(anyInt());
-        verify(telegramClient).execute((SendMessage) argThat(message -> {
-            SendMessage m = (SendMessage) message;
-            return m.getText().equals("Invalid command parameters.");
-        }));
+        assertThatThrownBy(() -> strategyContext.executeStrategy(update))
+            .isInstanceOf(InvalidCommandParameters.class);
     }
 
     @Test
