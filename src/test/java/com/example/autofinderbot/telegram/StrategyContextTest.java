@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -28,7 +29,7 @@ class StrategyContextTest extends BaseTelegramListenerTest {
     @Autowired
     StrategyContext strategyContext;
 
-    @MockBean
+    @SpyBean
     TestListenerBean testListenerBean;
 
     @Autowired
@@ -69,7 +70,6 @@ class StrategyContextTest extends BaseTelegramListenerTest {
     @Test
     void catchInnerException_PosTC() {
         when(update.getMessage().getText()).thenReturn("exception");
-        doCallRealMethod().when(testListenerBean).exception();
 
         assertDoesNotThrow(() -> strategyContext.executeStrategy(update));
     }
@@ -77,7 +77,6 @@ class StrategyContextTest extends BaseTelegramListenerTest {
     @Test
     void catchTelegramException_PosTC() throws TelegramApiException {
         when(update.getMessage().getText()).thenReturn("telegramException");
-        doCallRealMethod().when(testListenerBean).telegramException();
 
         strategyContext.executeStrategy(update);
 
@@ -104,7 +103,6 @@ class StrategyContextTest extends BaseTelegramListenerTest {
     @Test
     void invokeWithUpdateInstance_PosTC() {
         when(update.getMessage().getText()).thenReturn("update");
-        doCallRealMethod().when(testListenerBean).update(any());
 
         strategyContext.executeStrategy(update);
 
@@ -115,8 +113,6 @@ class StrategyContextTest extends BaseTelegramListenerTest {
     void invokeWithMoreArguments_PosTC() throws TelegramApiException {
         when(update.getMessage().getText()).thenReturn("test2 43 56 text");
 
-        doCallRealMethod().when(testListenerBean).test2(anyInt());
-
         strategyContext.executeStrategy(update);
 
         verify(testListenerBean).test2(43);
@@ -126,8 +122,6 @@ class StrategyContextTest extends BaseTelegramListenerTest {
     @Test
     void invokeWithLessArguments_NegTC(){
         when(update.getMessage().getText()).thenReturn("test2");
-
-        doCallRealMethod().when(testListenerBean).test2(anyInt());
 
         verify(testListenerBean, never()).test2(anyInt());
         assertThatThrownBy(() -> strategyContext.executeStrategy(update))
@@ -152,5 +146,35 @@ class StrategyContextTest extends BaseTelegramListenerTest {
         strategyContext.executeStrategy(update);
 
         Mockito.verify(testListenerBean).callback(eq(1L), any(Update.class), eq("example"));
+    }
+
+    @Test
+    void invokeForUser_PosTC() {
+        when(update.getMessage().getChatId()).thenReturn(1L);
+        when(update.getMessage().getText()).thenReturn("user");
+        when(update.getMessage().getFrom().getUserName()).thenReturn("username");
+        when(update.getMessage().getFrom().getFirstName()).thenReturn("firstname");
+        when(update.getMessage().getFrom().getLastName()).thenReturn("lastname");
+        when(update.getMessage().getFrom().getLanguageCode()).thenReturn("pl");
+
+        strategyContext.executeStrategy(update);
+
+        verify(testListenerBean).user(argThat(user -> {
+            assertThat(user)
+                .extracting(
+                    User::getChatId,
+                    User::getUsername,
+                    User::getFirstname,
+                    User::getLastname,
+                    User::getLanguageCode
+                ).containsExactly(
+                    1L,
+                    "username",
+                    "firstname",
+                    "lastname",
+                    "pl"
+                );
+            return true;
+        }));
     }
 }
