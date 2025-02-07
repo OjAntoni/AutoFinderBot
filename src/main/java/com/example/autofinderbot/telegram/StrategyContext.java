@@ -59,8 +59,8 @@ public class StrategyContext {
             return;
         }
 
-        Object[] parsedArgs = params != null ? strategyArgumentParser.parseArguments(method, params, update)
-            : strategyArgumentParser.parseArguments(method, args, update);
+        Object[] parsedArgs = params != null ? strategyArgumentParser.parseArguments(method, params, update, user)
+            : strategyArgumentParser.parseArguments(method, args, update, user);
 
         strategyExecutor.execute(strategyName, parsedArgs, update, chatId);
     }

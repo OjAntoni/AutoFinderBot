@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.example.autofinderbot.telegram.CommandPath.*;
+import static java.lang.String.valueOf;
 import static lombok.AccessLevel.PRIVATE;
 
 @RequiredArgsConstructor
@@ -37,11 +38,8 @@ public class UserListener {
 
     @SneakyThrows
     @CommandListener(START)
-    public void registerUser(Update update) {
-        Long chatId = update.getMessage().getChatId();
-        User user = userService.findByChatId(chatId);
-
-        SendMessage message = new SendMessage(chatId.toString(),
+    public void registerUser(User user) {
+        SendMessage message = new SendMessage(valueOf(user.getChatId()),
                 "Hi, %s! I am you car assistant that will help you to find your dream car ".formatted(user.getFirstname()) +
                 "in the fastest way possible. Just set up filter for yourself. That's all :)");
         telegramClient.execute(message);
@@ -49,10 +47,7 @@ public class UserListener {
 
     @SneakyThrows
     @CommandListener(SET_FILTER)
-    public void setFilter(Update update){
-        Long chatId = update.getMessage().getChatId();
-        User user = userService.findByChatId(chatId);
-
+    public void setFilter(User user){
         user.setRedirectTo(UPLOAD_URL);
         userService.save(user);
 
@@ -61,7 +56,7 @@ public class UserListener {
                 .url("https://www.otomoto.pl/osobowe?search%5Badvanced_search_expanded%5D=true")
                 .build();
 
-        SendMessage message = new SendMessage(chatId.toString(), "Click the button below to open otomoto page, then copy and send your search url here.");
+        SendMessage message = new SendMessage(valueOf(user.getChatId()), "Click the button below to open otomoto page, then copy and send your search url here.");
         message.setReplyMarkup(InlineKeyboardMarkup.builder()
                 .keyboard(List.of(new InlineKeyboardRow(Collections.singletonList(webAppButton))))
                 .build());
@@ -70,10 +65,7 @@ public class UserListener {
 
     @SneakyThrows
     @CommandListener(UPLOAD_URL)
-    public void uploadUrl(String url, Update update) {
-        Long chatId = update.getMessage().getChatId();
-        User user = userService.findByChatId(chatId);
-
+    public void uploadUrl(String url, User user) {
         userRedirectedValidator.validate(UPLOAD_URL, user);
         userUrlValidator.validate(url);
 
@@ -92,7 +84,7 @@ public class UserListener {
                 .build();
         SendMessage message = SendMessage.builder()
                 .parseMode("Markdown")
-                .chatId(chatId.toString())
+                .chatId(valueOf(user.getChatId()))
                 .text("You selected the following filters for yourself, are they right? Please type 'yes' or 'no' in the response.\n\n" + userFilter.filterParametersOnly())
                 .replyMarkup(replyMarkup)
                 .build();
@@ -102,9 +94,7 @@ public class UserListener {
 
     @SneakyThrows
     @CommandListener(CONFIRM_FILTER)
-    public void confirmFilter(String answer, Update update) {
-        Long chatId = update.getMessage().getChatId();
-        User user = userService.findByChatId(chatId);
+    public void confirmFilter(String answer, User user) {
         UserFilter userFilter = userService.findUserFilter(user.getId());
 
         userRedirectedValidator.validate(CONFIRM_FILTER, user);
@@ -119,7 +109,7 @@ public class UserListener {
             userService.save(userFilter);
 
             SendMessage message = SendMessage.builder()
-                    .chatId(chatId.toString())
+                    .chatId(valueOf(user.getChatId()))
                     .text("You filters was successfully saved.")
                     .replyMarkup(removeReplyKeyboard)
                     .build();
@@ -129,14 +119,14 @@ public class UserListener {
             user.setSearchUrl(null);
             userService.rollbackToOldFilter(user);
             SendMessage message = SendMessage.builder()
-                    .chatId(chatId.toString())
+                    .chatId(valueOf(user.getChatId()))
                     .text("Sorry, our app is in development now. Try again.")
                     .replyMarkup(removeReplyKeyboard)
                     .build();
             telegramClient.execute(message);
         } else {
             SendMessage message = SendMessage.builder()
-                    .chatId(chatId.toString())
+                    .chatId(valueOf(user.getChatId()))
                     .text("Please type 'yes' or 'no'.")
                     .build();
             telegramClient.execute(message);
@@ -147,9 +137,7 @@ public class UserListener {
 
     @SneakyThrows
     @CommandListener(SHOW_FILTER)
-    public void showFilter(Update update){
-        Long chatId = update.getMessage().getChatId();
-        User user = userService.findByChatId(chatId);
+    public void showFilter(User user){
         UserFilter userFilter = userService.findUserFilter(user.getId());
         String textMessage;
 
@@ -159,7 +147,7 @@ public class UserListener {
             textMessage = "Your current filters are:\n\n" + userFilter;
         }
 
-        SendMessage message = new SendMessage(chatId.toString(), textMessage);
+        SendMessage message = new SendMessage(valueOf(user.getChatId()), textMessage);
         message.setParseMode("Markdown");
 
         telegramClient.execute(message);
@@ -167,51 +155,47 @@ public class UserListener {
 
     @SneakyThrows
     @CommandListener(STOP_FILTER)
-    public void stopFilter(Update update){
-        Long chatId = update.getMessage().getChatId();
-        User user = userService.findByChatId(chatId);
+    public void stopFilter(User user){
         UserFilter userFilter = userService.findUserFilter(user.getId());
 
         if(userFilter == null) {
-            SendMessage message = new SendMessage(chatId.toString(), "You don't have any filters now.");
+            SendMessage message = new SendMessage(valueOf(user.getChatId()), "You don't have any filters now.");
             telegramClient.execute(message);
             return;
         }
 
         if(!userFilter.isActive()) {
-            SendMessage message = new SendMessage(chatId.toString(), "Your filter is already stopped.");
+            SendMessage message = new SendMessage(valueOf(user.getChatId()), "Your filter is already stopped.");
             telegramClient.execute(message);
             return;
         }
 
         userService.stopFilter(user);
 
-        SendMessage message = new SendMessage(chatId.toString(), "Your filter was stopped. From now you will not receive any notifications. You can start it again at any time.");
+        SendMessage message = new SendMessage(valueOf(user.getChatId()), "Your filter was stopped. From now you will not receive any notifications. You can start it again at any time.");
         telegramClient.execute(message);
     }
 
     @SneakyThrows
     @CommandListener(ACTIVATE_FILTER)
-    public void activateFilter(Update update) {
-        Long chatId = update.getMessage().getChatId();
-        User user = userService.findByChatId(chatId);
+    public void activateFilter(User user) {
         UserFilter userFilter = userService.findUserFilter(user.getId());
 
         if(userFilter == null) {
-            SendMessage message = new SendMessage(chatId.toString(), "You don't have any filters now.");
+            SendMessage message = new SendMessage(valueOf(user.getChatId()), "You don't have any filters now.");
             telegramClient.execute(message);
             return;
         }
 
         if(userFilter.isActive()) {
-            SendMessage message = new SendMessage(chatId.toString(), "Your filter is already active.");
+            SendMessage message = new SendMessage(valueOf(user.getChatId()), "Your filter is already active.");
             telegramClient.execute(message);
             return;
         }
 
         userService.activateFilter(user);
 
-        SendMessage message = new SendMessage(chatId.toString(), "Your filter was activated. From now you will receive notifications about new cars.");
+        SendMessage message = new SendMessage(valueOf(user.getChatId()), "Your filter was activated. From now you will receive notifications about new cars.");
         telegramClient.execute(message);
     }
 }

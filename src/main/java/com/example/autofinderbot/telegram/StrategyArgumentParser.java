@@ -1,5 +1,6 @@
 package com.example.autofinderbot.telegram;
 
+import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
 import com.example.autofinderbot.shared.Logger;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,11 @@ public class StrategyArgumentParser {
 
     private final Logger logger;
 
-    public Object[] parseArguments(Method method, String[] args, Update update) {
+    public Object[] parseArguments(Method method, String[] args, Update update, User user) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         List<Class<?>> nonTelegramParameters = Arrays.stream(parameterTypes)
             .filter(clas -> clas != Update.class)
+            .filter(clas -> clas != User.class)
             .toList();
 
         if (nonTelegramParameters.size() > args.length) {
@@ -35,13 +37,17 @@ public class StrategyArgumentParser {
                 parsedArgs[i] = update;
                 continue;
             }
+            if (parameterTypes[i] == User.class) {
+                parsedArgs[i] = user;
+                continue;
+            }
             parsedArgs[i] = convertArgument(parameterTypes[i], args[argsN]);
             argsN++;
         }
         return parsedArgs;
     }
 
-    public Object[] parseArguments(Method method, Map<String, Object> params, Update update) {
+    public Object[] parseArguments(Method method, Map<String, Object> params, Update update, User user) {
         Class<?>[] parameterTypes = method.getParameterTypes();
         List<String> parameterNames = Arrays.stream(method.getParameters())
             .map(Parameter::getName)
@@ -49,6 +55,7 @@ public class StrategyArgumentParser {
 
         List<Class<?>> nonTelegramParameters = Arrays.stream(parameterTypes)
             .filter(clas -> clas != Update.class)
+            .filter(clas -> clas != User.class)
             .toList();
 
         if (nonTelegramParameters.size() > params.size()) {
@@ -59,6 +66,10 @@ public class StrategyArgumentParser {
         for (int i = 0; i < parameterTypes.length; i++) {
             if (parameterTypes[i] == Update.class) {
                 parsedArgs[i] = update;
+                continue;
+            }
+            if (parameterTypes[i] == User.class) {
+                parsedArgs[i] = user;
                 continue;
             }
             parsedArgs[i] = convertArgument(parameterTypes[i], params.get(parameterNames.get(i)).toString());

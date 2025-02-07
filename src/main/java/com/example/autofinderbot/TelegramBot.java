@@ -2,8 +2,7 @@ package com.example.autofinderbot;
 
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.telegram.StrategyContext;
-import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -11,25 +10,21 @@ import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsume
 import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
 
-import java.util.List;
+import static lombok.AccessLevel.PRIVATE;
 
 @Profile("!test")
 @Component
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
-    private final TelegramClient telegramClient;
-    private final String botToken;
-    private long chatId;
-    private final Logger logger;
-    //todo test purpose
-    @Autowired
+    String botToken;
+    Logger logger;
     StrategyContext strategyContext;
 
-    public TelegramBot(@Value("${telegram.bot.token}") String token, Logger logger, TelegramClient telegramClient) {
+    public TelegramBot(@Value("${telegram.bot.token}") String token, Logger logger, StrategyContext strategyContext) {
         botToken = token;
-        this.telegramClient = telegramClient;
         this.logger = logger;
+        this.strategyContext = strategyContext;
     }
 
     @Override
@@ -42,7 +37,6 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         return this;
     }
 
-    @SneakyThrows
     @Override
     public void consume(Update update) {
         if(update.getMyChatMember() != null ) {
