@@ -30,6 +30,8 @@ public class StrategyContext {
         String[] args = null;
         Map<String, Object> params = null;
 
+        User user = strategyUserProvider.getOrCreateUser(update);
+
         if (update.hasCallbackQuery() && update.getCallbackQuery().getData() != null) {
             chatId = update.getCallbackQuery().getMessage().getChatId();
             params = callbackDataConverter.convert(update.getCallbackQuery().getData());
@@ -38,15 +40,19 @@ public class StrategyContext {
             chatId = update.getMessage().getChatId();
             String input = update.getMessage().getText();
             String[] parts = input.split("\\s+");
-            strategyName = parts[0];
-            args = parts.length > 1 ? new String[parts.length - 1] : new String[0];
-            System.arraycopy(parts, 1, args, 0, args.length);
+            boolean isRedirected = user.getRedirectTo() != null;
+            if(isRedirected) {
+                strategyName = user.getRedirectTo();
+                args = parts;
+            } else {
+                strategyName = parts[0];
+                args = parts.length > 1 ? new String[parts.length - 1] : new String[0];
+                System.arraycopy(parts, 1, args, 0, args.length);
+            }
         } else {
             logger.debug("Update has no message or callback query");
             return;
         }
-
-        User user = strategyUserProvider.getOrCreateUser(chatId, update);
 
         Method method = strategyExecutor.getMethod(strategyName);
         if (method == null) {

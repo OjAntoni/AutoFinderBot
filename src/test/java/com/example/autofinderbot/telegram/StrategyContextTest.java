@@ -52,7 +52,7 @@ class StrategyContextTest extends BaseTelegramListenerTest {
 
         strategyContext.executeStrategy(update);
 
-        Mockito.verify(testListenerBean).test(ArgumentMatchers.any());
+        verify(testListenerBean).test(ArgumentMatchers.any());
 
         assertThat(userRepository.getByChatId(35L))
             .extracting(
@@ -135,7 +135,7 @@ class StrategyContextTest extends BaseTelegramListenerTest {
 
         strategyContext.executeStrategy(update);
 
-        Mockito.verify(testListenerBean).callback(eq(1L), any(Update.class));
+        verify(testListenerBean).callback(eq(1L), any(Update.class));
     }
 
     @Test
@@ -145,7 +145,7 @@ class StrategyContextTest extends BaseTelegramListenerTest {
 
         strategyContext.executeStrategy(update);
 
-        Mockito.verify(testListenerBean).callback(eq(1L), any(Update.class), eq("example"));
+        verify(testListenerBean).callback(eq(1L), any(Update.class), eq("example"));
     }
 
     @Test
@@ -176,5 +176,15 @@ class StrategyContextTest extends BaseTelegramListenerTest {
                 );
             return true;
         }));
+    }
+
+    @Test
+    void invokeWithRedirection() {
+        when(update.getMessage().getChatId()).thenReturn(7L);
+        when(update.getMessage().getText()).thenReturn("Test 25");
+
+        strategyContext.executeStrategy(update);
+
+        verify(testListenerBean).redirection(any(User.class), eq("Test"), eq(25L));
     }
 }

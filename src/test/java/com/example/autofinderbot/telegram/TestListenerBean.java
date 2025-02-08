@@ -47,4 +47,7 @@ public class TestListenerBean {
     public void user(User user) {
         System.out.println(user);
     }
+
+    @CommandListener("redirection")
+    public void redirection(User user, String arg, long number) {}
 }

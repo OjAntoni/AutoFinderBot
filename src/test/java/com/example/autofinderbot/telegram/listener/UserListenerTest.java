@@ -108,13 +108,14 @@ class UserListenerTest extends BaseTelegramListenerTest {
         assertThat(user)
                 .isPresent()
                 .get()
-                .extracting(User::getSearchUrl, User::getRedirectTo)
-                .containsExactly(url, CONFIRM_FILTER);
+                .extracting(User::getRedirectTo)
+                .isEqualTo(CONFIRM_FILTER);
 
         assertThat(findByUserId(user.get().getId(), NEW))
                 .isPresent()
                 .get()
                 .extracting(
+                    UserFilter::getSearchUrl,
                     UserFilter::isConfirmed,
                     UserFilter::getMileageFrom,
                     UserFilter::getMileageTo,
@@ -130,7 +131,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
                     filter -> filter.getFuelTypes().stream().map(FuelType::getName).toList(),
                     filter -> filter.getGearboxes().stream().toList()
                 ).containsExactly(
-                false,
+                    url,
+                    false,
                     75000,
                     170000,
                     2015,
@@ -220,8 +222,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
         assertThat(user)
                 .isPresent()
                 .get()
-                .extracting(User::getRedirectTo, User::getSearchUrl)
-                .containsExactly(null, null);
+                .extracting(User::getRedirectTo)
+                .isNull();
 
         assertThat(findByUserId(user.get().getId(), NEW))
                 .isEmpty();
