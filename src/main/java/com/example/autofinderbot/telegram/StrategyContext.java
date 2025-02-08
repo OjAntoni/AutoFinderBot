@@ -1,6 +1,7 @@
 package com.example.autofinderbot.telegram;
 
 import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.service.UserHistoryService;
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.telegram.converter.CallbackDataConverter;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.Map;
 public class StrategyContext {
     private final StrategyUserProvider strategyUserProvider;
     private final Logger logger;
+    private final UserHistoryService userHistoryService;
     private final StrategyExecutor strategyExecutor;
     private final CallbackDataConverter callbackDataConverter;
     private final StrategyArgumentParser strategyArgumentParser;
@@ -27,6 +29,7 @@ public class StrategyContext {
     public void executeStrategy(Update update) {
         long chatId;
         String strategyName;
+        String dataReceived;
         String[] args = null;
         Map<String, Object> params = null;
 
@@ -35,11 +38,13 @@ public class StrategyContext {
         if (update.hasCallbackQuery() && update.getCallbackQuery().getData() != null) {
             chatId = update.getCallbackQuery().getMessage().getChatId();
             params = callbackDataConverter.convert(update.getCallbackQuery().getData());
+            dataReceived = update.getCallbackQuery().getData();
             strategyName = (String) params.remove("tg_c");
         } else if (update.hasMessage() && update.getMessage().hasText()) {
             chatId = update.getMessage().getChatId();
             String input = update.getMessage().getText();
             String[] parts = input.split("\\s+");
+            dataReceived = update.getMessage().getText();
             boolean isRedirected = user.getRedirectTo() != null;
             if(isRedirected) {
                 strategyName = user.getRedirectTo();
@@ -53,6 +58,8 @@ public class StrategyContext {
             logger.debug("Update has no message or callback query");
             return;
         }
+
+        userHistoryService.save(user, strategyName, dataReceived);
 
         Method method = strategyExecutor.getMethod(strategyName);
         if (method == null) {

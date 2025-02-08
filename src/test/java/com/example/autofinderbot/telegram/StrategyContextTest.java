@@ -2,6 +2,8 @@ package com.example.autofinderbot.telegram;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.domain.UserHistory;
+import com.example.autofinderbot.repository.UserHistoryRepository;
 import com.example.autofinderbot.repository.UserRepository;
 import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,9 @@ class StrategyContextTest extends BaseTelegramListenerTest {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    UserHistoryRepository userHistoryRepository;
+
     @BeforeEach
     void setUp() {
         when(update.hasMessage()).thenReturn(true);
@@ -65,6 +70,29 @@ class StrategyContextTest extends BaseTelegramListenerTest {
                 "lastname",
                 "username",
                 "en");
+
+        assertThat(userHistoryRepository.findAll())
+            .filteredOn(userHistory -> userHistory.getChatId() == 35L)
+            .hasSize(1)
+            .element(0)
+            .extracting(
+                UserHistory::getChatId,
+                UserHistory::getRedirectTo,
+                UserHistory::getFirstname,
+                UserHistory::getLastname,
+                UserHistory::getUsername,
+                UserHistory::getLanguageCode,
+                UserHistory::getCommand,
+                UserHistory::getData
+            ).containsExactly(
+                35L,
+                null,
+                "firstname",
+                "lastname",
+                "username",
+                "en",
+                "test",
+                "test arg");
     }
 
     @Test

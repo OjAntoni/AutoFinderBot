@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 @Component
 @RequiredArgsConstructor
 public class StrategyUserProvider {
-
     private final UserService userService;
     private final DateTimeUtil dateTimeUtil;
 
