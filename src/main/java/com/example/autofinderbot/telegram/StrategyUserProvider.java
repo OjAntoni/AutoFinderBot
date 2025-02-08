@@ -19,18 +19,28 @@ public class StrategyUserProvider {
     /**
      * Retrieves an existing user or creates a new one, ensuring lastActive is always updated.
      */
-    public User getOrCreateUser(Long chatId, Update update) {
-        User user = userService.findByChatId(chatId);
+    public User getOrCreateUser(Update update) {
+        User user = userService.findByChatId(getChatId(update));
 
         if (user == null) {
             user = new User();
+            user.setChatId(getChatId(update));
         }
 
-        user.setChatId(chatId);
         user.setLastActive(dateTimeUtil.now());
         populateUserData(update, user);
 
         return userService.save(user);
+    }
+
+    private long getChatId(Update update) {
+        if (update.hasCallbackQuery()) {
+            return update.getCallbackQuery().getMessage().getChatId();
+        } else if (update.hasMessage()) {
+            return update.getMessage().getChatId();
+        } else {
+            throw new IllegalArgumentException("Update has no message or callback query");
+        }
     }
 
     private void populateUserData(Update update, User user) {

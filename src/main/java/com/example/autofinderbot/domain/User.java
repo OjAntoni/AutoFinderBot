@@ -22,8 +22,6 @@ public class User {
     long id;
     @Column(nullable = false)
     long chatId;
-    @Column
-    String searchUrl;
     String redirectTo;
     String firstname;
     String lastname;

@@ -69,11 +69,11 @@ public class UserListener {
         userRedirectedValidator.validate(UPLOAD_URL, user);
         userUrlValidator.validate(url);
 
-        user.setSearchUrl(url);
         user.setRedirectTo(CONFIRM_FILTER);
 
         UserFilter userFilter = urlToFiltersConverter.parseUrl(url);
         userFilter.setUser(user);
+        userFilter.setSearchUrl(url);
         userService.save(user);
         userService.save(userFilter);
 
@@ -116,7 +116,6 @@ public class UserListener {
             telegramClient.execute(message);
         } else if ("no".equalsIgnoreCase(answer)) {
             user.setRedirectTo(null);
-            user.setSearchUrl(null);
             userService.rollbackToOldFilter(user);
             SendMessage message = SendMessage.builder()
                     .chatId(valueOf(user.getChatId()))

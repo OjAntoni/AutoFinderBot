@@ -20,6 +20,9 @@ public class UserFilter {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false)
+    String searchUrl;
+
     @ManyToMany(fetch = EAGER)
     @JoinTable(
             name = "user_filter_2_car_brands",
