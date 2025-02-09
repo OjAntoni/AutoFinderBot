@@ -1,6 +1,7 @@
 package com.example.autofinderbot.telegram;
 
 
+import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.telegram.exception.TelegramBotException;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -41,4 +42,12 @@ public class TestListenerBean {
     public void callback(long id, Update update, String text) {
         System.out.println(update);
     }
+
+    @CommandListener("user")
+    public void user(User user) {
+        System.out.println(user);
+    }
+
+    @CommandListener("redirection")
+    public void redirection(User user, String arg, long number) {}
 }

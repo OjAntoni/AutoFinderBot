@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: otomoto-app-prod
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/otomotodb
+      SPRING_DATASOURCE_USERNAME: admin-prod
+      SPRING_DATASOURCE_PASSWORD: admin-prod
+    networks:
+      - prod-network
+
+  postgres:
+    container_name: postgres-otomoto-prod
+    environment:
+      POSTGRES_USER: admin-prod
+      POSTGRES_PASSWORD: admin-prod
+      POSTGRES_DB: otomotodb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data-prod:/var/lib/postgresql/data
+    networks:
+      - prod-network
+
+volumes:
+  postgres-data-prod:
+
+networks:
+  prod-network:
+    driver: bridge

@@ -1,10 +1,9 @@
 package com.example.autofinderbot.domain;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,20 +11,22 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
-@ToString
-public class User {
+public class UserHistory {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     long id;
-    @Column(nullable = false)
+    long userId;
     long chatId;
     String redirectTo;
     String firstname;
     String lastname;
     String username;
     String languageCode;
-    LocalDateTime lastActive;
+    String command;
+    String data;
+    LocalDateTime updatedAt;
 }
