@@ -37,22 +37,26 @@ Follow these steps to set up the project locally:
    
 4. Create `.env` file containig telegram token:
    ```bash
-   echo "TELEGRAM_BOT_TOKEN={Your token here}" > filename.txt
+   echo "TELEGRAM_BOT_TOKEN={Your token here}" > .env.dev
 
-5. Run docker compose to start application:
+5. Run docker compose to start application in development mode:
    ```bash
-   docker-compose up
+   docker-compose -p dev up -d
+   ```
+   For production deployment use:
+   ```bash
+   docker-compose -p prod -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 ### 💡 **Tips for Docker compose**
-If you added some changes to your code it's more convenient and simple to run `docker-compose up --build` that will rebuild application.
-To make database store your data between docker compose restarts just comment out lines in `docker-compose` file:
+If you added some changes to your code it's more convenient and simple to run `docker-compose -p dev up -d --build` that will rebuild the application.
+If you would like to store dev results for some reason simply add such lines to the `docker-compose.override.yml` file:
 ```
-#    volumes:
-#      - postgres-data:/var/lib/postgresql/data
-#
-#volumes:
-#  postgres-data:
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
 ```
 If you want to run database container separately and for example run application via IDE use:
-`docker run --name postgres-otomoto -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e PGDATA=/var/lib/postgresql/data/pgdata -v otomoto-data:/var/lib/postgresql/data -p 5432:5432 -d postgres`
-In such case of a standaolne application start up remember to set up environment variable `TELEGRAM_BOT_TOKEN` with your token.
+`docker run --name postgres-otomoto -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e PGDATA=/var/lib/postgresql/data/pgdata -v otomoto-data:/var/lib/postgresql/data -p 5435:5432 -d postgres`
+In such case of a standalone application start up remember to set up environment variable `TELEGRAM_BOT_TOKEN` with your token.

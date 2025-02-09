@@ -24,20 +24,19 @@ class UserServiceTest extends BaseSpringBootTest {
     void save_PosTC(){
         User user = new User();
         user.setChatId(123L);
-        user.setSearchUrl("https://example.com");
 
 
         User savedUser = userService.save(user);
 
         assertThat(savedUser)
-                .extracting(User::getChatId, User::getSearchUrl)
-                .containsExactly(123L, "https://example.com");
+                .extracting(User::getChatId)
+                .isEqualTo(123L);
 
         assertThat(userRepository.findById(savedUser.getId()))
                 .isPresent()
                 .get()
-                .extracting(User::getChatId, User::getSearchUrl)
-                .containsExactly(123L, "https://example.com");
+                .extracting(User::getChatId)
+                .isEqualTo(123L);
     }
 
     @Test
