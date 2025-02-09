@@ -55,37 +55,26 @@ class UserListenerTest extends BaseTelegramListenerTest {
 
     @Test
     void startBotWithRegisteredUser_PosTC() throws TelegramApiException {
-        Mockito.when(update.getMessage().getChatId()).thenReturn(1L);
+        userListener.registerUser(userRepository.getReferenceById(1L));
 
-        userListener.registerUser(update);
-
-        Mockito.verify(userService, never()).save(ArgumentMatchers.any(User.class));
-        Mockito.verify(telegramClient, never()).execute(any(SendMessage.class));
+        Mockito.verify(telegramClient).execute(any(SendMessage.class));
     }
 
     @Test
     void startBotWithUnregisteredUser_PosTC() throws TelegramApiException {
-        Mockito.when(update.getMessage().getChatId()).thenReturn(12345L);
-        Mockito.when(update.getMessage().getFrom().getUserName()).thenReturn("Username");
+        userListener.registerUser(userRepository.getReferenceById(1L));
 
-        userListener.registerUser(update);
-
-        Mockito.verify(userService).save(ArgumentMatchers.any(User.class));
+        Mockito.verify(userService, never()).save(ArgumentMatchers.any(User.class));
         Mockito.verify(telegramClient).execute((SendMessage) argThat(message -> {
             SendMessage m = (SendMessage) message;
-            return m.getText().equals("Hi, Username! I am you car assistant that will help you to find your dream car " +
+            return m.getText().equals("Hi, John! I am you car assistant that will help you to find your dream car " +
                     "in the fastest way possible. Just set up filter for yourself. That's all :)");
         }));
-
-        assertThat(findByChatId(12345L))
-                .isPresent();
     }
 
     @Test
     void setFilter_PosTC() throws TelegramApiException {
-        Mockito.when(update.getMessage().getChatId()).thenReturn(1L);
-
-        userListener.setFilter(update);
+        userListener.setFilter(userRepository.getReferenceById(1L));
 
         assertThat(findByChatId(1L))
                 .isPresent()
@@ -111,22 +100,22 @@ class UserListenerTest extends BaseTelegramListenerTest {
                 "er_float_mileage%3Afrom%5D=75000&search%5Bfilter_float_mileage%3Ato%5D=170000&search%5Bfilter_float" +
                 "_price%3Afrom%5D=2000&search%5Bfilter_float_price%3Ato%5D=35000&search%5Bfilter_float_year%3Ato%5D=2" +
                 "020&search%5Bprivate_business%5D=private&search%5Badvanced_search_expanded%5D=true";
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.uploadUrl(url, update);
+        userListener.uploadUrl(url, userRepository.getReferenceById(chatId));
 
         Optional<User> user = findByChatId(chatId);
 
         assertThat(user)
                 .isPresent()
                 .get()
-                .extracting(User::getSearchUrl, User::getRedirectTo)
-                .containsExactly(url, CONFIRM_FILTER);
+                .extracting(User::getRedirectTo)
+                .isEqualTo(CONFIRM_FILTER);
 
         assertThat(findByUserId(user.get().getId(), NEW))
                 .isPresent()
                 .get()
                 .extracting(
+                    UserFilter::getSearchUrl,
                     UserFilter::isConfirmed,
                     UserFilter::getMileageFrom,
                     UserFilter::getMileageTo,
@@ -142,7 +131,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
                     filter -> filter.getFuelTypes().stream().map(FuelType::getName).toList(),
                     filter -> filter.getGearboxes().stream().toList()
                 ).containsExactly(
-                false,
+                    url,
+                    false,
                     75000,
                     170000,
                     2015,
@@ -174,9 +164,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
         String url = "https://www.testdomain.pl/osobowe/audi--bmw/od-2015?search%5Bfilter_float_mileage%3Afrom%5D=75000&search%5Bfilter_float_mileage" +
                 "%3Ato%5D=170000&search%5Bfilter_float_price%3Afrom%5D=2000&search%5Bfilter_float_price%3Ato%5D=35000&search%5Bfilter_float_year%3At" +
                 "o%5D=2020&search%5Badvanced_search_expanded%5D=true";
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        assertThatThrownBy(() -> userListener.uploadUrl(url, update))
+        assertThatThrownBy(() -> userListener.uploadUrl(url, userRepository.getReferenceById(chatId)))
                 .isInstanceOf(InvalidSearchUrlException.class);
 
         verify(userService, never()).save(any(User.class));
@@ -189,9 +178,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
         String url = "https://www.otomoto.pl/osobowe/audi--bmw/od-2015?search%5Bfilter_float_mileage%3Afrom%5D=75000&search%5Bfilter_float_mileage" +
                 "%3Ato%5D=170000&search%5Bfilter_float_price%3Afrom%5D=2000&search%5Bfilter_float_price%3Ato%5D=35000&search%5Bfilter_float_year%3At" +
                 "o%5D=2020&search%5Badvanced_search_expanded%5D=true";
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        assertThatThrownBy(() -> userListener.uploadUrl(url, update))
+        assertThatThrownBy(() -> userListener.uploadUrl(url, userRepository.getReferenceById(chatId)))
                 .isInstanceOf(UserIsNotRedirectedException.class);
 
         verify(userService, never()).save(any(User.class));
@@ -201,9 +189,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void confirmFilterWithYesAnswer_PosTC() throws TelegramApiException {
         long chatId = 5L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.confirmFilter("yes", update);
+        userListener.confirmFilter("yes", userRepository.getReferenceById(chatId));
 
         Optional<User> user = findByChatId(chatId);
         assertThat(user)
@@ -228,16 +215,15 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void confirmFilterWithNoAnswer_NegTC() throws TelegramApiException {
         long chatId = 5L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.confirmFilter("no", update);
+        userListener.confirmFilter("no", userRepository.getReferenceById(chatId));
 
         Optional<User> user = findByChatId(chatId);
         assertThat(user)
                 .isPresent()
                 .get()
-                .extracting(User::getRedirectTo, User::getSearchUrl)
-                .containsExactly(null, null);
+                .extracting(User::getRedirectTo)
+                .isNull();
 
         assertThat(findByUserId(user.get().getId(), NEW))
                 .isEmpty();
@@ -252,9 +238,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void confirmFilterWithInvalidAnswer_NegTC() throws TelegramApiException {
         long chatId = 5L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.confirmFilter("answer", update);
+        userListener.confirmFilter("answer", userRepository.getReferenceById(chatId));
 
         Optional<User> user = findByChatId(chatId);
         assertThat(user)
@@ -278,9 +263,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void showExistingFilter_PosTC() throws TelegramApiException {
         long chatId = 6L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.showFilter(update);
+        userListener.showFilter(userRepository.getReferenceById(chatId));
 
         verify(telegramClient).execute((SendMessage) argThat(message -> {
             SendMessage m = (SendMessage) message;
@@ -292,9 +276,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void showNonExistingFilter_PosTC() throws TelegramApiException {
         long chatId = 1L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.showFilter(update);
+        userListener.showFilter(userRepository.getReferenceById(chatId));
 
         verify(telegramClient).execute((SendMessage) argThat(message -> {
             SendMessage m = (SendMessage) message;
@@ -305,9 +288,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void stopFilter_PosTC() throws TelegramApiException {
         long chatId = 6L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.stopFilter(update);
+        userListener.stopFilter(userRepository.getReferenceById(chatId));
 
         Optional<User> user = findByChatId(chatId);
 
@@ -329,9 +311,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void stopMissingFilter_PosTC() throws TelegramApiException {
         long chatId = 1L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.stopFilter(update);
+        userListener.stopFilter(userRepository.getReferenceById(chatId));
 
         verify(telegramClient).execute((SendMessage) argThat(message -> {
             SendMessage m = (SendMessage) message;
@@ -342,9 +323,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void stopAlreadyStoppedFilter_PosTC() throws TelegramApiException {
         long chatId = 3L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.stopFilter(update);
+        userListener.stopFilter(userRepository.getReferenceById(chatId));
 
         verify(telegramClient).execute((SendMessage) argThat(message -> {
             SendMessage m = (SendMessage) message;
@@ -355,9 +335,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void activateFilter_PosTC() throws TelegramApiException {
         long chatId = 3L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.activateFilter(update);
+        userListener.activateFilter(userRepository.getReferenceById(chatId));
 
         Optional<User> user = findByChatId(chatId);
 
@@ -379,9 +358,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void activateMissingFilter_PosTC() throws TelegramApiException {
         long chatId = 1L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.activateFilter(update);
+        userListener.activateFilter(userRepository.getReferenceById(chatId));
 
         verify(telegramClient).execute((SendMessage) argThat(message -> {
             SendMessage m = (SendMessage) message;
@@ -392,9 +370,8 @@ class UserListenerTest extends BaseTelegramListenerTest {
     @Test
     void activateAlreadyActiveFilter_PosTC() throws TelegramApiException {
         long chatId = 6L;
-        Mockito.when(update.getMessage().getChatId()).thenReturn(chatId);
 
-        userListener.activateFilter(update);
+        userListener.activateFilter(userRepository.getReferenceById(chatId));
 
         verify(telegramClient).execute((SendMessage) argThat(message -> {
             SendMessage m = (SendMessage) message;
