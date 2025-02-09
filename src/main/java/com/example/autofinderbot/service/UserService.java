@@ -82,6 +82,11 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public boolean existsByChatId(Long chatId) {
+        return userRepository.existsByChatId(chatId);
+    }
+
+    @Transactional(readOnly = true)
     public List<UserFilter> findAllActiveUserFilters() {
         return userFilterRepository.findAllByConfirmedIsAndActive(true, true);
     }
