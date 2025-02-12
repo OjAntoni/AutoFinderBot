@@ -19,7 +19,6 @@ public class JwtTokenProvider {
     public JwtTokenProvider(@Value("${app.jwt.secret}") String secret,
                             @Value("${app.jwt.expiration-in-ms}") long jwtExpirationInMs,
                             DateTimeUtil dateTimeUtil) {
-        // Using HMAC-SHA key. In production, ensure the secret is secure and properly managed.
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.jwtExpirationInMs = jwtExpirationInMs;
         this.dateTimeUtil = dateTimeUtil;
@@ -49,14 +48,7 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String authToken) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
-            return true;
-        } catch (ExpiredJwtException e) {
-            // Token has expired
-        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-            // Invalid token
-        }
-        return false;
+        Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
+        return true;
     }
 }

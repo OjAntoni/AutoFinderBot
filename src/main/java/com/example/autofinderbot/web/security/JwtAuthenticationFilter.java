@@ -2,6 +2,10 @@ package com.example.autofinderbot.web.security;
 
 import com.example.autofinderbot.web.security.JwtTokenProvider;
 import com.example.autofinderbot.web.service.CustomUserDetailsService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +20,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+
+import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -42,11 +48,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (Exception ex) {
-            // In production, consider logging the exception with proper logging framework.
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
+            response.sendError(SC_UNAUTHORIZED, e.getMessage());
+        }
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

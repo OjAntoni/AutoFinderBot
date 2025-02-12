@@ -44,12 +44,14 @@ public abstract class BaseSpringBootTest {
     }
 
     @DynamicPropertySource
-    static void overrideProperties(DynamicPropertyRegistry registry) throws IOException {
+    static void overrideProperties(DynamicPropertyRegistry registry){
         registry.add("telegram.bot.token", () -> "token");
 
         registry.add("spring.datasource.url", POSTGRES_CONTAINER::getJdbcUrl);
         registry.add("spring.datasource.username", POSTGRES_CONTAINER::getUsername);
         registry.add("spring.datasource.password", POSTGRES_CONTAINER::getPassword);
         registry.add("spring.liquibase.change-log", () -> "classpath:db/changelog/test/db.changelog-test.yaml");
+
+        registry.add("app.jwt.secret", () -> "jwtSecret".repeat(30));
     }
 }
