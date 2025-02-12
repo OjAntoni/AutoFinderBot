@@ -9,6 +9,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/otomoto
       SPRING_DATASOURCE_USERNAME: admin-dev
       SPRING_DATASOURCE_PASSWORD: admin-dev
+    ports:
+        - "8082:8080"
     networks:
       - dev-network
 
