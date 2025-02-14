@@ -2,22 +2,22 @@ package com.example.autofinderbot.web.controller;
 
 import com.example.autofinderbot.web.security.JwtTokenProvider;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import static lombok.AccessLevel.PRIVATE;
+
+@FieldDefaults(level = PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtTokenProvider tokenProvider;
+    AuthenticationManager authenticationManager;
+    JwtTokenProvider tokenProvider;
 
     @PostMapping("/login")
     public JwtAuthenticationResponse authenticateUser(@RequestBody LoginRequest loginRequest) {

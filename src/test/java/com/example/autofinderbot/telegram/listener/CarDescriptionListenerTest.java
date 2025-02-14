@@ -3,10 +3,8 @@ package com.example.autofinderbot.telegram.listener;
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.domain.Message;
 import com.example.autofinderbot.repository.MessageRepository;
-import com.example.autofinderbot.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -18,8 +16,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class CarDescriptionListenerTest extends BaseTelegramListenerTest {
-    @SpyBean
-    UserService userService;
     @Autowired
     MessageRepository messageRepository;
     @Autowired

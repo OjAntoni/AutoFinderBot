@@ -16,10 +16,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static lombok.AccessLevel.PRIVATE;
@@ -28,32 +30,42 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private static final List<String> excludedPaths = List.of(
+        "/api/auth/**",
+        "/api/swagger-ui/**",
+        "/api/docs",
+        "/api/openapi/**"
+    );
+
     JwtTokenProvider tokenProvider;
     CustomUserDetailsService customUserDetailsService;
+    PathMatcher pathMatcher;
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request,
                                     @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
-        try {
-            String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                String username = tokenProvider.getUsernameFromJWT(jwt);
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+        String jwt = getJwtFromRequest(request);
 
-                UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+            String username = tokenProvider.getUsernameFromJWT(jwt);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+            UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-            response.sendError(SC_UNAUTHORIZED, e.getMessage());
-            return;
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            filterChain.doFilter(request, response);
+        } else {
+            response.setStatus(SC_UNAUTHORIZED);
         }
+    }
 
-        filterChain.doFilter(request, response);
+    @Override
+    protected boolean shouldNotFilter(@NotNull HttpServletRequest request){
+        return excludedPaths.stream().anyMatch(path -> pathMatcher.match(path, request.getRequestURI()));
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

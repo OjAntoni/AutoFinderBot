@@ -5,9 +5,7 @@ import com.example.autofinderbot.domain.Notification;
 import com.example.autofinderbot.repository.NotificationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.telegram.telegrambots.meta.generics.TelegramClient;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static com.example.autofinderbot.domain.Notification.State.PROCESSED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,11 +13,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 class NotificationServiceTest extends BaseSpringBootTest {
-    @MockBean
-    TelegramClient telegramClient;
     @Autowired
     NotificationRepository notificationRepository;
-    @SpyBean
+    @MockitoBean
     NotificationService notificationService;
 
     @Test

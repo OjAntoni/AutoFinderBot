@@ -3,6 +3,7 @@ package com.example.autofinderbot.web.security;
 import com.example.autofinderbot.shared.DateTimeUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -48,7 +49,11 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String authToken) {
-        Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
+        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
+            return false;
+        }
         return true;
     }
 }

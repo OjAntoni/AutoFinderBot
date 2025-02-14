@@ -14,7 +14,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -43,7 +43,7 @@ class UserListenerTest extends BaseTelegramListenerTest {
     UserRepository userRepository;
     @Autowired
     UserFilterRepository userFilterRepository;
-    @SpyBean
+    @MockitoSpyBean
     UserService userService;
     @Autowired
     UserListener userListener;
