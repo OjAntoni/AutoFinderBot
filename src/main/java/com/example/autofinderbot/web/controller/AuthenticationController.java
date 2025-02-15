@@ -1,6 +1,8 @@
 package com.example.autofinderbot.web.controller;
 
 import com.example.autofinderbot.web.security.JwtTokenProvider;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +22,7 @@ public class AuthenticationController {
     JwtTokenProvider tokenProvider;
 
     @PostMapping("/login")
-    public JwtAuthenticationResponse authenticateUser(@RequestBody LoginRequest loginRequest) {
+    public JwtAuthenticationResponse authenticateUser(@RequestBody @Valid LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
@@ -35,7 +37,9 @@ public class AuthenticationController {
 
     @Data
     public static class LoginRequest {
+        @NotEmpty
         private String username;
+        @NotEmpty
         private String password;
     }
 

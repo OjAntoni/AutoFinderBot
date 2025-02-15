@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.springframework.http.HttpStatus.*;
 
 class AuthenticationControllerTest extends BaseRestApiTest {
 
@@ -21,7 +23,7 @@ class AuthenticationControllerTest extends BaseRestApiTest {
         .when()
             .post("/api/auth/login")
         .then()
-            .statusCode(200)
+            .statusCode(OK.value())
             .body("tokenType", equalTo("Bearer"))
             .body("accessToken", Matchers.notNullValue());
     }
@@ -34,7 +36,22 @@ class AuthenticationControllerTest extends BaseRestApiTest {
         .when()
             .post("/api/auth/login")
         .then()
-            .statusCode(401);
+            .statusCode(UNAUTHORIZED.value());
+    }
+
+    @Test
+    void nullAndEmptyCredentials_NegTC() throws JsonProcessingException {
+        given()
+            .contentType(ContentType.JSON)
+            .body(payload(null, ""))
+        .when()
+            .post("/api/auth/login")
+        .then()
+            .statusCode(BAD_REQUEST.value())
+            .body("errors.error", containsInAnyOrder(
+                "username must not be empty",
+                "password must not be empty"
+            ));
     }
 
     private String payload(String username, String password) throws JsonProcessingException {

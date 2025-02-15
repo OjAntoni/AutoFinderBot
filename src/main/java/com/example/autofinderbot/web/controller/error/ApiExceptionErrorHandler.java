@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class ApiExceptionControllerAdvice {
+public class ApiExceptionErrorHandler {
 
     @ExceptionHandler(ApiConflictException.class)
     public ResponseEntity<ErrorMessageResponse> handleApiConflictException(ApiConflictException exception) {

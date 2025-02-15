@@ -12,6 +12,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingExcept
 
 import static com.example.autofinderbot.web.domain.Account.Role.ADMIN;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpStatus.*;
 
@@ -24,7 +25,7 @@ class AccountControllerTest extends BaseRestApiTest {
         given()
             .contentType(ContentType.JSON)
             .header("Authorization", "Bearer " + jwt(1L))
-            .body(bodyJson("test", "test"))
+            .body(bodyJson("test", "test1111A"))
         .when()
             .post("/api/account")
         .then()
@@ -49,7 +50,7 @@ class AccountControllerTest extends BaseRestApiTest {
         given()
             .contentType(ContentType.JSON)
             .header("Authorization", "Bearer " + jwt(1L))
-            .body(bodyJson("admin_user", "admin"))
+            .body(bodyJson("admin_user", "admin1111A"))
         .when()
             .post("/api/account")
         .then()
@@ -62,7 +63,7 @@ class AccountControllerTest extends BaseRestApiTest {
         given()
             .contentType(ContentType.JSON)
             .header("Authorization", "Bearer " + jwt(2L))
-            .body(bodyJson("test", "test"))
+            .body(bodyJson("test", "test111A"))
         .when()
             .post("/api/account")
         .then()
@@ -78,6 +79,22 @@ class AccountControllerTest extends BaseRestApiTest {
             .post("/api/account")
         .then()
             .statusCode(UNAUTHORIZED.value());
+    }
+
+    @Test
+    void invalidUsernameAndPassword_NegTC() throws JsonProcessingException {
+        given()
+            .contentType(ContentType.JSON)
+            .header("Authorization", "Bearer " + jwt(1L))
+            .body(bodyJson("t", "t"))
+        .when()
+            .post("/api/account")
+        .then()
+            .statusCode(BAD_REQUEST.value())
+            .body("errors.error", containsInAnyOrder(
+                "username must be 3-20 characters long and can only contain letters, digits, underscores, hyphens, or periods",
+                "password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one digit"
+            ));
     }
 
 

@@ -3,6 +3,7 @@ package com.example.autofinderbot.web.controller.account;
 import com.example.autofinderbot.web.dto.account.CreateAccountRequest;
 import com.example.autofinderbot.web.service.AccountService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ public class AccountController {
     @PostMapping
     @PreAuthorize("hasRole(T(com.example.autofinderbot.web.domain.Account.Role).ADMIN)")
     @SecurityRequirement(name = "bearerAuth")
-    public void createAccount(@RequestBody CreateAccountRequest createAccountRequest) {
+    public void createAccount(@RequestBody @Valid CreateAccountRequest createAccountRequest) {
         accountService.createAccount(createAccountRequest);
     }
 }
