@@ -11,10 +11,10 @@ import com.example.autofinderbot.service.CarService;
 import com.example.autofinderbot.service.DocumentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.io.IOException;
 import java.util.List;
@@ -55,7 +55,7 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
     @Autowired
     CacheManager cacheManager;
 
-    @SpyBean
+    @MockitoSpyBean
     DocumentService documentService;
 
     @Test

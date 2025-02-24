@@ -10,8 +10,8 @@ import com.example.autofinderbot.service.CarFiltersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -28,7 +28,7 @@ class CarFiltersSynchronizationServiceTest extends BaseSpringBootTest {
     GenerationRepository generationRepository;
     @Autowired
     FuelTypeRepository fuelTypeRepository;
-    @SpyBean
+    @MockitoSpyBean
     CarFiltersService carFiltersService;
 
     @BeforeEach

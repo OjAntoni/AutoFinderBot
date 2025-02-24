@@ -64,6 +64,10 @@ insert into message(id, chat_id, car_id, description_state, details_state) value
 (1, 2, 1, 'DESCRIPTION', 'DEFAULT'),
 (2, 3, 1, 'DEFAULT', 'DETAILS');
 
+insert into account(id, username, password, role) values
+(1, 'admin_user', 'password', 'ADMIN'),
+(2, 'user', 'password', NULL);
+
 ALTER SEQUENCE car_id_seq RESTART WITH 100;
 ALTER SEQUENCE car_detail_id_seq RESTART WITH 100;
 ALTER SEQUENCE report_id_seq RESTART WITH 100;
@@ -71,3 +75,4 @@ ALTER SEQUENCE users_id_seq RESTART WITH 100;
 ALTER SEQUENCE user_filter_id_seq RESTART WITH 100;
 ALTER SEQUENCE selected_car_id_seq RESTART WITH 100;
 ALTER SEQUENCE message_id_seq RESTART WITH 100;
+ALTER SEQUENCE account_id_seq RESTART WITH 100;

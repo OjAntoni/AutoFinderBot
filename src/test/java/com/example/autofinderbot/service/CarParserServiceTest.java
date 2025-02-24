@@ -6,7 +6,7 @@ import com.example.autofinderbot.parser.CarParserService;
 import com.example.autofinderbot.shared.Details;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,7 +22,7 @@ class CarParserServiceTest extends BaseSpringBootTest {
     @Autowired
     CarParserService carParserService;
 
-    @SpyBean
+    @MockitoSpyBean
     DocumentService documentService;
 
     @Test

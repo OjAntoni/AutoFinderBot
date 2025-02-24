@@ -9,12 +9,10 @@ import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -31,7 +29,7 @@ class StrategyContextTest extends BaseTelegramListenerTest {
     @Autowired
     StrategyContext strategyContext;
 
-    @SpyBean
+    @MockitoSpyBean
     TestListenerBean testListenerBean;
 
     @Autowired
