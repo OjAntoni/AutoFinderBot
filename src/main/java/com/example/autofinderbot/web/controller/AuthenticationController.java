@@ -23,7 +23,6 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public JwtAuthenticationResponse authenticateUser(@RequestBody @Valid LoginRequest loginRequest) {
-
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(),
