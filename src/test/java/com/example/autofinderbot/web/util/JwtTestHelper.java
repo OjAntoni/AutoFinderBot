@@ -2,10 +2,13 @@ package com.example.autofinderbot.web.util;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+
+import static org.springframework.http.HttpMethod.POST;
 
 @Component
 public class JwtTestHelper {
@@ -18,7 +21,13 @@ public class JwtTestHelper {
 
     public String loginAs(String username, String password) {
         Map<String, String> credentials = Map.of("username", username, "password", password);
-        ResponseEntity<Map<String, Object>> response = restTemplateProvider.getObject().postForEntity("/api/auth/login", credentials, Map.class);
+        ResponseEntity<Map<String, Object>> response = restTemplateProvider.getObject()
+            .exchange(
+                "/api/auth/login",
+                POST,
+                new HttpEntity<>(credentials),
+                new ParameterizedTypeReference<>() {}
+            );
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
             throw new IllegalStateException("Failed to log in and retrieve token");

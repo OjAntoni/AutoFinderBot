@@ -44,7 +44,7 @@ class UserControllerTest extends BaseRestApiTest {
     }
 
     @Test
-    void unauthorized_NegTC() {
+    void unauthorizedGetAllUsers_NegTC() {
         ParameterizedTypeReference<PagedResponse<User>> typeRef = new ParameterizedTypeReference<>() {};
 
         ResponseEntity<PagedResponse<User>> response = testRequestSender.unauthorized("/api/users", GET, null, typeRef);
