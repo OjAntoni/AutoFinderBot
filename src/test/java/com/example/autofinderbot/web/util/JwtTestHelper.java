@@ -18,7 +18,7 @@ public class JwtTestHelper {
 
     public String loginAs(String username, String password) {
         Map<String, String> credentials = Map.of("username", username, "password", password);
-        ResponseEntity<Map> response = restTemplateProvider.getObject().postForEntity("/api/auth/login", credentials, Map.class);
+        ResponseEntity<Map<String, Object>> response = restTemplateProvider.getObject().postForEntity("/api/auth/login", credentials, Map.class);
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
             throw new IllegalStateException("Failed to log in and retrieve token");
