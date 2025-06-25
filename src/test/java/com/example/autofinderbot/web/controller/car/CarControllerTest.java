@@ -23,7 +23,7 @@ class CarControllerTest extends BaseRestApiTest {
     void getCars_PosTC() {
         ParameterizedTypeReference<PagedResponse<CarResponse>> type = new ParameterizedTypeReference<>() {};
         ResponseEntity<PagedResponse<CarResponse>> response = testRequestSender.asAdmin(
-                "/api/cars?brand=BMW", GET, null, type);
+            "/api/cars?brand=BMW", GET, null, type);
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
@@ -35,7 +35,7 @@ class CarControllerTest extends BaseRestApiTest {
     void pagination_PosTC() {
         ParameterizedTypeReference<PagedResponse<CarResponse>> type = new ParameterizedTypeReference<>() {};
         ResponseEntity<PagedResponse<CarResponse>> response = testRequestSender.asAdmin(
-                "/api/cars?size=2", GET, null, type);
+            "/api/cars?size=2", GET, null, type);
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
@@ -44,10 +44,48 @@ class CarControllerTest extends BaseRestApiTest {
     }
 
     @Test
+    void fuelType_PosTC() {
+        ParameterizedTypeReference<PagedResponse<CarResponse>> type = new ParameterizedTypeReference<>() {};
+        ResponseEntity<PagedResponse<CarResponse>> response = testRequestSender.asAdmin(
+            "/api/cars?fuelType=Diesel", GET, null, type);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getTotalElements()).isEqualTo(2);
+        assertThat(response.getBody().getContent())
+            .extracting(CarResponse::title)
+            .containsExactlyInAnyOrder("Audi A4", "Mercedes C");
+    }
+
+    @Test
+    void mileageRange_PosTC() {
+        ParameterizedTypeReference<PagedResponse<CarResponse>> type = new ParameterizedTypeReference<>() {};
+        ResponseEntity<PagedResponse<CarResponse>> response = testRequestSender.asAdmin(
+            "/api/cars?mileageFrom=150000&mileageTo=250000", GET, null, type);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getTotalElements()).isEqualTo(1);
+        assertThat(response.getBody().getContent().getFirst().title()).isEqualTo("BMW 3");
+    }
+
+    @Test
+    void priceRange_PosTC() {
+        ParameterizedTypeReference<PagedResponse<CarResponse>> type = new ParameterizedTypeReference<>() {};
+        ResponseEntity<PagedResponse<CarResponse>> response = testRequestSender.asAdmin(
+            "/api/cars?priceFrom=11000&priceTo=25000", GET, null, type);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getTotalElements()).isEqualTo(1);
+        assertThat(response.getBody().getContent().getFirst().title()).isEqualTo("BMW 3");
+    }
+
+    @Test
     void unauthorizedGetCars_NegTC() {
         ParameterizedTypeReference<PagedResponse<CarResponse>> type = new ParameterizedTypeReference<>() {};
         ResponseEntity<PagedResponse<CarResponse>> response = testRequestSender.unauthorized(
-                "/api/cars", GET, null, type);
+            "/api/cars", GET, null, type);
 
         assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
     }

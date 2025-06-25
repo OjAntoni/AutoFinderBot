@@ -5,9 +5,6 @@ import com.example.autofinderbot.domain.Seller;
 
 import java.util.List;
 
-/**
- * DTO for exposing car information via REST API.
- */
 public record CarResponse(
         long id,
         String title,

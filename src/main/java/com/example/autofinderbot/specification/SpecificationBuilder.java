@@ -4,9 +4,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.function.Function;
 
-/**
- * Utility builder for composing JPA specifications using nullable parameters.
- */
 public class SpecificationBuilder<T> {
     private Specification<T> spec = Specification.where(null);
 
