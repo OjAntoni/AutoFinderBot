@@ -7,6 +7,7 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 @Configuration
+@ConditionalOnNotWebOnly
 public class TelegramConfig {
     @Bean
     public TelegramClient telegramClient(@Value("${telegram.bot.token}") String token) {

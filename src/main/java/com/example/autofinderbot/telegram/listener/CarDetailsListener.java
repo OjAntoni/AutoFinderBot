@@ -1,12 +1,12 @@
 package com.example.autofinderbot.telegram.listener;
 
+import com.example.autofinderbot.config.ConditionalOnNotWebOnly;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.service.CarService;
 import com.example.autofinderbot.service.MessageService;
 import com.example.autofinderbot.service.UserService;
 import com.example.autofinderbot.telegram.CommandListener;
-import com.example.autofinderbot.telegram.CommandPath;
 import com.example.autofinderbot.telegram.converter.CarDetailsConverter;
 import com.example.autofinderbot.telegram.converter.CarMenuKeyboardConverter;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Component
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@ConditionalOnNotWebOnly
 public class CarDetailsListener {
     TelegramClient telegramClient;
     UserService userService;

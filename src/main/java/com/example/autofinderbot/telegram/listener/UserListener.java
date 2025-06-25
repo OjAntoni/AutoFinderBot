@@ -1,5 +1,6 @@
 package com.example.autofinderbot.telegram.listener;
 
+import com.example.autofinderbot.config.ConditionalOnNotWebOnly;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.domain.UserFilter;
 import com.example.autofinderbot.service.UserService;
@@ -10,7 +11,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
@@ -29,6 +29,7 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @Component
+@ConditionalOnNotWebOnly
 public class UserListener {
     UserService userService;
     UserUrlValidator userUrlValidator;

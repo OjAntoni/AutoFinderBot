@@ -1,5 +1,6 @@
 package com.example.autofinderbot.telegram.listener;
 
+import com.example.autofinderbot.config.ConditionalOnNotWebOnly;
 import com.example.autofinderbot.domain.SelectedCar;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.parser.service.DocumentService;
@@ -34,6 +35,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Component
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@ConditionalOnNotWebOnly
 public class CarListener {
     UserService userService;
     TelegramClient telegramClient;

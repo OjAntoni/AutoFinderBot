@@ -1,5 +1,6 @@
 package com.example.autofinderbot.service;
 
+import com.example.autofinderbot.config.ConditionalOnNotWebOnly;
 import com.example.autofinderbot.domain.Notification;
 import com.example.autofinderbot.repository.NotificationRepository;
 import com.example.autofinderbot.shared.Logger;
@@ -20,6 +21,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Service
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@ConditionalOnNotWebOnly
 public class NotificationService {
     TelegramClient telegramClient;
     NotificationRepository notificationRepository;
