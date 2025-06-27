@@ -34,13 +34,19 @@ public class OlxCarDetailsExtractor {
     public CarDetailsResponse extract(String url) {
         Document document;
         try {
-            document = documentService.load(url, doc -> doc.selectFirst("script[type=application/ld+json]") != null);
+            document = documentService.load(url, doc -> !doc.select("script[type=application/ld+json]").isEmpty());
         } catch (IOException e) {
             logger.error(e.getMessage());
             return new CarDetailsResponse(emptyList(), null, "");
         }
 
-        Element scriptElement = document.selectFirst("script[type=application/ld+json]");
+        Element scriptElement = null;
+        for (Element sc : document.select("script[type=application/ld+json]")) {
+            if (sc.html() != null && !sc.html().isBlank()) {
+                scriptElement = sc;
+                break;
+            }
+        }
         if (scriptElement == null) {
             logger.error("Script element with JSON data not found.");
             return new CarDetailsResponse(emptyList(), null, "");

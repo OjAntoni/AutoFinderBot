@@ -45,25 +45,38 @@ public class OlxCarParserService {
     DateTimeUtil dateTimeUtil;
 
     private static final Predicate<Document> validator = doc -> {
-        Element script = doc.selectFirst("script[type=application/ld+json]");
-        if (script == null) {
-            return false;
+        for (Element script : doc.select("script[type=application/ld+json]")) {
+            try {
+                JsonNode root = OBJECT_MAPPER.readTree(script.html());
+                JsonNode list = root.at("/itemListElement");
+                if (list.isArray() &&
+                        StreamSupport.stream(list.spliterator(), false).allMatch(item -> item.has("url"))) {
+                    return true;
+                }
+            } catch (JsonProcessingException ignored) {
+            }
         }
-        try {
-            JsonNode root = OBJECT_MAPPER.readTree(script.html());
-            JsonNode list = root.path("itemListElement");
-            return list.isArray() && StreamSupport.stream(list.spliterator(), false)
-                    .allMatch(item -> item.has("url"));
-        } catch (JsonProcessingException e) {
-            return false;
-        }
+        return false;
     };
 
     public List<Car> findCars(String url) throws IOException {
         Document document = documentService.load(url, validator);
-        Element script = document.selectFirst("script[type=application/ld+json]");
-        JsonNode root = OBJECT_MAPPER.readTree(script.html());
-        JsonNode items = root.path("itemListElement");
+        JsonNode root = null;
+        for (Element script : document.select("script[type=application/ld+json]")) {
+            try {
+                JsonNode candidate = OBJECT_MAPPER.readTree(script.html());
+                JsonNode list = candidate.at("/itemListElement");
+                if (list.isArray()) {
+                    root = candidate;
+                    break;
+                }
+            } catch (JsonProcessingException ignored) {
+            }
+        }
+        if (root == null) {
+            throw new IOException("No listing data found");
+        }
+        JsonNode items = root.at("/itemListElement");
         Map<String, Car> cars = new ConcurrentHashMap<>();
         int counter = 0;
         for (JsonNode item : items) {
