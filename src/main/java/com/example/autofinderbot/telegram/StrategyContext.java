@@ -1,6 +1,6 @@
 package com.example.autofinderbot.telegram;
 
-import com.example.autofinderbot.config.ConditionalOnNotWebOnly;
+import com.example.autofinderbot.config.TelegramRelated;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.service.UserHistoryService;
 import com.example.autofinderbot.shared.Logger;
@@ -16,7 +16,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 @Component
-@ConditionalOnNotWebOnly
+@TelegramRelated
 @RequiredArgsConstructor
 public class StrategyContext {
     private final StrategyUserProvider strategyUserProvider;

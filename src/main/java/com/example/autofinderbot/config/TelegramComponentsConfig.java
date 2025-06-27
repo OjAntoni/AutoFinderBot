@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
  * These components are only loaded when the application is not running in web-only mode.
  */
 @Configuration
-@ConditionalOnNotWebOnly
+@TelegramRelated
 @ComponentScan(basePackages = {
     "com.example.autofinderbot.telegram",
     "com.example.autofinderbot.telegram.converter",

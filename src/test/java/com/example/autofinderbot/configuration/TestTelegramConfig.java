@@ -1,6 +1,6 @@
 package com.example.autofinderbot.configuration;
 
-import com.example.autofinderbot.config.NotWebOnlyCondition;
+import com.example.autofinderbot.config.TelegramRelatedCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -18,8 +18,8 @@ public class TestTelegramConfig {
      * This ensures that Telegram components are always loaded during tests.
      */
     @Bean
-    public NotWebOnlyCondition notWebOnlyCondition() {
-        return new NotWebOnlyCondition() {
+    public TelegramRelatedCondition notWebOnlyCondition() {
+        return new TelegramRelatedCondition() {
             @Override
             public boolean matches(org.springframework.context.annotation.ConditionContext context, 
                                   org.springframework.core.type.AnnotatedTypeMetadata metadata) {

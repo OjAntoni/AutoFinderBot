@@ -12,6 +12,6 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Conditional(NotWebOnlyCondition.class)
-public @interface ConditionalOnNotWebOnly {
+@Conditional(TelegramRelatedCondition.class)
+public @interface TelegramRelated {
 }

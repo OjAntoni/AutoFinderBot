@@ -8,7 +8,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * Condition that checks if the application is NOT running in web-only mode.
  * This condition is the opposite of WebOnlyCondition.
  */
-public class NotWebOnlyCondition implements Condition {
+public class TelegramRelatedCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {

@@ -1,9 +1,8 @@
 package com.example.autofinderbot.telegram;
 
-import com.example.autofinderbot.config.ConditionalOnNotWebOnly;
+import com.example.autofinderbot.config.TelegramRelated;
 import com.example.autofinderbot.telegram.exception.TelegramBotException;
 import com.example.autofinderbot.shared.Logger;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
@@ -20,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
-@ConditionalOnNotWebOnly
+@TelegramRelated
 @RequiredArgsConstructor
 public class StrategyExecutor {
     private final ApplicationContext applicationContext;
