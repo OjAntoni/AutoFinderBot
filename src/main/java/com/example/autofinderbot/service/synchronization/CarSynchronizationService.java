@@ -3,6 +3,7 @@ package com.example.autofinderbot.service.synchronization;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.Report;
 import com.example.autofinderbot.parser.CarParserService;
+import com.example.autofinderbot.parser.olx.OlxCarParserService;
 import com.example.autofinderbot.service.CarService;
 import com.example.autofinderbot.service.ReportService;
 import com.example.autofinderbot.shared.DateTimeUtil;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static com.example.autofinderbot.domain.Report.Operation.DELETE;
 import static com.example.autofinderbot.domain.Report.Operation.INSERT;
-import static com.example.autofinderbot.shared.APIConstants.SEARCH_URL;
+import static com.example.autofinderbot.shared.APIConstants.*;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -35,6 +36,7 @@ public class CarSynchronizationService {
 
     ApplicationEventPublisher eventPublisher;
     CarParserService carParserService;
+    OlxCarParserService olxCarParserService;
     CarService carService;
     ReportService reportService;
     DateTimeUtil dateTimeUtil;
@@ -74,6 +76,37 @@ public class CarSynchronizationService {
             logger.debug("Filtered out %d cars from page %d", filtered.size(), page-1);
 
             if(filtered.size() != cars.size()) break;
+        }
+
+        if (newCars.size() < CAR_LIMIT) {
+            page = 1;
+            while (newCars.size() < CAR_LIMIT && page <= MAX_PAGE_SIZE) {
+                List<Car> olxCars;
+                try {
+                    olxCars = olxCarParserService.findCars(OLX_SEARCH_URL(page++));
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                    break;
+                }
+
+                logger.debug("Found OLX cars on page %d: %d", page - 1, olxCars.size());
+
+                List<Car> filtered = olxCars.stream()
+                        .filter(car -> car.getUrl() != null && !car.getUrl().contains("otomoto"))
+                        .collect(Collectors.toMap(Car::getUrl, c -> c, (a, b) -> a))
+                        .values()
+                        .stream()
+                        .filter(car -> !carService.exists(car.getUrl()))
+                        .limit(newCars.size() + olxCars.size() > CAR_LIMIT ? CAR_LIMIT - newCars.size() : olxCars.size())
+                        .toList();
+
+                newCars.addAll(carService.saveAll(filtered));
+                logger.debug("Filtered out %d OLX cars from page %d", filtered.size(), page - 1);
+
+                if (filtered.size() != olxCars.size()) {
+                    break;
+                }
+            }
         }
 
         Mono.fromRunnable(() -> eventPublisher.publishEvent(new NewCarsEvent(this, newCars))).subscribe();
