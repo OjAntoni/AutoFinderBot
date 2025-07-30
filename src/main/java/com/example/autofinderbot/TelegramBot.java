@@ -1,5 +1,6 @@
 package com.example.autofinderbot;
 
+import com.example.autofinderbot.config.TelegramRelated;
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.telegram.StrategyContext;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +16,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Profile("!test")
 @Component
+@TelegramRelated
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
     String botToken;
