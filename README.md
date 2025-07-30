@@ -176,6 +176,106 @@ When running the application standalone, set the `TELEGRAM_BOT_TOKEN` environmen
 
 ---
 
+## 🔄 Web-Only Mode
+
+AutoFinderBot can be run in two different modes:
+
+1. **Normal Mode**: All components including the Telegram bot are loaded and active
+2. **Web-Only Mode**: Only web components are loaded, and the Telegram bot is disabled
+
+Web-only mode is useful when you only need the web API functionality without the Telegram bot, which can save resources and simplify deployment in certain scenarios.
+
+### What Web-Only Mode Does
+
+When running in web-only mode:
+- All Telegram-related components are excluded from the Spring application context
+- The web API remains fully functional
+- The application logs a message indicating it's running in web-only mode
+- Resources used by the Telegram bot (memory, network connections) are saved
+
+### Running in Web-Only Mode
+
+#### Using Gradle
+
+To run the application in web-only mode with Gradle:
+
+```powershell
+# For Windows (PowerShell)
+.\gradlew bootRun --args="--web-only"
+```
+
+If you need to specify the JWT secret directly:
+
+```powershell
+.\gradlew bootRun --args="--web-only --app.jwt.secret=your_jwt_secret_here"
+```
+
+#### Using Java JAR
+
+After building the application:
+
+```powershell
+# For Windows (PowerShell)
+java -jar build\libs\autofinderbot-1.0.2.jar --web-only
+```
+
+With JWT secret:
+
+```powershell
+java -jar build\libs\autofinderbot-1.0.2.jar --web-only --app.jwt.secret=your_jwt_secret_here
+```
+
+#### Using Docker Compose
+
+To run the application in web-only mode with Docker Compose, you can modify the `docker-compose.yml` file:
+
+```yaml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-boot-app
+    restart: no
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    # Add this line to pass the --web-only flag
+    command: ["--web-only"]
+```
+Alternatively, you can create a custom Dockerfile for web-only mode:
+```dockerfile
+# Dockerfile.web-only
+FROM openjdk:21-jdk-slim
+
+WORKDIR /app
+
+COPY --from=build /app/build/libs/*.jar app.jar
+
+# Add the --web-only flag to the entrypoint
+ENTRYPOINT ["java", "-jar", "app.jar", "--web-only"]
+```
+
+And use it in your docker-compose command:
+
+```powershell
+# For Windows (PowerShell)
+docker-compose -f docker-compose.yml -e "DOCKERFILE=Dockerfile.web-only" up -d
+```
+
+### Verifying Web-Only Mode
+
+When the application starts in web-only mode, you should see the following message in the logs:
+
+```
+Running in web-only mode. Telegram bot is disabled.
+```
+
+This confirms that the Telegram components have been excluded from the application context.
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions to AutoFinderBot! Please follow our contribution guidelines to ensure a smooth collaboration process.
