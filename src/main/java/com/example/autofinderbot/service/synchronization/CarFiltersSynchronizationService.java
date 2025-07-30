@@ -2,9 +2,9 @@ package com.example.autofinderbot.service.synchronization;
 
 import com.example.autofinderbot.domain.CarBrand;
 import com.example.autofinderbot.domain.FuelType;
-import com.example.autofinderbot.parser.CarFiltersParser;
+import com.example.autofinderbot.parser.otomoto.CarFiltersParser;
+import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.service.CarFiltersService;
-import com.example.autofinderbot.service.DocumentService;
 import com.example.autofinderbot.shared.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +27,7 @@ import static lombok.AccessLevel.PRIVATE;
 public class CarFiltersSynchronizationService {
     CarFiltersParser carFiltersParser;
     CarFiltersService carFiltersService;
-    DocumentService documentService;
+    DocumentService<Document> documentService;
     TransactionTemplate transactionTemplate;
     Logger logger;
 

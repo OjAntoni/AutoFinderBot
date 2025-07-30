@@ -29,10 +29,10 @@ public abstract class BaseSpringBootTest {
             .withDatabaseName(POSTGRES_DB)
             .withUsername(POSTGRES_USERNAME)
             .withPassword(POSTGRES_PASSWORD)
-            .withExposedPorts(5434);
+            .withExposedPorts(5430);
 
     static {
-        POSTGRES_CONTAINER.setPortBindings(List.of("5433:5432"));
+        POSTGRES_CONTAINER.setPortBindings(List.of("5430:5432"));
         POSTGRES_CONTAINER.start();
     }
 

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface CarModelRepository extends JpaRepository<CarModel, Long> {
     List<CarModel> findAllBySearchKeyIn(List<String> searchKeys);
+    List<CarModel> findAllByName(String name);
 }

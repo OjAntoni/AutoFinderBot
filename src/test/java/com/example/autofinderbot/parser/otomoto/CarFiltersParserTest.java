@@ -1,4 +1,4 @@
-package com.example.autofinderbot.parser;
+package com.example.autofinderbot.parser.otomoto;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.domain.CarBrand;

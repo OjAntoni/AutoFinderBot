@@ -1,13 +1,13 @@
 --liquibase formatted sql
 -- changeset anton:001
 
-insert into car (id, title, brand, fuel_type, mileage, mileage_unit, price, currency, url, created_at, description) values
-(1, 'Audi A4', 'Audi', 'Diesel', 100000, 'km', 10000, 'EUR', 'https://www.example.com/audi-a4', now() - interval '1 day', 'Description 1'),
-(2, 'BMW 3', 'BMW', 'Petrol', 200000, 'km', 20000, 'EUR', 'https://www.example.com/bmw-3' , now() - interval '2 day', 'Description 2'),
-(3, 'Mercedes C', 'Mercedes', 'Diesel', 300000, 'km', 30000, 'EUR', 'https://www.example.com/mercedes-c', now() - interval '3 day', 'Description 3'),
-(4, 'Toyota Corolla expired 1', 'Toyota', 'Petrol', 400000, 'km', 40000, 'EUR', 'https://www.otomoto.pl/osobowe/oferta/invalid-url-1', now() - interval '32 day', 'Description 4'),
-(5, 'Toyota Corolla expired 2', 'Toyota', 'Petrol', 400000, 'km', 40000, 'EUR', 'https://www.otomoto.pl/osobowe/oferta/invalid-url-2', now() - interval '33 day', 'Description 5'),
-(6, 'Toyota Corolla expired 3', 'Toyota', 'Petrol', 400000, 'km', 40000, 'EUR', 'https://www.otomoto.pl/osobowe/oferta/invalid-url-3', now() - interval '34 day', 'Description 6');
+insert into car (id, title, brand, fuel_type, mileage, mileage_unit, price, currency, url, created_at, description, source) values
+(1, 'Audi A4', 'Audi', 'Diesel', 100000, 'km', 10000, 'EUR', 'https://www.example.com/audi-a4', now() - interval '1 day', 'Description 1', 'OTOMOTO'),
+(2, 'BMW 3', 'BMW', 'Petrol', 200000, 'km', 20000, 'EUR', 'https://www.example.com/bmw-3' , now() - interval '2 day', 'Description 2', 'OTOMOTO'),
+(3, 'Mercedes C', 'Mercedes', 'Diesel', 300000, 'km', 30000, 'EUR', 'https://www.example.com/mercedes-c', now() - interval '3 day', 'Description 3', 'OTOMOTO'),
+(4, 'Toyota Corolla expired 1', 'Toyota', 'Petrol', 400000, 'km', 40000, 'EUR', 'https://www.otomoto.pl/osobowe/oferta/invalid-url-1', now() - interval '32 day', 'Description 4', 'OLX'),
+(5, 'Toyota Corolla expired 2', 'Toyota', 'Petrol', 400000, 'km', 40000, 'EUR', 'https://www.otomoto.pl/osobowe/oferta/invalid-url-2', now() - interval '33 day', 'Description 5', 'OLX'),
+(6, 'Toyota Corolla expired 3', 'Toyota', 'Petrol', 400000, 'km', 40000, 'EUR', 'https://www.otomoto.pl/osobowe/oferta/invalid-url-3', now() - interval '34 day', 'Description 6', 'OLX');
 
 insert into car_detail (id, car_id, detail, value) values
 (1, 1, 'color', 'black'),

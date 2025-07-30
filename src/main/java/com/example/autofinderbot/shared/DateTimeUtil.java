@@ -3,6 +3,7 @@ package com.example.autofinderbot.shared;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -17,6 +18,10 @@ public class DateTimeUtil {
 
     public LocalDateTime convert(ZonedDateTime zonedDateTime) {
         return zonedDateTime.withZoneSameInstant(WARSAW_ZONE).toLocalDateTime();
+    }
+
+    public LocalDateTime convert(OffsetDateTime offsetDateTime) {
+        return offsetDateTime.atZoneSameInstant(WARSAW_ZONE).toLocalDateTime();
     }
 
     public Date convert(LocalDateTime localDateTime) {
