@@ -1,7 +1,9 @@
-package com.example.autofinderbot.service;
+package com.example.autofinderbot.parser.otomoto;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
+import com.example.autofinderbot.parser.service.DocumentService;
 import jakarta.validation.ConstraintViolationException;
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
-class DocumentServiceTest extends BaseSpringBootTest {
-
+class OtomotoDocumentServiceTest extends BaseSpringBootTest {
     @Autowired
-    DocumentService documentService;
+    DocumentService<Document> documentService;
 
     @Test
     void loadDocument_PosTC() throws IOException {
@@ -30,7 +31,7 @@ class DocumentServiceTest extends BaseSpringBootTest {
         final AtomicInteger counter = new AtomicInteger(1);
 
         assertThat(documentService.load(SEARCH_URL, (document) -> counter.getAndIncrement() == 10))
-                .isNotNull();
+            .isNotNull();
     }
 
     @Test

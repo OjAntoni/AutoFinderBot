@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.EAGER;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -29,7 +28,7 @@ public class Car {
     String title;
     String brand;
     String fuelType;
-    long mileage;
+    Long mileage;
     String mileageUnit;
     double price;
     String currency;
@@ -38,14 +37,18 @@ public class Car {
     @Exclude
     LocalDateTime createdAt;
     @Exclude
-    @OneToMany(mappedBy = "carId", cascade = REMOVE, orphanRemoval = true, fetch = EAGER)
+    @OneToMany(mappedBy = "carId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = EAGER)
     List<CarDetail> details;
     @OneToOne(cascade = ALL, fetch = EAGER)
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
     Seller seller;
     String description;
 
-    public Car(String title, String brand, String fuelType, long mileage, String mileageUnit, double price, String currency) {
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source", nullable = false)
+    private Source source;
+
+    public Car(String title, String brand, String fuelType, long mileage, String mileageUnit, double price, String currency, Source source) {
         this.title = title;
         this.brand = brand;
         this.fuelType = fuelType;
@@ -53,6 +56,7 @@ public class Car {
         this.mileageUnit = mileageUnit;
         this.price = price;
         this.currency = currency;
+        this.source = source;
     }
 
     @Override
@@ -66,5 +70,10 @@ public class Car {
     @Override
     public int hashCode() {
         return Objects.hashCode(url);
+    }
+
+    public enum Source {
+        OLX,
+        OTOMOTO
     }
 }

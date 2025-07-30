@@ -3,12 +3,13 @@ package com.example.autofinderbot.service.synchronization;
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.Report;
+import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.repository.CarDetailRepository;
 import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.repository.ReportRepository;
 import com.example.autofinderbot.repository.SellerRepository;
 import com.example.autofinderbot.service.CarService;
-import com.example.autofinderbot.service.DocumentService;
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
@@ -56,7 +57,7 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
     CacheManager cacheManager;
 
     @MockitoSpyBean
-    DocumentService documentService;
+    DocumentService<Document> documentService;
 
     @Test
     @DirtiesContext

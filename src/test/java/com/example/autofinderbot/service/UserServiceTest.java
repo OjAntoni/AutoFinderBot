@@ -52,7 +52,7 @@ class UserServiceTest extends BaseSpringBootTest {
         Car car = new Car();
         car.setBrand("Toyota");
         car.setPrice(15000);
-        car.setMileage(50000);
+        car.setMileage(50000L);
         car.setDetails(List.of(
             new CarDetail(MODEL.name, "Corolla"),
             new CarDetail(YEAR.name, "2018"),

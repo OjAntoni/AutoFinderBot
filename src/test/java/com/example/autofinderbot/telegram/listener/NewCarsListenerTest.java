@@ -3,7 +3,7 @@ package com.example.autofinderbot.telegram.listener;
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.Seller;
-import com.example.autofinderbot.service.DocumentService;
+import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.shared.NewCarsEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +28,7 @@ class NewCarsListenerTest extends BaseTelegramListenerTest {
     @Autowired
     NewCarsListener newCarsListener;
     @Autowired
-    DocumentService documentService;
+    DocumentService<Document> documentService;
 
     @Test
     void handleEvent_PosTC() throws TelegramApiException {
@@ -40,7 +40,8 @@ class NewCarsListenerTest extends BaseTelegramListenerTest {
                         18000L,
                         "KM",
                         80000,
-                        "PLN"
+                        "PLN",
+                        Car.Source.OTOMOTO
                 ),
                 new Car(
                         "Nowe Audi",
@@ -49,7 +50,8 @@ class NewCarsListenerTest extends BaseTelegramListenerTest {
                         120000L,
                         "KM",
                         90000,
-                        "PLN"
+                        "PLN",
+                        Car.Source.OTOMOTO
                 ),
                 new Car(
                         "Nowe Mercedes",
@@ -58,7 +60,8 @@ class NewCarsListenerTest extends BaseTelegramListenerTest {
                         135000L,
                         "KM",
                         100000,
-                        "PLN"
+                        "PLN",
+                        Car.Source.OTOMOTO
                 )
         ));
 

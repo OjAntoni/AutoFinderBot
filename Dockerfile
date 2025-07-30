@@ -1,30 +1,50 @@
-# Stage 1: Build the application
-FROM gradle:8.12.0-jdk21 as build
-
-# Set the working directory inside the container
+# ─── Stage 1: Build the application ───────────────────────
+FROM gradle:8.12.0-jdk21 AS build
 WORKDIR /app
 
-# Copy only the necessary files first (to leverage caching)
+# Copy and cache Gradle metadata
 COPY build.gradle settings.gradle ./
-
-# Pre-download dependencies
 RUN gradle dependencies --no-daemon
 
-# Copy the entire project
+# Copy source & build
 COPY src ./src
-
-# Build the project
 RUN gradle clean bootJar --no-daemon
 
-# Stage 2: Package the application
+# ─── Stage 2: Package & Runtime ──────────────────────────
 FROM openjdk:21-jdk-slim
 
-# Set the working directory inside the container
+# Install only the Debian libs Playwright’s Chromium actually needs
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      libglib2.0-0 \
+      libnspr4 \
+      libnss3 \
+      libdbus-1-3 \
+      libatk1.0-0 \
+      libatk-bridge2.0-0 \
+      libexpat1 \
+      libatspi2.0-0 \
+      libx11-6 \
+      libx11-xcb1 \
+      libxcursor1 \
+      libxcomposite1 \
+      libxdamage1 \
+      libxext6 \
+      libxfixes3 \
+      libxrandr2 \
+      libgbm1 \
+      libxcb1 \
+      libxkbcommon0 \
+      libasound2 \
+      libcups2 \
+      libcairo2 \
+      libcairo-gobject2 \
+      libpango-1.0-0 \
+      libpangocairo-1.0-0 \
+      libgdk-pixbuf2.0-0 \
+      libgtk-3-0 \
+ && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
-
-# Copy the JAR file from the build stage
 COPY --from=build /app/build/libs/*.jar app.jar
-
-# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
-

@@ -2,7 +2,7 @@ package com.example.autofinderbot.telegram.listener;
 
 import com.example.autofinderbot.domain.SelectedCar;
 import com.example.autofinderbot.domain.User;
-import com.example.autofinderbot.service.DocumentService;
+import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.service.UserService;
 import com.example.autofinderbot.shared.Logger;
 import com.example.autofinderbot.shared.RemoveSelectedCarEvent;
@@ -11,6 +11,7 @@ import com.example.autofinderbot.telegram.converter.CarMenuKeyboardConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
+import org.jsoup.nodes.Document;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -37,7 +38,7 @@ public class CarListener {
     UserService userService;
     TelegramClient telegramClient;
     Logger logger;
-    DocumentService documentService;
+    DocumentService<Document> documentService;
     CarMenuKeyboardConverter carMenuKeyboardConverter;
 
     @SneakyThrows

@@ -1,9 +1,9 @@
-package com.example.autofinderbot.parser;
+package com.example.autofinderbot.parser.otomoto;
 
 import com.example.autofinderbot.domain.Address;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.domain.Seller;
-import com.example.autofinderbot.service.DocumentService;
+import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.shared.Details;
 import com.example.autofinderbot.shared.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
-import org.jsoup.parser.Parser;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -32,11 +31,11 @@ import static lombok.AccessLevel.PRIVATE;
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-class CarDetailsExtractor {
+public class CarDetailsExtractor {
     private static final String SCRIPT_ERROR_MESSAGE = "Script element with JSON data not found.";
     private static final String AVERT_ERROR_MESSAGE = "Advert data not found in JSON.";
     Logger logger;
-    DocumentService documentService;
+    DocumentService<Document> documentService;
     ObjectMapper objectMapper;
 
     public CarDetailsResponse extract(String url) {
