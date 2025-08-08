@@ -1,4 +1,4 @@
-package com.example.autofinderbot.specification;
+package com.example.autofinderbot.web.specification;
 
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.web.dto.car.CarRequest;

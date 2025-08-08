@@ -3,7 +3,7 @@ package com.example.autofinderbot.web.service;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.mapper.CarMapper;
 import com.example.autofinderbot.repository.CarRepository;
-import com.example.autofinderbot.specification.CarSpecifications;
+import com.example.autofinderbot.web.specification.CarSpecifications;
 import com.example.autofinderbot.web.dto.car.CarRequest;
 import com.example.autofinderbot.web.dto.car.CarResponse;
 import lombok.RequiredArgsConstructor;

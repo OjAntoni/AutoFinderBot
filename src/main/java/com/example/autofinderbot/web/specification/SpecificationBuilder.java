@@ -1,4 +1,4 @@
-package com.example.autofinderbot.specification;
+package com.example.autofinderbot.web.specification;
 
 import org.springframework.data.jpa.domain.Specification;
 
