@@ -29,6 +29,7 @@ class CarControllerTest extends BaseRestApiTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getTotalElements()).isEqualTo(1);
         assertThat(response.getBody().getContent().getFirst().title()).isEqualTo("BMW 3");
+        assertThat(response.getBody().getContent().getFirst().thumbnailUrl()).isEqualTo("https://www.example.com/bmw-3-thumbnail");
     }
 
     @Test

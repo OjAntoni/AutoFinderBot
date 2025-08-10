@@ -7,6 +7,7 @@ import java.util.List;
 
 public record CarResponse(
         long id,
+        String url,
         String title,
         String brand,
         String fuelType,
@@ -16,6 +17,7 @@ public record CarResponse(
         String currency,
         List<CarDetail> details,
         Seller seller,
-        String description
+        String description,
+        String thumbnailUrl
 ) {
 }

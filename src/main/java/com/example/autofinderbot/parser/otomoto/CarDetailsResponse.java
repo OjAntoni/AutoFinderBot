@@ -17,4 +17,5 @@ public class CarDetailsResponse {
     List<CarDetail> carDetails;
     Seller seller;
     String description;
+    List<String> imageUrls;
 }

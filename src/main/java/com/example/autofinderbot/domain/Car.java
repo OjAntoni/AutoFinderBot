@@ -34,6 +34,9 @@ public class Car {
     String currency;
     @Exclude
     String url;
+    String thumbnailUrl;
+    @ElementCollection
+    List<String> imageUrls;
     @Exclude
     LocalDateTime createdAt;
     @Exclude

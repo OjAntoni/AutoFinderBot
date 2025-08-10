@@ -36,6 +36,8 @@ class OtomotoScraperServiceTest extends BaseSpringBootTest {
         assertThat(cars)
             .anyMatch(carResponse -> carResponse.getCreatedAt() != null &&
                 carResponse.getDetails().stream().noneMatch(cd -> cd.getDetail().equals(Details.CREATED_AT.name)))
+            .anyMatch(carResponse -> carResponse.getThumbnailUrl() != null &&
+                carResponse.getImageUrls() != null)
             .allMatch(carResponse -> carResponse.getUrl() != null)
             .allMatch(carResponse -> !carResponse.getDetails().isEmpty())
             .allMatch(carResponse -> carResponse.getSeller() != null);

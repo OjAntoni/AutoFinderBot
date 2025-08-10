@@ -44,6 +44,8 @@ public class OlxCarToCarConverter {
         car.setCreatedAt(dateTimeUtil.convert(olxCar.getCreatedTime()));
         car.setSeller(getSeller(olxCar));
         car.setDescription(olxCar.getDescription());
+        car.setImageUrls(olxCar.getPhotos());
+        car.setThumbnailUrl(olxCar.getPhotos().isEmpty() ? null : olxCar.getPhotos().getFirst());
 
         List<CarDetail> details = olxCarParamsToCarDetailsConverter.convert(olxCar.getParams());
 
