@@ -44,7 +44,7 @@ public class CarDetailsExtractor {
             document = documentService.load(url, (doc -> doc.selectFirst(CAR_PAGE_JSON_DATA) != null));
         } catch (IOException e) {
             logger.error(e.getMessage());
-            return new CarDetailsResponse(emptyList(), null, "");
+            return new CarDetailsResponse(emptyList(), null, "", emptyList());
         }
         Element scriptElement = document.selectFirst(CAR_PAGE_JSON_DATA);
         if (scriptElement == null) {
@@ -59,7 +59,7 @@ public class CarDetailsExtractor {
             rootNode = objectMapper.readTree(jsonData);
         } catch (JsonProcessingException e) {
             logger.error(e);
-            return new CarDetailsResponse(emptyList(), null, "");
+            return new CarDetailsResponse(emptyList(), null, "", emptyList());
         }
 
         JsonNode advertNode = rootNode.at(CAR_PAGE_ADVERT);
@@ -67,7 +67,9 @@ public class CarDetailsExtractor {
         List<CarDetail> carDetails = extractCarProperties(advertNode);
         Seller seller = extractSeller(advertNode);
         String description = extractDescription(advertNode);
-        return new CarDetailsResponse(carDetails, seller, description);
+        List<String> imageUrls = extractImageUrls(advertNode);
+
+        return new CarDetailsResponse(carDetails, seller, description, imageUrls);
     }
 
     private List<CarDetail> extractCarProperties(JsonNode advertNode) {
@@ -188,6 +190,21 @@ public class CarDetailsExtractor {
         }
 
         return buffer;
+    }
+
+    private List<String> extractImageUrls(JsonNode advertNode) {
+        List<String> urls = new ArrayList<>();
+
+        JsonNode imagesNode = advertNode.get("images").get("photos");
+        if (imagesNode != null && imagesNode.isArray()) {
+            for (JsonNode imageNode : imagesNode) {
+                JsonNode urlNode = imageNode.get("url");
+                if (urlNode != null && urlNode.isTextual()) {
+                    urls.add(urlNode.asText());
+                }
+            }
+        }
+        return urls;
     }
 }
 

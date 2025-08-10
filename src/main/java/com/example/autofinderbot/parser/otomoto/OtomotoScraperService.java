@@ -136,10 +136,13 @@ public class OtomotoScraperService implements ScraperService<Car> {
                     CarDetailsResponse response = carDetailsExtractor.extract(carUrl);
                     List<CarDetail> carDetails = response.getCarDetails();
 
-                    extractCreationDate(carDetails, carNameToCars.get(carKey));
-                    carNameToCars.get(carKey).setDetails(carDetails);
-                    carNameToCars.get(carKey).setDescription(response.getDescription());
-                    carNameToCars.get(carKey).setSeller(response.getSeller());
+                    Car car = carNameToCars.get(carKey);
+                    extractCreationDate(carDetails, car);
+                    car.setDetails(carDetails);
+                    car.setDescription(response.getDescription());
+                    car.setSeller(response.getSeller());
+                    car.setImageUrls(response.getImageUrls());
+                    car.setThumbnailUrl(response.getImageUrls().isEmpty() ? null : response.getImageUrls().getFirst());
                 }, executor))
                 .toList();
 

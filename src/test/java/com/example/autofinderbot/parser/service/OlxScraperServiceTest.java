@@ -21,6 +21,7 @@ class OlxScraperServiceTest extends BaseSpringBootTest {
         List<Car> scrape = olxScraperService.scrape("https://www.olx.pl/motoryzacja/samochody/?search%5Border%5D=created_at:desc");
 
         assertThat(scrape)
+            .anyMatch(car -> car.getThumbnailUrl() != null && !car.getImageUrls().isEmpty())
             .allSatisfy(car -> {
                 assertThat(car.getTitle()).isNotNull();
                 assertThat(car.getPrice()).isPositive();

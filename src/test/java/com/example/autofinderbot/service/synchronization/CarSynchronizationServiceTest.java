@@ -79,13 +79,20 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
                 .matches(r -> r.getOperation() == INSERT && r.getAffectedRows() > 0 && !r.getTargetIds().isEmpty(),
                         "Report should contain inserted ids.");
 
-        assertThat(carRepository.findAllById(report.get().getTargetIds()).stream().map(Car::getUrl).toList())
+        List<Car> cars = carRepository.findAllById(report.get().getTargetIds());
+        assertThat(cars.stream().map(Car::getUrl).toList())
                 .allMatch(url -> requireNonNull(cache).get(url) != null);
 
-        assertThat(carRepository.findAllById(report.get().getTargetIds()).stream().map(Car::getSeller).toList())
+        assertThat(cars.stream().map(Car::getSeller).toList())
                 .allMatch(seller -> sellerRepository.existsById(seller.getId()))
                 .allMatch(seller -> seller.getAddress() != null)
                 .allMatch(seller -> seller.getAddress().getLatitude() != 0 && seller.getAddress().getLongitude() != 0);
+
+        assertThat(cars)
+            .anySatisfy(car -> {
+                assertThat(car.getThumbnailUrl()).isNotNull();
+                assertThat(car.getThumbnailUrl()).isNotEmpty();
+            });
     }
 
     @Test
