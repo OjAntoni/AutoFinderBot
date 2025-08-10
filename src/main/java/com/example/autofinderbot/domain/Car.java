@@ -36,6 +36,11 @@ public class Car {
     String url;
     String thumbnailUrl;
     @ElementCollection
+    @CollectionTable(
+        name = "car_image_urls",
+        joinColumns = @JoinColumn(name = "car_id")
+    )
+    @Column(name = "image_url")
     List<String> imageUrls;
     @Exclude
     LocalDateTime createdAt;
