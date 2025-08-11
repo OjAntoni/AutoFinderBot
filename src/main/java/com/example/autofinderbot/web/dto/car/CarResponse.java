@@ -29,6 +29,7 @@ public class CarResponse {
     boolean isPriceLower;
     PriceComparison priceComparison;
     boolean isDamaged;
+    List<String> imageUrls;
 
     public enum PriceComparison {
         LOWER, MEDIUM, HIGHER, UNDEFINED

@@ -31,8 +31,6 @@ public class WebCarService {
 
     static final double PRICE_TOLERANCE = 0.05;
     static final double MILEAGE_TOLERANCE = 0.10;
-    static final String DETAIL_MODEL = "model";
-    static final String DETAIL_YEAR = "year";
 
     CarRepository carRepository;
     CarMapper carMapper;
@@ -48,8 +46,8 @@ public class WebCarService {
     private CarResponse toResponseWithDerivedFlags(Car car) {
         Map<String, String> details = carDetailsMap(car);
 
-        String model = details.get(DETAIL_MODEL);
-        String year  = details.get(DETAIL_YEAR);
+        String model = details.get(Details.MODEL.name);
+        String year  = details.get(Details.YEAR.name);
 
         long mileage = nonNullMileage(car.getMileage());
         long minMileage = lowerBound(mileage, MILEAGE_TOLERANCE);
