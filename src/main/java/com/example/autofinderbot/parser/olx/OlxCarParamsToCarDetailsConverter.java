@@ -50,8 +50,7 @@ public class OlxCarParamsToCarDetailsConverter {
                         // default: use the raw or normalized value as you prefer
                         p.getValue();
                 };
-                CarDetail detail = new CarDetail(detailEnum.name(), storedValue);
-                return detail;
+                return new CarDetail(detailEnum.name, storedValue);
             })
             .filter(Objects::nonNull)
             .collect(Collectors.toList());

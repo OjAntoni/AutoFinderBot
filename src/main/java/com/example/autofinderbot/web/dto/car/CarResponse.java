@@ -2,22 +2,35 @@ package com.example.autofinderbot.web.dto.car;
 
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.domain.Seller;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-public record CarResponse(
-        long id,
-        String url,
-        String title,
-        String brand,
-        String fuelType,
-        long mileage,
-        String mileageUnit,
-        double price,
-        String currency,
-        List<CarDetail> details,
-        Seller seller,
-        String description,
-        String thumbnailUrl
-) {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class CarResponse {
+    long id;
+    String url;
+    String title;
+    String brand;
+    String fuelType;
+    long mileage;
+    String mileageUnit;
+    double price;
+    String currency;
+    List<CarDetail> details;
+    Seller seller;
+    String description;
+    String thumbnailUrl;
+    boolean isPriceMedium;
+    boolean isPriceLower;
+    PriceComparison priceComparison;
+    boolean isDamaged;
+
+    public enum PriceComparison {
+        LOWER, MEDIUM, HIGHER, UNDEFINED
+    }
 }
