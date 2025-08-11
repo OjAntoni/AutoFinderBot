@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 
+import static com.example.autofinderbot.web.dto.car.CarResponse.PriceComparison.HIGHER;
+import static com.example.autofinderbot.web.dto.car.CarResponse.PriceComparison.UNDEFINED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
@@ -27,9 +29,10 @@ class CarControllerTest extends BaseRestApiTest {
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTotalElements()).isEqualTo(1);
-        assertThat(response.getBody().getContent().getFirst().title()).isEqualTo("BMW 3");
-        assertThat(response.getBody().getContent().getFirst().thumbnailUrl()).isEqualTo("https://www.example.com/bmw-3-thumbnail");
+        assertThat(response.getBody().getTotalElements()).isEqualTo(5);
+        assertThat(response.getBody().getContent().getFirst().getTitle()).isEqualTo("BMW 3 clearly higher");
+        assertThat(response.getBody().getContent().getFirst().getPriceComparison()).isEqualTo(UNDEFINED);
+        assertThat(response.getBody().getContent().getFirst().getThumbnailUrl()).isEqualTo("https://www.example.com/bmw-3-13-thumb");
     }
 
     @Test
@@ -52,10 +55,17 @@ class CarControllerTest extends BaseRestApiTest {
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTotalElements()).isEqualTo(2);
+        assertThat(response.getBody().getTotalElements()).isEqualTo(7);
         assertThat(response.getBody().getContent())
-            .extracting(CarResponse::title)
-            .containsExactlyInAnyOrder("Audi A4", "Mercedes C");
+            .extracting(CarResponse::getTitle)
+            .containsExactlyInAnyOrder(
+                "Audi A4",
+                "Mercedes C",
+                "Audi A4 similar A",
+                "Audi A4 similar B",
+                "Audi A4 far mileage",
+                "Mercedes C no-mileage",
+                "Mercedes C case-key");
     }
 
     @Test
@@ -66,8 +76,8 @@ class CarControllerTest extends BaseRestApiTest {
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTotalElements()).isEqualTo(1);
-        assertThat(response.getBody().getContent().getFirst().title()).isEqualTo("BMW 3");
+        assertThat(response.getBody().getTotalElements()).isEqualTo(5);
+        assertThat(response.getBody().getContent().getFirst().getTitle()).isEqualTo("BMW 3 clearly higher");
     }
 
     @Test
@@ -78,8 +88,8 @@ class CarControllerTest extends BaseRestApiTest {
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTotalElements()).isEqualTo(1);
-        assertThat(response.getBody().getContent().getFirst().title()).isEqualTo("BMW 3");
+        assertThat(response.getBody().getTotalElements()).isEqualTo(7);
+        assertThat(response.getBody().getContent().getFirst().getTitle()).isEqualTo("Mercedes C no-mileage");
     }
 
     @Test
