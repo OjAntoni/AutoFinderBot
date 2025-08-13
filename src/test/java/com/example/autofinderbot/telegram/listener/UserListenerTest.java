@@ -114,6 +114,9 @@ class UserListenerTest extends BaseTelegramListenerTest {
         assertThat(findByUserId(user.get().getId(), NEW))
                 .isPresent()
                 .get()
+                .satisfies(
+                    uf -> assertThat(uf.getCarBrands().stream().map(CarBrand::getName))
+                        .containsExactlyInAnyOrder("BMW", "Audi"))
                 .extracting(
                     UserFilter::getSearchUrl,
                     UserFilter::isConfirmed,
@@ -125,7 +128,6 @@ class UserListenerTest extends BaseTelegramListenerTest {
                     UserFilter::getPriceEnd,
                     UserFilter::getDamaged,
                     UserFilter::getSellerType,
-                    filter -> filter.getCarBrands().stream().map(CarBrand::getName).toList(),
                     filter -> filter.getCarModels().stream().map(CarModel::getName).toList(),
                     filter -> filter.getGenerations().stream().map(Generation::getName).toList(),
                     filter -> filter.getFuelTypes().stream().map(FuelType::getName).toList(),
@@ -141,7 +143,6 @@ class UserListenerTest extends BaseTelegramListenerTest {
                     35000L,
                     false,
                     "private",
-                    List.of("BMW", "Audi"),
                     emptyList(),
                     emptyList(),
                     emptyList(),

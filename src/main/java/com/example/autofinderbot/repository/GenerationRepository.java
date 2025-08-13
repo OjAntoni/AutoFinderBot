@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface GenerationRepository extends JpaRepository<Generation, Long> {
     List<Generation> findAllBySearchKeyIn(List<String> searchKeys);
+    List<Generation> findAllByCarModelId(long carModelId);
 }

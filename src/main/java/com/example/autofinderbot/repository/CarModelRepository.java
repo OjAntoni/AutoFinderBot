@@ -10,4 +10,5 @@ import java.util.List;
 public interface CarModelRepository extends JpaRepository<CarModel, Long> {
     List<CarModel> findAllBySearchKeyIn(List<String> searchKeys);
     List<CarModel> findAllByName(String name);
+    List<CarModel> findAllByCarBrandId(long carBrandId);
 }
