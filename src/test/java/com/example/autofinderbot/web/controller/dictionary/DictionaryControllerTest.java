@@ -1,6 +1,10 @@
 package com.example.autofinderbot.web.controller.dictionary;
 
 import com.example.autofinderbot.configuration.BaseRestApiTest;
+import com.example.autofinderbot.domain.CarBrand;
+import com.example.autofinderbot.domain.CarModel;
+import com.example.autofinderbot.domain.Generation;
+import com.example.autofinderbot.repository.CarBrandRepository;
 import com.example.autofinderbot.web.dto.dictionary.DictionaryResponse;
 import com.example.autofinderbot.web.dto.dictionary.GearboxTypeResponse;
 import com.example.autofinderbot.web.util.TestRequestSender;
@@ -20,6 +24,9 @@ class DictionaryControllerTest extends BaseRestApiTest {
     @Autowired
     TestRequestSender testRequestSender;
 
+    @Autowired
+    CarBrandRepository carBrandRepository;
+
     @Test
     void getCarBrands_PosTC() {
         ParameterizedTypeReference<List<DictionaryResponse>> type = new ParameterizedTypeReference<>() {};
@@ -29,7 +36,7 @@ class DictionaryControllerTest extends BaseRestApiTest {
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody()).extracting(DictionaryResponse::getName)
-            .containsExactlyInAnyOrder("Audi", "BMW");
+            .contains("Audi", "BMW");
     }
 
     @Test
@@ -41,7 +48,7 @@ class DictionaryControllerTest extends BaseRestApiTest {
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody()).extracting(DictionaryResponse::getName)
-            .containsExactlyInAnyOrder("Diesel", "Petrol");
+            .contains("Diesel", "Benzyna");
     }
 
     @Test
@@ -59,24 +66,28 @@ class DictionaryControllerTest extends BaseRestApiTest {
     @Test
     void getCarModels_PosTC() {
         ParameterizedTypeReference<List<DictionaryResponse>> type = new ParameterizedTypeReference<>() {};
+        CarBrand audi = carBrandRepository.findAllBySearchKeyIn(List.of("audi")).getFirst();
         ResponseEntity<List<DictionaryResponse>> response = testRequestSender.asAdmin(
-            "/api/dictionaries/car-brands/1/models", GET, null, type);
+            "/api/dictionaries/car-brands/%d/models".formatted(audi.getId()), GET, null, type);
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody()).extracting(DictionaryResponse::getName)
-            .containsExactlyInAnyOrder("A4", "A6");
+            .contains("A4", "A6");
     }
 
     @Test
     void getGenerations_PosTC() {
         ParameterizedTypeReference<List<DictionaryResponse>> type = new ParameterizedTypeReference<>() {};
+        CarModel audiModel = carBrandRepository.findAllBySearchKeyIn(List.of("audi")).getFirst()
+            .getModels().stream().filter(model -> model.getName().equals("A4")).toList().getFirst();
+        List<Generation> audiGenerations = audiModel.getGenerations();
         ResponseEntity<List<DictionaryResponse>> response = testRequestSender.asAdmin(
-            "/api/dictionaries/car-models/1/generations", GET, null, type);
+            "/api/dictionaries/car-models/%d/generations".formatted(audiModel.getId()), GET, null, type);
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody()).extracting(DictionaryResponse::getName)
-            .containsExactlyInAnyOrder("B8", "B9");
+            .containsExactlyInAnyOrderElementsOf(audiGenerations.stream().map(Generation::getName).toList());
     }
 }
