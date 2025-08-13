@@ -116,6 +116,24 @@ insert into account(id, username, password, role) values
 (1, 'admin_user', 'password', 'ADMIN'),
 (2, 'user', 'password', NULL);
 
+insert into car_brand (id, search_key, name) values
+(1, 'audi', 'Audi'),
+(2, 'bmw', 'BMW');
+
+insert into car_model (id, search_key, name, car_brand_id) values
+(1, 'a4', 'A4', 1),
+(2, 'a6', 'A6', 1),
+(3, 'm3', '3', 2);
+
+insert into generation (id, search_key, name, car_model_id) values
+(1, 'b8', 'B8', 1),
+(2, 'b9', 'B9', 1),
+(3, 'g20', 'G20', 3);
+
+insert into fuel_type (id, search_key, name) values
+(1, 'diesel', 'Diesel'),
+(2, 'petrol', 'Petrol');
+
 ALTER SEQUENCE car_id_seq RESTART WITH 100;
 ALTER SEQUENCE car_detail_id_seq RESTART WITH 100;
 ALTER SEQUENCE report_id_seq RESTART WITH 100;
