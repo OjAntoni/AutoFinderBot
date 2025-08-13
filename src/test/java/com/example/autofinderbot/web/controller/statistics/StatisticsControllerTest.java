@@ -98,9 +98,9 @@ class StatisticsControllerTest extends BaseRestApiTest {
             );
 
         assertThat(body.bestDays())
-            .containsExactlyInAnyOrder(WEDNESDAY, SUNDAY);
+            .containsExactlyInAnyOrder(WEDNESDAY, FRIDAY);
         assertThat(body.worstDays())
-            .containsExactlyInAnyOrder(MONDAY, TUESDAY, FRIDAY, THURSDAY, SATURDAY);
+            .containsExactlyInAnyOrder(SATURDAY, TUESDAY, SUNDAY, THURSDAY, MONDAY);
     }
 
     @Test

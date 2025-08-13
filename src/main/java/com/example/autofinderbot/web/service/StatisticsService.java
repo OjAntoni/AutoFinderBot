@@ -80,7 +80,7 @@ public class StatisticsService {
                 .collect(Collectors.toMap(
                     dow -> dow,
                     dow -> ((avgCounts.get(dow) - meanCount) / stdCount)
-                        + ((avgPrices.get(dow) - meanPrice) / stdPrice)
+                        - ((avgPrices.get(dow) - meanPrice) / stdPrice)
                 ));
 
             bestDays = scores.entrySet().stream()
