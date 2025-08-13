@@ -29,10 +29,10 @@ class CarControllerTest extends BaseRestApiTest {
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTotalElements()).isEqualTo(5);
-        assertThat(response.getBody().getContent().getFirst().getTitle()).isEqualTo("BMW 3 clearly higher");
+        assertThat(response.getBody().getTotalElements()).isEqualTo(11L);
+        assertThat(response.getBody().getContent().getFirst().getTitle()).isEqualTo("BMW 3 hist 8d");
         assertThat(response.getBody().getContent().getFirst().getPriceComparison()).isEqualTo(UNDEFINED);
-        assertThat(response.getBody().getContent().getFirst().getThumbnailUrl()).isEqualTo("https://www.example.com/bmw-3-13-thumb");
+        assertThat(response.getBody().getContent().getFirst().getThumbnailUrl()).isEqualTo("https://www.example.com/bmw-3-22-thumb");
     }
 
     @Test
@@ -76,8 +76,8 @@ class CarControllerTest extends BaseRestApiTest {
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTotalElements()).isEqualTo(5);
-        assertThat(response.getBody().getContent().getFirst().getTitle()).isEqualTo("BMW 3 clearly higher");
+        assertThat(response.getBody().getTotalElements()).isEqualTo(11L);
+        assertThat(response.getBody().getContent().getFirst().getTitle()).isEqualTo("BMW 3 hist 8d");
     }
 
     @Test
@@ -88,8 +88,8 @@ class CarControllerTest extends BaseRestApiTest {
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getTotalElements()).isEqualTo(7);
-        assertThat(response.getBody().getContent().getFirst().getTitle()).isEqualTo("Mercedes C no-mileage");
+        assertThat(response.getBody().getTotalElements()).isEqualTo(13L);
+        assertThat(response.getBody().getContent().getFirst().getTitle()).isEqualTo("BMW 3 hist 8d");
     }
 
     @Test

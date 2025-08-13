@@ -1,8 +1,21 @@
 package com.example.autofinderbot.web.dto.statistics;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.sql.Date;
 import java.time.LocalDate;
 
-public record DayCount(
-    LocalDate day,
-    long count
-) {}
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class DayCount{
+    LocalDate day;
+    long count;
+
+    public DayCount(Date date, Long count) {
+        this.day = date.toLocalDate();
+        this.count = count != null ? count : 0L;
+    }
+}

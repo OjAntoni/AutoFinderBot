@@ -47,34 +47,59 @@ public class StatisticsService {
         List<DayCount> offers = brandStatisticsRepository.offersCountByBrand(brand, startDate);
         List<DayPrice> predictions = forecast(averages);
 
-        Map<DayOfWeek, Long> countsByDay = offers.stream()
-            .collect(Collectors.groupingBy(dc -> dc.day().getDayOfWeek(), Collectors.summingLong(DayCount::count)));
+        Map<DayOfWeek, Double> avgCounts = offers.stream()
+            .collect(Collectors.groupingBy(
+                dc -> dc.getDay().getDayOfWeek(),
+                Collectors.averagingLong(DayCount::getCount)
+            ));
 
-        double mean = countsByDay.values().stream().mapToLong(Long::longValue).average().orElse(0);
-        double variance = countsByDay.values().stream()
-            .mapToDouble(v -> Math.pow(v - mean, 2))
+        Map<DayOfWeek, Double> avgPrices = averages.stream()
+            .collect(Collectors.groupingBy(
+                dp -> dp.getDay().getDayOfWeek(),
+                Collectors.averagingDouble(DayPrice::getPrice)
+            ));
+
+        double meanCount = avgCounts.values().stream().mapToDouble(Double::doubleValue).average().orElse(0);
+        double stdCount = Math.sqrt(avgCounts.values().stream()
+            .mapToDouble(v -> Math.pow(v - meanCount, 2))
             .average()
-            .orElse(0);
-        double stdDev = Math.sqrt(variance);
+            .orElse(0));
 
-        List<DayOfWeek> bestDays;
-        List<DayOfWeek> worstDays;
-        if (stdDev == 0) {
-            bestDays = List.of();
-            worstDays = List.of();
-        } else {
-            Map<DayOfWeek, Double> zScores = countsByDay.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> (e.getValue() - mean) / stdDev));
+        double meanPrice = avgPrices.values().stream().mapToDouble(Double::doubleValue).average().orElse(0);
+        double stdPrice = Math.sqrt(avgPrices.values().stream()
+            .mapToDouble(v -> Math.pow(v - meanPrice, 2))
+            .average()
+            .orElse(0));
 
-            bestDays = zScores.entrySet().stream()
+        List<DayOfWeek> bestDays = List.of();
+        List<DayOfWeek> worstDays = List.of();
+
+        if (stdCount != 0 && stdPrice != 0) {
+            Map<DayOfWeek, Double> scores = avgCounts.keySet().stream()
+                .filter(avgPrices::containsKey)
+                .collect(Collectors.toMap(
+                    dow -> dow,
+                    dow -> ((avgCounts.get(dow) - meanCount) / stdCount)
+                        + ((avgPrices.get(dow) - meanPrice) / stdPrice)
+                ));
+
+            bestDays = scores.entrySet().stream()
                 .filter(e -> e.getValue() >= 1d)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
-            worstDays = zScores.entrySet().stream()
-                .filter(e -> e.getValue() <= -1d)
+            worstDays = scores.entrySet().stream()
+                .filter(e -> e.getValue() < 0)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+
+            if (worstDays.isEmpty() && !scores.isEmpty()) {
+                final double minScore = Collections.min(scores.values());
+                worstDays = scores.entrySet().stream()
+                    .filter(e -> e.getValue() == minScore)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+            }
         }
 
         return new BrandStatisticsResponse(averages, predictions, offers, bestDays, worstDays);
@@ -82,33 +107,55 @@ public class StatisticsService {
 
     private List<DayPrice> forecast(List<DayPrice> history) {
         int n = history.size();
-        if (n < 2) {
+        int period = 7;
+        if (n < period) {
             return Collections.emptyList();
         }
 
-        double sumX = 0;
-        double sumY = 0;
-        double sumXY = 0;
-        double sumX2 = 0;
-        for (int i = 0; i < n; i++) {
-            double x = i;
-            double y = history.get(i).price();
-            sumX += x;
-            sumY += y;
-            sumXY += x * y;
-            sumX2 += x * x;
+        double alpha = 0.3;
+        double beta = 0.1;
+        double gamma = 0.3;
+
+        List<Double> values = history.stream()
+            .map(DayPrice::getPrice)
+            .toList();
+
+        double level = values.stream()
+            .limit(period)
+            .mapToDouble(Double::doubleValue)
+            .average()
+            .orElse(0);
+
+        int trendSamples = Math.min(n - period, period);
+        double trend = 0;
+        for (int i = 0; i < trendSamples; i++) {
+            trend += (values.get(i + period) - values.get(i)) / period;
+        }
+        if (trendSamples > 0) {
+            trend /= trendSamples;
         }
 
-        double denominator = n * sumX2 - sumX * sumX;
-        double slope = denominator == 0 ? 0 : (n * sumXY - sumX * sumY) / denominator;
-        double intercept = (sumY - slope * sumX) / n;
+        double[] season = new double[period];
+        for (int i = 0; i < period; i++) {
+            season[i] = values.get(i) - level;
+        }
 
-        LocalDate lastDay = history.get(n - 1).day();
+        for (int i = 0; i < n; i++) {
+            double value = values.get(i);
+            double prevLevel = level;
+            double prevTrend = trend;
+            double prevSeason = season[i % period];
+
+            level = alpha * (value - prevSeason) + (1 - alpha) * (prevLevel + prevTrend);
+            trend = beta * (level - prevLevel) + (1 - beta) * prevTrend;
+            season[i % period] = gamma * (value - level) + (1 - gamma) * prevSeason;
+        }
+
+        LocalDate lastDay = history.get(n - 1).getDay();
         List<DayPrice> result = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
-            double x = n + i;
-            double y = intercept + slope * x;
-            result.add(new DayPrice(lastDay.plusDays(i + 1), y));
+        for (int i = 1; i <= 30; i++) {
+            double forecast = level + i * trend + season[(n + i - 1) % period];
+            result.add(new DayPrice(lastDay.plusDays(i), forecast));
         }
         return result;
     }

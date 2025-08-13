@@ -15,27 +15,27 @@ public interface BrandStatisticsRepository extends CrudRepository<Car, Long> {
 
     @Query("""
         SELECT new com.example.autofinderbot.web.dto.statistics.DayPrice(
-            DATE(c.createdAt),
+            cast(c.createdAt as date),
             AVG(c.price)
         )
         FROM Car c
         WHERE c.brand = :brand
           AND c.createdAt >= :startDate
-        GROUP BY DATE(c.createdAt)
-        ORDER BY DATE(c.createdAt)
+        GROUP BY cast(c.createdAt as date)
+        ORDER BY cast(c.createdAt as date)
         """)
     List<DayPrice> averagePriceByBrand(String brand, LocalDateTime startDate);
 
     @Query("""
         SELECT new com.example.autofinderbot.web.dto.statistics.DayCount(
-            DATE(c.createdAt),
+            cast(c.createdAt as date),
             COUNT(c)
         )
         FROM Car c
         WHERE c.brand = :brand
           AND c.createdAt >= :startDate
-        GROUP BY DATE(c.createdAt)
-        ORDER BY DATE(c.createdAt)
+        GROUP BY cast(c.createdAt as date)
+        ORDER BY cast(c.createdAt as date)
         """)
     List<DayCount> offersCountByBrand(String brand, LocalDateTime startDate);
 }

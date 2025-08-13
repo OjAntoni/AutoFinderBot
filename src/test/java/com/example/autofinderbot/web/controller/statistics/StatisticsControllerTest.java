@@ -6,10 +6,14 @@ import com.example.autofinderbot.web.dto.statistics.DayCount;
 import com.example.autofinderbot.web.dto.statistics.DayPrice;
 import com.example.autofinderbot.web.dto.statistics.UserStatisticsResponse;
 import com.example.autofinderbot.web.util.TestRequestSender;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
+import static java.time.DayOfWeek.*;
+import static java.time.DayOfWeek.SUNDAY;
+import static java.time.DayOfWeek.WEDNESDAY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
@@ -64,26 +68,39 @@ class StatisticsControllerTest extends BaseRestApiTest {
         LocalDate today = LocalDate.now(ZoneId.of("Europe/Warsaw"));
         LocalDate twoDaysAgo = today.minusDays(2);
 
+        Assertions.assertNotNull(body);
+
         assertThat(body.averagePrices())
             .containsExactly(
+                new DayPrice(today.minusDays(8), 20000d),
+                new DayPrice(today.minusDays(7), 18000d),
+                new DayPrice(today.minusDays(6), 20000d),
+                new DayPrice(today.minusDays(5), 19000d),
+                new DayPrice(today.minusDays(4), 20000d),
+                new DayPrice(today.minusDays(3), 21000d),
                 new DayPrice(twoDaysAgo, 20000d),
                 new DayPrice(today, 20250d)
             );
 
         assertThat(body.predictedPrices()).hasSize(30);
-        assertThat(body.predictedPrices().getFirst().day()).isEqualTo(today.plusDays(1));
+        assertThat(body.predictedPrices().getFirst().getDay()).isEqualTo(today.plusDays(1));
 
         assertThat(body.dailyOffers())
             .containsExactly(
+                new DayCount(today.minusDays(8), 1L),
+                new DayCount(today.minusDays(7), 1L),
+                new DayCount(today.minusDays(6), 1L),
+                new DayCount(today.minusDays(5), 1L),
+                new DayCount(today.minusDays(4), 1L),
+                new DayCount(today.minusDays(3), 1L),
                 new DayCount(twoDaysAgo, 1L),
                 new DayCount(today, 4L)
             );
 
-        DayOfWeek todayDow = today.getDayOfWeek();
-        DayOfWeek twoDaysAgoDow = twoDaysAgo.getDayOfWeek();
-
-        assertThat(body.bestDays()).isEqualTo(List.of(todayDow));
-        assertThat(body.worstDays()).isEqualTo(List.of(twoDaysAgoDow));
+        assertThat(body.bestDays())
+            .containsExactlyInAnyOrder(WEDNESDAY, SUNDAY);
+        assertThat(body.worstDays())
+            .containsExactlyInAnyOrder(MONDAY, TUESDAY, FRIDAY, THURSDAY, SATURDAY);
     }
 
     @Test
@@ -92,6 +109,7 @@ class StatisticsControllerTest extends BaseRestApiTest {
             "/api/statistics/cars/BMW", GET, null, BrandStatisticsResponse.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+        assertThat(response.getStatusCode())
+            .isEqualTo(UNAUTHORIZED);
     }
 }

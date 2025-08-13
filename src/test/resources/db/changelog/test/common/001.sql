@@ -17,7 +17,13 @@ insert into car (id, title, brand, fuel_type, mileage, mileage_unit, price, curr
 (13, 'BMW 3 clearly higher', 'BMW', 'Petrol', 195000, 'km', 23000, 'EUR', 'https://www.example.com/bmw-3-13', now() - interval '7 hours', 'Above 1.05*avg', 'OTOMOTO', 'https://www.example.com/bmw-3-13-thumb'),
 (14, 'Mercedes C no-mileage', 'Mercedes', 'Diesel', null, 'km', 25000, 'EUR', 'https://www.example.com/mercedes-c-14', now() - interval '8 hours', 'Null mileage -> band [0,0]', 'OTOMOTO', 'https://www.example.com/mercedes-c-14-thumb'),
 (15, 'Mercedes C case-key', 'Mercedes', 'Diesel', 300000, 'km', 32000, 'EUR', 'https://www.example.com/mercedes-c-15', now() - interval '9 hours', 'Case-insensitive detail key', 'OTOMOTO', 'https://www.example.com/mercedes-c-15-thumb'),
-(16, 'Toyota Corolla fresh', 'Toyota', 'Petrol', 400000, 'km', 38000, 'EUR', 'https://www.otomoto.pl/osobowe/oferta/valid-url-4', now() - interval '10 day', 'Fresh listing for expiry contrast', 'OLX', 'https://www.example.com/toyota-corolla-16-thumb');
+(16, 'Toyota Corolla fresh', 'Toyota', 'Petrol', 400000, 'km', 38000, 'EUR', 'https://www.otomoto.pl/osobowe/oferta/valid-url-4', now() - interval '10 day', 'Fresh listing for expiry contrast', 'OLX', 'https://www.example.com/toyota-corolla-16-thumb'),
+(17, 'BMW 3 hist 3d', 'BMW', 'Petrol', 220000, 'km', 21000, 'EUR', 'https://www.example.com/bmw-3-17', now() - interval '3 day', 'Historical BMW', 'OTOMOTO', 'https://www.example.com/bmw-3-17-thumb'),
+(18, 'BMW 3 hist 4d', 'BMW', 'Petrol', 220000, 'km', 20000, 'EUR', 'https://www.example.com/bmw-3-18', now() - interval '4 day', 'Historical BMW', 'OTOMOTO', 'https://www.example.com/bmw-3-18-thumb'),
+(19, 'BMW 3 hist 5d', 'BMW', 'Petrol', 220000, 'km', 19000, 'EUR', 'https://www.example.com/bmw-3-19', now() - interval '5 day', 'Historical BMW', 'OTOMOTO', 'https://www.example.com/bmw-3-19-thumb'),
+(20, 'BMW 3 hist 6d', 'BMW', 'Petrol', 220000, 'km', 20000, 'EUR', 'https://www.example.com/bmw-3-20', now() - interval '6 day', 'Historical BMW', 'OTOMOTO', 'https://www.example.com/bmw-3-20-thumb'),
+(21, 'BMW 3 hist 7d', 'BMW', 'Petrol', 220000, 'km', 18000, 'EUR', 'https://www.example.com/bmw-3-21', now() - interval '7 day', 'Historical BMW', 'OTOMOTO', 'https://www.example.com/bmw-3-21-thumb'),
+(22, 'BMW 3 hist 8d', 'BMW', 'Petrol', 220000, 'km', 20000, 'EUR', 'https://www.example.com/bmw-3-22', now() - interval '8 day', 'Historical BMW', 'OTOMOTO', 'https://www.example.com/bmw-3-22-thumb');
 
 insert into car_detail (id, car_id, detail, value) values
 (1, 1, 'color', 'black'),
