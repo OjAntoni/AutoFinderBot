@@ -35,6 +35,12 @@ public class CarController {
         return webCarService.getCars(request, pageable);
     }
 
+    @GetMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    public CarResponse getCar(@PathVariable long id) {
+        return webCarService.getCar(id);
+    }
+
     @GetMapping("/{id}/similar/prices")
     @SecurityRequirement(name = "bearerAuth")
     public SimilarCarPricesResponse getSimilarCarPrices(@PathVariable long id) {

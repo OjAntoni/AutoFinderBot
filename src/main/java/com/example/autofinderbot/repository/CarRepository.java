@@ -22,9 +22,9 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
         JOIN c.details modelDetail
         JOIN c.details yearDetail
         WHERE c.brand = :brand
-          AND modelDetail.detail = 'Model'
+          AND LOWER(modelDetail.detail) = 'model'
           AND modelDetail.value = :model
-          AND yearDetail.detail = 'Year'
+          AND LOWER(yearDetail.detail) = 'year'
           AND yearDetail.value = :year
           AND c.mileage BETWEEN :minMileage AND :maxMileage
     """)

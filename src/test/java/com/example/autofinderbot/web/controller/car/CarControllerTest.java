@@ -117,6 +117,25 @@ class CarControllerTest extends BaseRestApiTest {
     }
 
     @Test
+    void getCarById_PosTC() {
+        ResponseEntity<CarResponse> response = testRequestSender.asAdmin(
+            "/api/cars/1", GET, null, CarResponse.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getId()).isEqualTo(1L);
+        assertThat(response.getBody().getTitle()).isEqualTo("Audi A4");
+    }
+
+    @Test
+    void unauthorizedGetCarById_NegTC() {
+        ResponseEntity<CarResponse> response = testRequestSender.unauthorized(
+            "/api/cars/1", GET, null, CarResponse.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
+    }
+
+    @Test
     void unauthorizedGetCars_NegTC() {
         ParameterizedTypeReference<PagedResponse<CarResponse>> type = new ParameterizedTypeReference<>() {};
         ResponseEntity<PagedResponse<CarResponse>> response = testRequestSender.unauthorized(

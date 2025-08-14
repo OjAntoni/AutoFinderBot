@@ -47,6 +47,13 @@ public class WebCarService {
     }
 
     @Transactional(readOnly = true)
+    public CarResponse getCar(long id) {
+        return carRepository.findById(id)
+            .map(this::toResponseWithDerivedFlags)
+            .orElse(null);
+    }
+
+    @Transactional(readOnly = true)
     public SimilarCarPricesResponse getSimilarCarPrices(long carId) {
         Car car = carRepository.findById(carId).orElse(null);
         if (car == null) {
