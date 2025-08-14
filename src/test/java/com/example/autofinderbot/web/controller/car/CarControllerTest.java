@@ -2,6 +2,8 @@ package com.example.autofinderbot.web.controller.car;
 
 import com.example.autofinderbot.configuration.BaseRestApiTest;
 import com.example.autofinderbot.web.dto.car.CarResponse;
+import com.example.autofinderbot.web.dto.car.SimilarCarPriceResponse;
+import com.example.autofinderbot.web.dto.car.SimilarCarPricesResponse;
 import com.example.autofinderbot.web.util.PagedResponse;
 import com.example.autofinderbot.web.util.TestRequestSender;
 import org.junit.jupiter.api.Test;
@@ -90,6 +92,28 @@ class CarControllerTest extends BaseRestApiTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getTotalElements()).isEqualTo(13L);
         assertThat(response.getBody().getContent().getFirst().getTitle()).isEqualTo("BMW 3 hist 8d");
+    }
+
+    @Test
+    void similarPrices_PosTC() {
+        ResponseEntity<SimilarCarPricesResponse> response = testRequestSender.asAdmin(
+            "/api/cars/1/similar/prices", GET, null, SimilarCarPricesResponse.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getCars())
+            .extracting(SimilarCarPriceResponse::getId)
+            .containsExactlyInAnyOrder(7L, 8L);
+        assertThat(response.getBody().getMinPrice()).isEqualTo(9500.0);
+        assertThat(response.getBody().getMaxPrice()).isEqualTo(10500.0);
+    }
+
+    @Test
+    void unauthorizedSimilarPrices_NegTC() {
+        ResponseEntity<SimilarCarPricesResponse> response = testRequestSender.unauthorized(
+            "/api/cars/1/similar/prices", GET, null, SimilarCarPricesResponse.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(UNAUTHORIZED);
     }
 
     @Test

@@ -8,6 +8,8 @@ import com.example.autofinderbot.shared.Details;
 import com.example.autofinderbot.web.specification.CarSpecifications;
 import com.example.autofinderbot.web.dto.car.CarRequest;
 import com.example.autofinderbot.web.dto.car.CarResponse;
+import com.example.autofinderbot.web.dto.car.SimilarCarPriceResponse;
+import com.example.autofinderbot.web.dto.car.SimilarCarPricesResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,6 +44,39 @@ public class WebCarService {
 
         return carRepository.findAll(spec, pageable)
             .map(this::toResponseWithDerivedFlags);
+    }
+
+    @Transactional(readOnly = true)
+    public SimilarCarPricesResponse getSimilarCarPrices(long carId) {
+        Car car = carRepository.findById(carId).orElse(null);
+        if (car == null) {
+            return new SimilarCarPricesResponse(Collections.emptyList(), 0, 0);
+        }
+
+        String model = detailValueIgnoreCase(car, Details.MODEL.name);
+        String year = detailValueIgnoreCase(car, Details.YEAR.name);
+
+        String brand = car.getBrand();
+        long mileage = nonNullMileage(car.getMileage());
+        long minMileage = lowerBound(mileage, MILEAGE_TOLERANCE);
+        long maxMileage = upperBound(mileage, MILEAGE_TOLERANCE);
+
+        if (brand == null || model == null || year == null) {
+            return new SimilarCarPricesResponse(Collections.emptyList(), 0, 0);
+        }
+
+        List<Car> similar = carRepository.findSimilarCars(
+            brand, model, year, minMileage, maxMileage, carId
+        );
+
+        List<SimilarCarPriceResponse> responses = similar.stream()
+            .map(c -> new SimilarCarPriceResponse(c.getId(), c.getUrl(), c.getPrice(), c.getThumbnailUrl()))
+            .toList();
+
+        double minPrice = responses.stream().mapToDouble(SimilarCarPriceResponse::getPrice).min().orElse(0);
+        double maxPrice = responses.stream().mapToDouble(SimilarCarPriceResponse::getPrice).max().orElse(0);
+
+        return new SimilarCarPricesResponse(responses, minPrice, maxPrice);
     }
 
     private CarResponse toResponseWithDerivedFlags(Car car) {
@@ -104,6 +140,18 @@ public class WebCarService {
                 CarDetail::getDetail,
                 CarDetail::getValue
             ));
+    }
+
+    private String detailValueIgnoreCase(Car car, String key) {
+        if (car.getDetails() == null) {
+            return null;
+        }
+        return car.getDetails().stream()
+            .filter(Objects::nonNull)
+            .filter(cd -> key.equalsIgnoreCase(cd.getDetail()))
+            .map(CarDetail::getValue)
+            .findFirst()
+            .orElse(null);
     }
 
     private boolean isDamaged(Map<String, String> details) {
