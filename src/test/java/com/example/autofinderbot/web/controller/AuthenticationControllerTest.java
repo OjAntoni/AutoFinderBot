@@ -25,7 +25,8 @@ class AuthenticationControllerTest extends BaseRestApiTest {
         .then()
             .statusCode(OK.value())
             .body("tokenType", equalTo("Bearer"))
-            .body("accessToken", Matchers.notNullValue());
+            .body("accessToken", Matchers.notNullValue())
+            .body("expiresAt", Matchers.notNullValue());
     }
 
     @Test
