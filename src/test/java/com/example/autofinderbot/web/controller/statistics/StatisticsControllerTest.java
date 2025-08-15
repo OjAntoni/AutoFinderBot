@@ -11,9 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-import static java.time.DayOfWeek.*;
-import static java.time.DayOfWeek.SUNDAY;
-import static java.time.DayOfWeek.WEDNESDAY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
@@ -22,6 +19,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.EnumSet;
 import java.util.List;
 
 class StatisticsControllerTest extends BaseRestApiTest {
@@ -97,10 +95,15 @@ class StatisticsControllerTest extends BaseRestApiTest {
                 new DayCount(today, 4L)
             );
 
+        DayOfWeek todayDay = today.getDayOfWeek();
+        DayOfWeek fiveDaysAgoDay = today.minusDays(5).getDayOfWeek();
+        List<DayOfWeek> expectedBestDays = List.of(todayDay, fiveDaysAgoDay);
+        EnumSet<DayOfWeek> expectedWorstDays = EnumSet.complementOf(EnumSet.of(todayDay, fiveDaysAgoDay));
+
         assertThat(body.bestDays())
-            .containsExactlyInAnyOrder(WEDNESDAY, FRIDAY);
+            .containsExactlyInAnyOrderElementsOf(expectedBestDays);
         assertThat(body.worstDays())
-            .containsExactlyInAnyOrder(SATURDAY, TUESDAY, SUNDAY, THURSDAY, MONDAY);
+            .containsExactlyInAnyOrderElementsOf(expectedWorstDays);
     }
 
     @Test

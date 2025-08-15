@@ -22,9 +22,9 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
         JOIN c.details modelDetail
         JOIN c.details yearDetail
         WHERE c.brand = :brand
-          AND modelDetail.detail = 'Model'
+          AND LOWER(modelDetail.detail) = 'model'
           AND modelDetail.value = :model
-          AND yearDetail.detail = 'Year'
+          AND LOWER(yearDetail.detail) = 'year'
           AND yearDetail.value = :year
           AND c.mileage BETWEEN :minMileage AND :maxMileage
     """)
@@ -34,5 +34,27 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
         @Param("year") String year,
         @Param("minMileage") long minMileage,
         @Param("maxMileage") long maxMileage
+    );
+
+    @Query("""
+        SELECT DISTINCT c
+        FROM Car c
+        JOIN c.details modelDetail
+        JOIN c.details yearDetail
+        WHERE c.brand = :brand
+          AND LOWER(modelDetail.detail) = 'model'
+          AND modelDetail.value = :model
+          AND LOWER(yearDetail.detail) = 'year'
+          AND yearDetail.value = :year
+          AND c.mileage BETWEEN :minMileage AND :maxMileage
+          AND c.id <> :carId
+    """)
+    List<Car> findSimilarCars(
+        @Param("brand") String brand,
+        @Param("model") String model,
+        @Param("year") String year,
+        @Param("minMileage") long minMileage,
+        @Param("maxMileage") long maxMileage,
+        @Param("carId") long carId
     );
 }
