@@ -4,16 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.EqualsAndHashCode.Exclude;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PRIVATE;
 
 @Entity
+@Table(indexes = {
+    @Index(name = "idx_car_brand", columnList = "brand"),
+    @Index(name = "idx_car_fuel_type", columnList = "fuelType"),
+    @Index(name = "idx_car_mileage", columnList = "mileage"),
+    @Index(name = "idx_car_price", columnList = "price")
+})
 @NoArgsConstructor
 @FieldDefaults(level = PRIVATE)
 @Getter
@@ -41,14 +48,17 @@ public class Car {
         joinColumns = @JoinColumn(name = "car_id")
     )
     @Column(name = "image_url")
+    @BatchSize(size = 100)
     List<String> imageUrls;
     @Exclude
     LocalDateTime createdAt;
     @Exclude
-    @OneToMany(mappedBy = "carId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = EAGER)
+    @OneToMany(mappedBy = "carId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = LAZY)
+    @BatchSize(size = 100)
     List<CarDetail> details;
-    @OneToOne(cascade = ALL, fetch = EAGER)
+    @OneToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
+    @BatchSize(size = 100)
     Seller seller;
     String description;
 

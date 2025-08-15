@@ -1,22 +1,25 @@
 package com.example.autofinderbot.web.service;
 
+import com.example.autofinderbot.config.CacheConfig;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.mapper.CarMapper;
 import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.shared.Details;
-import com.example.autofinderbot.web.specification.CarSpecifications;
 import com.example.autofinderbot.web.dto.car.CarRequest;
 import com.example.autofinderbot.web.dto.car.CarResponse;
 import com.example.autofinderbot.web.dto.car.SimilarCarPriceResponse;
 import com.example.autofinderbot.web.dto.car.SimilarCarPricesResponse;
+import com.example.autofinderbot.web.specification.CarSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +42,8 @@ public class WebCarService {
     CarMapper carMapper;
 
     @Transactional(readOnly = true)
+    @Cacheable(value = CacheConfig.CAR_SEARCH_CACHE,
+        key = "#request + '_' + #pageable.pageNumber + '_' + #pageable.pageSize + '_' + #pageable.sort")
     public Page<CarResponse> getCars(CarRequest request, Pageable pageable) {
         Specification<Car> spec = CarSpecifications.build(request);
 
