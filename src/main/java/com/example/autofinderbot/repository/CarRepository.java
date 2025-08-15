@@ -64,4 +64,31 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
         @Param("maxMileage") long maxMileage,
         @Param("carId") long carId
     );
+
+    @Query("""
+        SELECT c.id AS id,
+               (
+                   SELECT AVG(c2.price)
+                   FROM Car c2
+                   JOIN c2.details md2
+                   JOIN c2.details yd2
+                   WHERE c2.brand = c.brand
+                     AND LOWER(md2.detail) = 'model'
+                     AND md2.value = md.value
+                     AND LOWER(yd2.detail) = 'year'
+                     AND yd2.value = yd.value
+                     AND c2.mileage BETWEEN c.mileage * (1.0 - :tolerance) AND c.mileage * (1.0 + :tolerance)
+                     AND c2.id <> c.id
+               ) AS avgPrice
+        FROM Car c
+        JOIN c.details md
+        JOIN c.details yd
+        WHERE c.id IN :ids
+          AND LOWER(md.detail) = 'model'
+          AND LOWER(yd.detail) = 'year'
+    """)
+    List<CarAveragePrice> avgPriceForSimilarBulk(
+        @Param("ids") List<Long> ids,
+        @Param("tolerance") double tolerance
+    );
 }
