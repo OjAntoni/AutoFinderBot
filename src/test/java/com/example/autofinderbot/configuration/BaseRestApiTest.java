@@ -51,6 +51,6 @@ public class BaseRestApiTest extends BaseSpringBootTest {
             userDetails, null, userDetails.getAuthorities()
         );
 
-        return tokenProvider.generateToken(authentication);
+        return tokenProvider.generateToken(authentication).accessToken();
     }
 }

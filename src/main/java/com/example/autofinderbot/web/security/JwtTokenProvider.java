@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 @Component
@@ -20,22 +23,29 @@ public class JwtTokenProvider {
     public JwtTokenProvider(@Value("${app.jwt.secret}") String secret,
                             @Value("${app.jwt.expiration-in-ms}") long jwtExpirationInMs,
                             DateTimeUtil dateTimeUtil) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length < 64) {
+            throw new IllegalArgumentException("JWT secret must be at least 64 bytes");
+        }
+        this.key = Keys.hmacShaKeyFor(keyBytes);
         this.jwtExpirationInMs = jwtExpirationInMs;
         this.dateTimeUtil = dateTimeUtil;
     }
 
-    public String generateToken(Authentication authentication) {
+    public JwtToken generateToken(Authentication authentication) {
         String username = authentication.getName();
         Date now = dateTimeUtil.convert(dateTimeUtil.now());
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
-        return Jwts.builder()
+        String token = Jwts.builder()
             .setSubject(username)
             .setIssuedAt(now)
             .setExpiration(expiryDate)
             .signWith(key, SignatureAlgorithm.HS512)
             .compact();
+
+        OffsetDateTime expiresAt = expiryDate.toInstant().atOffset(ZoneOffset.UTC);
+        return new JwtToken(token, expiresAt);
     }
 
     public String getUsernameFromJWT(String token) {
@@ -56,4 +66,6 @@ public class JwtTokenProvider {
         }
         return true;
     }
+
+    public record JwtToken(String accessToken, OffsetDateTime expiresAt) {}
 }

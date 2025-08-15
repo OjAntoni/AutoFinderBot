@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtTokenProviderTest {
 
@@ -19,19 +23,20 @@ class JwtTokenProviderTest {
         JwtTokenProvider provider = createProvider(1000);
         Authentication auth = new UsernamePasswordAuthenticationToken("user", null);
 
-        String token = provider.generateToken(auth);
+        JwtTokenProvider.JwtToken token = provider.generateToken(auth);
 
-        assertThat(provider.getUsernameFromJWT(token)).isEqualTo("user");
-        assertThat(provider.validateToken(token)).isTrue();
+        assertThat(provider.getUsernameFromJWT(token.accessToken())).isEqualTo("user");
+        assertThat(provider.validateToken(token.accessToken())).isTrue();
+        assertThat(token.expiresAt()).isAfter(OffsetDateTime.now(ZoneOffset.UTC));
     }
 
     @Test
     void validateTokenWhenTampered_NegTC() {
         JwtTokenProvider provider = createProvider(1000);
         Authentication auth = new UsernamePasswordAuthenticationToken("user", null);
-        String token = provider.generateToken(auth);
+        JwtTokenProvider.JwtToken token = provider.generateToken(auth);
 
-        String tampered = token + "a";
+        String tampered = token.accessToken() + "a";
 
         assertThat(provider.validateToken(tampered)).isFalse();
     }
@@ -40,10 +45,18 @@ class JwtTokenProviderTest {
     void validateTokenWhenExpired_NegTC() throws InterruptedException {
         JwtTokenProvider provider = createProvider(100);
         Authentication auth = new UsernamePasswordAuthenticationToken("user", null);
-        String token = provider.generateToken(auth);
+        JwtTokenProvider.JwtToken token = provider.generateToken(auth);
 
         Thread.sleep(200);
 
-        assertThat(provider.validateToken(token)).isFalse();
+        assertThat(provider.validateToken(token.accessToken())).isFalse();
+    }
+
+    @Test
+    void constructWithShortSecret_NegTC() {
+        String shortSecret = "short"; // length < 64 bytes
+        assertThatThrownBy(() -> new JwtTokenProvider(shortSecret, 1000, new DateTimeUtil()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("64 bytes");
     }
 }
