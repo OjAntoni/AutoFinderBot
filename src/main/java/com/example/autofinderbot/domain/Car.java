@@ -58,7 +58,6 @@ public class Car {
     List<CarDetail> details;
     @OneToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
-    @BatchSize(size = 100)
     Seller seller;
     String description;
 

@@ -13,13 +13,11 @@ import org.springframework.context.annotation.Configuration;
 @EnableCaching
 public class CacheConfig {
     public static final String CAR_URLS_CACHE = "car_urls";
-    public static final String CAR_SEARCH_CACHE = "car_search";
 
     @Bean
     public CacheManager cacheManager(Cache<Object, Object> caffeine) {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.registerCustomCache(CAR_URLS_CACHE, caffeine);
-        cacheManager.registerCustomCache(CAR_SEARCH_CACHE, caffeine);
         return cacheManager;
     }
 

@@ -1,6 +1,5 @@
 package com.example.autofinderbot.web.service;
 
-import com.example.autofinderbot.config.CacheConfig;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.mapper.CarMapper;
@@ -14,7 +13,6 @@ import com.example.autofinderbot.web.dto.car.SimilarCarPricesResponse;
 import com.example.autofinderbot.web.specification.CarSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -40,8 +38,6 @@ public class WebCarService {
     CarMapper carMapper;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = CacheConfig.CAR_SEARCH_CACHE,
-        key = "#request + '_' + #pageable.pageNumber + '_' + #pageable.pageSize + '_' + #pageable.sort")
     public Page<CarResponse> getCars(CarRequest request, Pageable pageable) {
         Specification<Car> spec = CarSpecifications.build(request);
 
@@ -161,6 +157,13 @@ public class WebCarService {
         }
         List<Long> ids = cars.stream().map(Car::getId).toList();
         List<CarAveragePrice> averages = carRepository.avgPriceForSimilarBulk(ids, MILEAGE_TOLERANCE);
-        return averages.stream().collect(Collectors.toMap(CarAveragePrice::getId, CarAveragePrice::getAvgPrice));
+
+        return averages.stream()
+            .filter(ap -> ap.getAvgPrice() != null)
+            .collect(Collectors.toMap(
+                CarAveragePrice::getId,
+                CarAveragePrice::getAvgPrice,
+                (existing, replacement) -> existing
+            ));
     }
 }
