@@ -163,8 +163,7 @@ public class WebCarService {
             .filter(ap -> ap.getAvgPrice() != null)
             .collect(Collectors.toMap(
                 CarAveragePrice::getId,
-                CarAveragePrice::getAvgPrice,
-                (existing, replacement) -> existing
+                CarAveragePrice::getAvgPrice
             ));
     }
 }
