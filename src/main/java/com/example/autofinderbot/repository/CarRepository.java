@@ -1,6 +1,7 @@
 package com.example.autofinderbot.repository;
 
 import com.example.autofinderbot.domain.Car;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -19,29 +20,10 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
     boolean existsByUrl(String url);
     List<Car> findAllByCreatedAtBefore(LocalDateTime dateTime);
 
+    @NotNull
     @Override
-    @EntityGraph(attributePaths = "seller")
+    @EntityGraph(attributePaths = {"seller", "details"})
     Page<Car> findAll(Specification<Car> spec, Pageable pageable);
-
-    @Query("""
-        SELECT AVG(c.price)
-        FROM Car c
-        JOIN c.details modelDetail
-        JOIN c.details yearDetail
-        WHERE c.brand = :brand
-          AND LOWER(modelDetail.detail) = 'model'
-          AND modelDetail.value = :model
-          AND LOWER(yearDetail.detail) = 'year'
-          AND yearDetail.value = :year
-          AND c.mileage BETWEEN :minMileage AND :maxMileage
-    """)
-    Double avgPriceForSimilar(
-        @Param("brand") String brand,
-        @Param("model") String model,
-        @Param("year") String year,
-        @Param("minMileage") long minMileage,
-        @Param("maxMileage") long maxMileage
-    );
 
     @Query("""
         SELECT DISTINCT c

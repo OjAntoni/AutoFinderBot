@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.FetchType.EAGER;
 import static lombok.AccessLevel.PRIVATE;
 
 @Entity
@@ -53,10 +53,10 @@ public class Car {
     @Exclude
     LocalDateTime createdAt;
     @Exclude
-    @OneToMany(mappedBy = "carId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = LAZY)
+    @OneToMany(mappedBy = "carId", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = EAGER)
     @BatchSize(size = 100)
     List<CarDetail> details;
-    @OneToOne(cascade = ALL, fetch = LAZY)
+    @OneToOne(cascade = ALL, fetch = EAGER)
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
     Seller seller;
     String description;

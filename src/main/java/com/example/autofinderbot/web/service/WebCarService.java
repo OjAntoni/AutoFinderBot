@@ -89,7 +89,8 @@ public class WebCarService {
         return new SimilarCarPricesResponse(responses, minPrice, maxPrice);
     }
 
-    private CarResponse toResponseWithDerivedFlags(Car car, Double avgSimilar) {
+    @Transactional(readOnly = true)
+    protected CarResponse toResponseWithDerivedFlags(Car car, Double avgSimilar) {
         Map<String, String> details = carDetailsMap(car);
 
         CarResponse response = carMapper.toResponse(car);
