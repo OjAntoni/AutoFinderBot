@@ -1,8 +1,8 @@
-package com.example.autofinderbot;
+package com.example.autofinderbot.common.config.telegram;
 
-import com.example.autofinderbot.config.TelegramRelated;
+import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
 import com.example.autofinderbot.shared.Logger;
-import com.example.autofinderbot.telegram.StrategyContext;
+import com.example.autofinderbot.common.config.telegram.listener.StrategyContext;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -18,12 +18,16 @@ import static lombok.AccessLevel.PRIVATE;
 @Component
 @TelegramRelated
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
+class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
     String botToken;
     Logger logger;
     StrategyContext strategyContext;
 
-    public TelegramBot(@Value("${telegram.bot.token}") String token, Logger logger, StrategyContext strategyContext) {
+    public TelegramBot(
+            @Value("${telegram.bot.token}") String token,
+            Logger logger,
+            StrategyContext strategyContext)
+    {
         botToken = token;
         this.logger = logger;
         this.strategyContext = strategyContext;

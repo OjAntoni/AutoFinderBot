@@ -1,6 +1,6 @@
-package com.example.autofinderbot.telegram;
+package com.example.autofinderbot.common.config.telegram.listener;
 
-import com.example.autofinderbot.config.TelegramRelated;
+import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.service.UserHistoryService;
 import com.example.autofinderbot.shared.Logger;

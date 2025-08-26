@@ -1,4 +1,4 @@
-package com.example.autofinderbot.telegram;
+package com.example.autofinderbot.common.config.telegram.listener;
 
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.service.UserService;
@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 @Component
 @RequiredArgsConstructor
-public class StrategyUserProvider {
+class StrategyUserProvider {
     private final UserService userService;
     private final DateTimeUtil dateTimeUtil;
 

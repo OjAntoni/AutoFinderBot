@@ -1,4 +1,4 @@
-package com.example.autofinderbot.telegram;
+package com.example.autofinderbot.common.config.telegram.listener;
 
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class StrategyArgumentParser {
+class StrategyArgumentParser {
 
     private final Logger logger;
 

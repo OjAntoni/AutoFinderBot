@@ -1,5 +1,6 @@
 package com.example.autofinderbot.service;
 
+import com.example.autofinderbot.common.config.cache.CacheProperties;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.repository.CarDetailRepository;
@@ -22,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-import static com.example.autofinderbot.config.CacheConfig.CAR_URLS_CACHE;
 import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -35,6 +35,7 @@ public class CarService {
     CarDetailRepository carDetailRepository;
     CacheManager cacheManager;
     DateTimeUtil dateTimeUtil;
+    CacheProperties cacheProps;
     @NonFinal
     @Value("${synchronization.cars.expired-after.days:14}")
     int intervalDays;
@@ -48,14 +49,14 @@ public class CarService {
                 .toList();
         carDetailRepository.saveAll(carDetails);
 
-        Cache cache = cacheManager.getCache(CAR_URLS_CACHE);
+        Cache cache = cacheManager.getCache(cacheProps.getCarUrl());
         savedCars.stream().map(Car::getUrl).forEach(url -> requireNonNull(cache).put(url, true));
 
         return savedCars;
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = CAR_URLS_CACHE, key = "#url")
+    @Cacheable(cacheResolver = "carUrlCacheResolver", key = "#url")
     public boolean exists(@NotNull String url) {
         return carRepository.existsByUrl(url);
     }
@@ -71,7 +72,7 @@ public class CarService {
         List<Long> ids = cars.stream().map(Car::getId).toList();
         carRepository.deleteAllById(ids);
 
-        Cache cache = cacheManager.getCache(CAR_URLS_CACHE);
+        Cache cache = cacheManager.getCache(cacheProps.getCarUrl());
         cars.stream().map(Car::getUrl).forEach(url -> {
             requireNonNull(cache);
             if(cache.get(url) != null){

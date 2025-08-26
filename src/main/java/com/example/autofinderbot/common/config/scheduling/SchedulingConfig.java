@@ -1,4 +1,4 @@
-package com.example.autofinderbot.config;
+package com.example.autofinderbot.common.config.scheduling;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @EnableScheduling
 @Profile("!test")
 public class SchedulingConfig {
-
     @Bean
     TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();

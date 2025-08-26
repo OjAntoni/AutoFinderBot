@@ -1,6 +1,6 @@
 package com.example.autofinderbot.configuration;
 
-import com.example.autofinderbot.config.TelegramRelatedCondition;
+import com.example.autofinderbot.common.config.telegram.components.TelegramRelatedCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

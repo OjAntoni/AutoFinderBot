@@ -1,6 +1,7 @@
-package com.example.autofinderbot.telegram;
+package com.example.autofinderbot.common.config.telegram.listener;
 
 
+import com.example.autofinderbot.common.config.telegram.listener.CommandListener;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.telegram.exception.TelegramBotException;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package com.example.autofinderbot.service;
 
-import com.example.autofinderbot.config.TelegramRelated;
+import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
 import com.example.autofinderbot.domain.Notification;
 import com.example.autofinderbot.repository.NotificationRepository;
 import com.example.autofinderbot.shared.Logger;

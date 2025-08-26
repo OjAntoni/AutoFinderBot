@@ -20,7 +20,7 @@ import java.util.List;
 
 import static com.example.autofinderbot.domain.Message.State.DESCRIPTION;
 import static com.example.autofinderbot.domain.Message.State.DETAILS;
-import static com.example.autofinderbot.telegram.CommandPath.*;
+import static com.example.autofinderbot.common.config.telegram.listener.CommandPath.*;
 import static com.example.autofinderbot.telegram.converter.Parameter.of;
 import static lombok.AccessLevel.PRIVATE;
 

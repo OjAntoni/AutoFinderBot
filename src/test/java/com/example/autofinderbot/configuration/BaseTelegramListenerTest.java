@@ -1,6 +1,6 @@
 package com.example.autofinderbot.configuration;
 
-import com.example.autofinderbot.telegram.StrategyContext;
+import com.example.autofinderbot.common.config.telegram.listener.StrategyContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Answers;
 import org.mockito.Mock;

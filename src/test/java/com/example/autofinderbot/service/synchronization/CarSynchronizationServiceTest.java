@@ -1,5 +1,6 @@
 package com.example.autofinderbot.service.synchronization;
 
+import com.example.autofinderbot.common.config.cache.CacheProperties;
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.Report;
@@ -24,7 +25,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import static com.example.autofinderbot.config.CacheConfig.CAR_URLS_CACHE;
 import static com.example.autofinderbot.domain.Report.Operation.DELETE;
 import static com.example.autofinderbot.domain.Report.Operation.INSERT;
 import static java.util.Comparator.comparing;
@@ -56,13 +56,16 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
     @Autowired
     CacheManager cacheManager;
 
+    @Autowired
+    CacheProperties props;
+
     @MockitoSpyBean
     DocumentService<Document> documentService;
 
     @Test
     @DirtiesContext
     void saveAllCars_PosTC(){
-        Cache cache = cacheManager.getCache(CAR_URLS_CACHE);
+        Cache cache = cacheManager.getCache(props.getCarUrl());
         long count = carRepository.count();
 
         carSynchronizationService.updateCarDatabase();
@@ -119,7 +122,7 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
 
     @Test
     void deleteExpiredCars_PosTC(){
-        Cache cache = cacheManager.getCache(CAR_URLS_CACHE);
+        Cache cache = cacheManager.getCache(props.getCarUrl());
         carService.exists("https://www.otomoto.pl/osobowe/oferta/invalid-url-1");
         carService.exists("https://www.otomoto.pl/osobowe/oferta/invalid-url-2");
         carService.exists("https://www.otomoto.pl/osobowe/oferta/invalid-url-3");

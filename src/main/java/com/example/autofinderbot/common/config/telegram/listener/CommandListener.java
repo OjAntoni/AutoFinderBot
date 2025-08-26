@@ -1,4 +1,4 @@
-package com.example.autofinderbot.telegram;
+package com.example.autofinderbot.common.config.telegram.listener;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

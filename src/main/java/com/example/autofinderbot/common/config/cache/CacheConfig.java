@@ -1,4 +1,4 @@
-package com.example.autofinderbot.config;
+package com.example.autofinderbot.common.config.cache;
 
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -11,20 +11,18 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableCaching
-public class CacheConfig {
-    public static final String CAR_URLS_CACHE = "car_urls";
-
+class CacheConfig {
     @Bean
-    public CacheManager cacheManager(Cache<Object, Object> caffeine) {
+    public CacheManager cacheManager(Cache<Object, Object> caffeine, CacheProperties props) {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.registerCustomCache(CAR_URLS_CACHE, caffeine);
+        cacheManager.registerCustomCache(props.getCarUrl(), caffeine);
         return cacheManager;
     }
 
     @Bean
-    Cache<Object, Object> caffeine() {
+    public Cache<Object, Object> caffeine(CacheProperties props) {
         return Caffeine.newBuilder()
-                .maximumSize(100)
+                .maximumSize(props.getMaxSize())
                 .recordStats()
                 .build();
     }

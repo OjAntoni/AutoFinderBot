@@ -1,5 +1,6 @@
 package com.example.autofinderbot.service;
 
+import com.example.autofinderbot.common.config.cache.CacheProperties;
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.domain.Car;
@@ -15,9 +16,7 @@ import org.springframework.cache.CacheManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
-import static com.example.autofinderbot.config.CacheConfig.CAR_URLS_CACHE;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,6 +31,8 @@ class CarServiceTest extends BaseSpringBootTest {
     ReportRepository reportRepository;
     @Autowired
     CacheManager cacheManager;
+    @Autowired
+    CacheProperties props;
 
     @Test
     void existsByUrl_PosTC() {
@@ -41,7 +42,7 @@ class CarServiceTest extends BaseSpringBootTest {
 
     @Test
     void saveAll_PosTC() {
-        Cache cache = cacheManager.getCache(CAR_URLS_CACHE);
+        Cache cache = cacheManager.getCache(props.getCarUrl());
         requireNonNull(cache);
 
         List<Car> cars = List.of(
@@ -89,7 +90,7 @@ class CarServiceTest extends BaseSpringBootTest {
 
     @Test
     void deleteAll_PosTC(){
-        Cache cache = cacheManager.getCache(CAR_URLS_CACHE);
+        Cache cache = cacheManager.getCache(props.getCarUrl());
         requireNonNull(cache).put("https://www.example.com/audi-a4", true);
 
         carService.deleteAll(carRepository.findAllById(List.of(1L, 2L)));

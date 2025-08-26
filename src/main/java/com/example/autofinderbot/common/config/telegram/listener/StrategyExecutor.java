@@ -1,6 +1,6 @@
-package com.example.autofinderbot.telegram;
+package com.example.autofinderbot.common.config.telegram.listener;
 
-import com.example.autofinderbot.config.TelegramRelated;
+import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
 import com.example.autofinderbot.telegram.exception.TelegramBotException;
 import com.example.autofinderbot.shared.Logger;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 @TelegramRelated
 @RequiredArgsConstructor
-public class StrategyExecutor {
+class StrategyExecutor {
     private final ApplicationContext applicationContext;
     private final Logger logger;
     private final TelegramClient telegramClient;

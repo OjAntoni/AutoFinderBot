@@ -1,12 +1,12 @@
 package com.example.autofinderbot.telegram.listener;
 
-import com.example.autofinderbot.config.TelegramRelated;
+import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.service.CarService;
 import com.example.autofinderbot.service.MessageService;
 import com.example.autofinderbot.service.UserService;
-import com.example.autofinderbot.telegram.CommandListener;
+import com.example.autofinderbot.common.config.telegram.listener.CommandListener;
 import com.example.autofinderbot.telegram.converter.CarDetailsConverter;
 import com.example.autofinderbot.telegram.converter.CarMenuKeyboardConverter;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
-import static com.example.autofinderbot.telegram.CommandPath.HIDE_DETAILS;
-import static com.example.autofinderbot.telegram.CommandPath.SHOW_DETAILS;
+import static com.example.autofinderbot.common.config.telegram.listener.CommandPath.HIDE_DETAILS;
+import static com.example.autofinderbot.common.config.telegram.listener.CommandPath.SHOW_DETAILS;
 import static lombok.AccessLevel.PRIVATE;
 
 @Component

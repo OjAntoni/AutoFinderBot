@@ -1,4 +1,4 @@
-package com.example.autofinderbot.config;
+package com.example.autofinderbot.common.config.telegram.components;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

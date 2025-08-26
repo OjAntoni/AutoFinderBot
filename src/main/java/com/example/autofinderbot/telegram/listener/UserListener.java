@@ -1,10 +1,10 @@
 package com.example.autofinderbot.telegram.listener;
 
-import com.example.autofinderbot.config.TelegramRelated;
+import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.domain.UserFilter;
 import com.example.autofinderbot.service.UserService;
-import com.example.autofinderbot.telegram.CommandListener;
+import com.example.autofinderbot.common.config.telegram.listener.CommandListener;
 import com.example.autofinderbot.telegram.converter.UrlToFiltersConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -22,7 +22,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import java.util.Collections;
 import java.util.List;
 
-import static com.example.autofinderbot.telegram.CommandPath.*;
+import static com.example.autofinderbot.common.config.telegram.listener.CommandPath.*;
 import static java.lang.String.valueOf;
 import static lombok.AccessLevel.PRIVATE;
 
