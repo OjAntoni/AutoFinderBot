@@ -3,13 +3,14 @@ package com.example.autofinderbot.web.service;
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.mapper.CarMapper;
+import com.example.autofinderbot.repository.CarAveragePrice;
 import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.shared.Details;
-import com.example.autofinderbot.web.specification.CarSpecifications;
 import com.example.autofinderbot.web.dto.car.CarRequest;
 import com.example.autofinderbot.web.dto.car.CarResponse;
 import com.example.autofinderbot.web.dto.car.SimilarCarPriceResponse;
 import com.example.autofinderbot.web.dto.car.SimilarCarPricesResponse;
+import com.example.autofinderbot.web.specification.CarSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
@@ -17,10 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.autofinderbot.web.dto.car.CarResponse.PriceComparison.*;
@@ -42,14 +41,18 @@ public class WebCarService {
     public Page<CarResponse> getCars(CarRequest request, Pageable pageable) {
         Specification<Car> spec = CarSpecifications.build(request);
 
-        return carRepository.findAll(spec, pageable)
-            .map(this::toResponseWithDerivedFlags);
+        Page<Car> cars = carRepository.findAll(spec, pageable);
+        Map<Long, Double> averages = averagePricesFor(cars.getContent());
+        return cars.map(c -> toResponseWithDerivedFlags(c, averages.get(c.getId())));
     }
 
     @Transactional(readOnly = true)
     public CarResponse getCar(long id) {
         return carRepository.findById(id)
-            .map(this::toResponseWithDerivedFlags)
+            .map(car -> {
+                Map<Long, Double> avg = averagePricesFor(List.of(car));
+                return toResponseWithDerivedFlags(car, avg.get(car.getId()));
+            })
             .orElse(null);
     }
 
@@ -86,19 +89,9 @@ public class WebCarService {
         return new SimilarCarPricesResponse(responses, minPrice, maxPrice);
     }
 
-    private CarResponse toResponseWithDerivedFlags(Car car) {
+    @Transactional(readOnly = true)
+    protected CarResponse toResponseWithDerivedFlags(Car car, Double avgSimilar) {
         Map<String, String> details = carDetailsMap(car);
-
-        String model = details.get(Details.MODEL.name);
-        String year  = details.get(Details.YEAR.name);
-
-        long mileage = nonNullMileage(car.getMileage());
-        long minMileage = lowerBound(mileage, MILEAGE_TOLERANCE);
-        long maxMileage = upperBound(mileage, MILEAGE_TOLERANCE);
-
-        Double avgSimilar = averagePriceForSimilar(
-            car.getBrand(), model, year, minMileage, maxMileage
-        );
 
         CarResponse response = carMapper.toResponse(car);
         response.setPriceComparison(classifyPrice(car.getPrice(), avgSimilar));
@@ -117,13 +110,6 @@ public class WebCarService {
         if (price < lowerBound) return LOWER;
         if (price > upperBound) return HIGHER;
         return MEDIUM;
-    }
-
-    private Double averagePriceForSimilar(String brand, String model, String year, long minMileage, long maxMileage) {
-        if (brand == null || model == null || year == null) {
-            return null;
-        }
-        return carRepository.avgPriceForSimilar(brand, model, year, minMileage, maxMileage);
     }
 
     private long nonNullMileage(Long mileage) {
@@ -164,5 +150,20 @@ public class WebCarService {
     private boolean isDamaged(Map<String, String> details) {
         String damagedValue = details.get(Details.DAMAGED.name);
         return !"Nie".equalsIgnoreCase(damagedValue);
+    }
+
+    private Map<Long, Double> averagePricesFor(List<Car> cars) {
+        if (cars.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> ids = cars.stream().map(Car::getId).toList();
+        List<CarAveragePrice> averages = carRepository.avgPriceForSimilarBulk(ids, MILEAGE_TOLERANCE);
+
+        return averages.stream()
+            .filter(ap -> ap.getAvgPrice() != null)
+            .collect(Collectors.toMap(
+                CarAveragePrice::getId,
+                CarAveragePrice::getAvgPrice
+            ));
     }
 }

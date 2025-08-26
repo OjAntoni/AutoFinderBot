@@ -1,21 +1,19 @@
 package com.example.autofinderbot.telegram.converter;
 
 import com.example.autofinderbot.domain.Car;
-import com.example.autofinderbot.domain.Message;
 import com.example.autofinderbot.domain.Message.State;
 import com.example.autofinderbot.domain.Seller;
 import com.example.autofinderbot.domain.User;
 import com.example.autofinderbot.service.CarService;
 import com.example.autofinderbot.service.MessageService;
 import com.example.autofinderbot.service.UserService;
-import com.example.autofinderbot.telegram.CommandPath;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
-import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +34,7 @@ public class CarMenuKeyboardConverter {
     UserService userService;
     CarService carService;
 
+    @Transactional(readOnly = true)
     public InlineKeyboardMarkup menuKeyboard(User user, long carId) {
         Car car = carService.findById(carId);
         return menuKeyboard(user, car);

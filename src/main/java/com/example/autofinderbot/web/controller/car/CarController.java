@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,15 +25,19 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class CarController {
+    private static final int MAX_PAGE_SIZE = 100;
+
     WebCarService webCarService;
 
     @GetMapping
     @SecurityRequirement(name = "bearerAuth")
     public Page<CarResponse> getCars(
             @ModelAttribute CarRequest request,
-            @PageableDefault(sort = "id", direction = DESC) Pageable pageable
+            @PageableDefault(sort = "id", direction = DESC, size = 20) Pageable pageable
     ) {
-        return webCarService.getCars(request, pageable);
+        int size = Math.min(pageable.getPageSize(), MAX_PAGE_SIZE);
+        Pageable limited = PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
+        return webCarService.getCars(request, limited);
     }
 
     @GetMapping("/{id}")
