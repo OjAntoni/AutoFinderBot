@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.example.autofinderbot.shared.APIConstants.SEARCH_URL;
+import static com.example.autofinderbot.common.util.APIConstants.SEARCH_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;

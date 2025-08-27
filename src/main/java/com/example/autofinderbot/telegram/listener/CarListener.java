@@ -2,11 +2,11 @@ package com.example.autofinderbot.telegram.listener;
 
 import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
 import com.example.autofinderbot.domain.SelectedCar;
-import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.user.User;
 import com.example.autofinderbot.parser.service.DocumentService;
-import com.example.autofinderbot.service.UserService;
-import com.example.autofinderbot.shared.Logger;
-import com.example.autofinderbot.shared.RemoveSelectedCarEvent;
+import com.example.autofinderbot.user.UserService;
+import com.example.autofinderbot.common.util.Logger;
+import com.example.autofinderbot.common.event.RemoveSelectedCarEvent;
 import com.example.autofinderbot.common.config.telegram.listener.CommandListener;
 import com.example.autofinderbot.telegram.converter.CarMenuKeyboardConverter;
 import lombok.RequiredArgsConstructor;

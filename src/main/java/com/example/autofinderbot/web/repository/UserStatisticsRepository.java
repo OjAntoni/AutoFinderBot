@@ -1,6 +1,6 @@
 package com.example.autofinderbot.web.repository;
 
-import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.user.User;
 import com.example.autofinderbot.web.dto.statistics.UserStatisticsResponse;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

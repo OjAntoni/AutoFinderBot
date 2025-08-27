@@ -1,4 +1,4 @@
-package com.example.autofinderbot.shared;
+package com.example.autofinderbot.common.event;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;

@@ -1,5 +1,7 @@
 package com.example.autofinderbot.telegram.exception;
 
+import com.example.autofinderbot.common.exception.TelegramBotException;
+
 public class InvalidSearchUrlException extends TelegramBotException {
     public InvalidSearchUrlException(String reason) {
         super(reason);

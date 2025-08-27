@@ -1,10 +1,7 @@
-package com.example.autofinderbot.service;
+package com.example.autofinderbot.user.history;
 
-import com.example.autofinderbot.domain.User;
-import com.example.autofinderbot.domain.UserHistory;
-import com.example.autofinderbot.mapper.UserToUserHistoryMapper;
-import com.example.autofinderbot.repository.UserHistoryRepository;
-import com.example.autofinderbot.shared.DateTimeUtil;
+import com.example.autofinderbot.user.User;
+import com.example.autofinderbot.common.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;

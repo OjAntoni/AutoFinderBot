@@ -1,6 +1,6 @@
 package com.example.autofinderbot.web.service;
 
-import com.example.autofinderbot.shared.DateTimeUtil;
+import com.example.autofinderbot.common.util.DateTimeUtil;
 import com.example.autofinderbot.web.dto.statistics.BrandStatisticsResponse;
 import com.example.autofinderbot.web.dto.statistics.DayCount;
 import com.example.autofinderbot.web.dto.statistics.DayPrice;

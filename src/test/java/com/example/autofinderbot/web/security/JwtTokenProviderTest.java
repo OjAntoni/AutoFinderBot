@@ -1,6 +1,6 @@
 package com.example.autofinderbot.web.security;
 
-import com.example.autofinderbot.shared.DateTimeUtil;
+import com.example.autofinderbot.common.util.DateTimeUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

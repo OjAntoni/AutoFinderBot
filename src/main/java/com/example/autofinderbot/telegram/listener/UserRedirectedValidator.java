@@ -1,6 +1,6 @@
 package com.example.autofinderbot.telegram.listener;
 
-import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.user.User;
 import com.example.autofinderbot.telegram.exception.UserIsNotRedirectedException;
 import org.springframework.stereotype.Component;
 

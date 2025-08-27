@@ -1,13 +1,12 @@
-package com.example.autofinderbot.service;
+package com.example.autofinderbot.user;
 
 import com.example.autofinderbot.domain.*;
 import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.repository.SelectedCarRepository;
 import com.example.autofinderbot.repository.UserFilterRepository;
-import com.example.autofinderbot.repository.UserRepository;
-import com.example.autofinderbot.shared.DateTimeUtil;
-import com.example.autofinderbot.shared.Details;
-import com.example.autofinderbot.shared.RemoveSelectedCarEvent;
+import com.example.autofinderbot.common.util.DateTimeUtil;
+import com.example.autofinderbot.common.util.Details;
+import com.example.autofinderbot.common.event.RemoveSelectedCarEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.ApplicationEventPublisher;
@@ -19,14 +18,15 @@ import java.util.Map;
 
 import static com.example.autofinderbot.domain.UserFilter.State.NEW;
 import static com.example.autofinderbot.domain.UserFilter.State.OLD;
-import static com.example.autofinderbot.shared.Answer.NO_PL;
-import static com.example.autofinderbot.shared.Answer.YES_PL;
+import static com.example.autofinderbot.common.util.Answer.NO_PL;
+import static com.example.autofinderbot.common.util.Answer.YES_PL;
 import static java.util.stream.Collectors.toMap;
 import static lombok.AccessLevel.PRIVATE;
 
 @Service
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+//TODO split into domain services
 public class UserService {
     private static final int SELECTED_CARS_LIMIT = 5;
 

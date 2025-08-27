@@ -3,7 +3,7 @@ package com.example.autofinderbot.telegram.listener;
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.domain.SelectedCar;
 import com.example.autofinderbot.repository.SelectedCarRepository;
-import com.example.autofinderbot.service.UserService;
+import com.example.autofinderbot.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

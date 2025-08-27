@@ -1,7 +1,7 @@
 package com.example.autofinderbot.web.service;
 
-import com.example.autofinderbot.domain.UserHistory;
-import com.example.autofinderbot.repository.UserHistoryRepository;
+import com.example.autofinderbot.user.history.UserHistory;
+import com.example.autofinderbot.user.history.UserHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;

@@ -1,8 +1,8 @@
 package com.example.autofinderbot.common.config.telegram.listener;
 
 import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
-import com.example.autofinderbot.telegram.exception.TelegramBotException;
-import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.common.exception.TelegramBotException;
+import com.example.autofinderbot.common.util.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;

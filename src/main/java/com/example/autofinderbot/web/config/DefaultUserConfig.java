@@ -1,6 +1,6 @@
 package com.example.autofinderbot.web.config;
 
-import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.common.util.Logger;
 import com.example.autofinderbot.web.domain.Account;
 import com.example.autofinderbot.web.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;

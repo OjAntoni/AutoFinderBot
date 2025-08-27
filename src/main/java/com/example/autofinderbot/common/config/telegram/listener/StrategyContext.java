@@ -1,9 +1,9 @@
 package com.example.autofinderbot.common.config.telegram.listener;
 
 import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
-import com.example.autofinderbot.domain.User;
-import com.example.autofinderbot.service.UserHistoryService;
-import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.user.User;
+import com.example.autofinderbot.user.history.UserHistoryService;
+import com.example.autofinderbot.common.util.Logger;
 import com.example.autofinderbot.telegram.converter.CallbackDataConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

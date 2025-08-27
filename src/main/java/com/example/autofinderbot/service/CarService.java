@@ -5,7 +5,7 @@ import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.repository.CarDetailRepository;
 import com.example.autofinderbot.repository.CarRepository;
-import com.example.autofinderbot.shared.DateTimeUtil;
+import com.example.autofinderbot.common.util.DateTimeUtil;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

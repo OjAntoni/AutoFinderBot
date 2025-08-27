@@ -1,7 +1,7 @@
 package com.example.autofinderbot.web.controller.user;
 
 import com.example.autofinderbot.configuration.BaseRestApiTest;
-import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.user.User;
 import com.example.autofinderbot.web.util.PagedResponse;
 import com.example.autofinderbot.web.util.TestRequestSender;
 import org.junit.jupiter.api.Test;

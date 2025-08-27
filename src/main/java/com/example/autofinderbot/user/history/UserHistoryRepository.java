@@ -1,6 +1,5 @@
-package com.example.autofinderbot.repository;
+package com.example.autofinderbot.user.history;
 
-import com.example.autofinderbot.domain.UserHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserHistoryRepository extends JpaRepository<UserHistory, Long> {

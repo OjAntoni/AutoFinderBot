@@ -3,7 +3,7 @@ package com.example.autofinderbot.service;
 import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
 import com.example.autofinderbot.domain.Notification;
 import com.example.autofinderbot.repository.NotificationRepository;
-import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.common.util.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

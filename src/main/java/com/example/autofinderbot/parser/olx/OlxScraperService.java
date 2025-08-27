@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.autofinderbot.shared.APIConstants.OLX_SEARCH_URL;
+import static com.example.autofinderbot.common.util.APIConstants.OLX_SEARCH_URL;
 import static lombok.AccessLevel.PRIVATE;
 
 @Service

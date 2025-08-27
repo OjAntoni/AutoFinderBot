@@ -1,6 +1,6 @@
 package com.example.autofinderbot.web.security;
 
-import com.example.autofinderbot.shared.DateTimeUtil;
+import com.example.autofinderbot.common.util.DateTimeUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;

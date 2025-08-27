@@ -1,6 +1,6 @@
-package com.example.autofinderbot.repository;
+package com.example.autofinderbot.user;
 
-import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

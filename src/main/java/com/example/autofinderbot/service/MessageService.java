@@ -2,7 +2,7 @@ package com.example.autofinderbot.service;
 
 import com.example.autofinderbot.domain.Message;
 import com.example.autofinderbot.domain.Message.State;
-import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.user.User;
 import com.example.autofinderbot.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

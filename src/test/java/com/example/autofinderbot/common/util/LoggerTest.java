@@ -1,4 +1,4 @@
-package com.example.autofinderbot.shared;
+package com.example.autofinderbot.common.util;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -28,7 +28,7 @@ class LoggerTest extends BaseSpringBootTest {
         ILoggingEvent logEvent = listAppender.list.getFirst();
         String formattedMessage = logEvent.getFormattedMessage();
 
-        assertThat(formattedMessage).isEqualTo("[com.example.autofinderbot.shared.LoggerTest:26] - Test message");
+        assertThat(formattedMessage).isEqualTo("[com.example.autofinderbot.common.util.LoggerTest:26] - Test message");
         assertThat(logEvent.getLevel().toString()).isEqualTo("INFO");
     }
 

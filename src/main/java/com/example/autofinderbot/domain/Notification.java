@@ -1,5 +1,6 @@
 package com.example.autofinderbot.domain;
 
+import com.example.autofinderbot.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

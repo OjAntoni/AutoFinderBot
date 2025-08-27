@@ -2,8 +2,8 @@ package com.example.autofinderbot.parser.olx;
 
 import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.domain.GearboxType;
-import com.example.autofinderbot.shared.Answer;
-import com.example.autofinderbot.shared.Details;
+import com.example.autofinderbot.common.util.Answer;
+import com.example.autofinderbot.common.util.Details;
 import org.springframework.stereotype.Component;
 
 import java.util.*;

@@ -1,10 +1,10 @@
 package com.example.autofinderbot.common.config.telegram.listener;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
-import com.example.autofinderbot.domain.User;
-import com.example.autofinderbot.domain.UserHistory;
-import com.example.autofinderbot.repository.UserHistoryRepository;
-import com.example.autofinderbot.repository.UserRepository;
+import com.example.autofinderbot.user.User;
+import com.example.autofinderbot.user.history.UserHistory;
+import com.example.autofinderbot.user.history.UserHistoryRepository;
+import com.example.autofinderbot.user.UserRepository;
 import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

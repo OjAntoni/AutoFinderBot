@@ -1,7 +1,6 @@
-package com.example.autofinderbot.mapper;
+package com.example.autofinderbot.user.history;
 
-import com.example.autofinderbot.domain.User;
-import com.example.autofinderbot.domain.UserHistory;
+import com.example.autofinderbot.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

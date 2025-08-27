@@ -4,7 +4,7 @@ import com.example.autofinderbot.domain.CarBrand;
 import com.example.autofinderbot.domain.CarModel;
 import com.example.autofinderbot.domain.FuelType;
 import com.example.autofinderbot.domain.Generation;
-import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.common.util.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.example.autofinderbot.shared.APIConstants.*;
+import static com.example.autofinderbot.common.util.APIConstants.*;
 import static java.util.Collections.emptyList;
 import static lombok.AccessLevel.PRIVATE;
 

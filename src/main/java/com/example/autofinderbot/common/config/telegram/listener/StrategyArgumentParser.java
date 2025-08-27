@@ -1,8 +1,8 @@
 package com.example.autofinderbot.common.config.telegram.listener;
 
-import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.user.User;
 import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
-import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.common.util.Logger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;

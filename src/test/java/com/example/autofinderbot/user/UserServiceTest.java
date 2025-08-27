@@ -1,9 +1,7 @@
-package com.example.autofinderbot.service;
+package com.example.autofinderbot.user;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.domain.*;
-import com.example.autofinderbot.repository.UserRepository;
-import com.example.autofinderbot.shared.Details;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,7 +9,7 @@ import java.util.List;
 
 import static com.example.autofinderbot.domain.GearboxType.AUTOMATIC;
 import static com.example.autofinderbot.domain.Seller.SellerType.PRIVATE;
-import static com.example.autofinderbot.shared.Details.*;
+import static com.example.autofinderbot.common.util.Details.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UserServiceTest extends BaseSpringBootTest {
@@ -24,7 +22,6 @@ class UserServiceTest extends BaseSpringBootTest {
     void save_PosTC(){
         User user = new User();
         user.setChatId(123L);
-
 
         User savedUser = userService.save(user);
 

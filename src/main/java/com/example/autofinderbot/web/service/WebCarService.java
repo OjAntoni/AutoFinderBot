@@ -5,7 +5,7 @@ import com.example.autofinderbot.domain.CarDetail;
 import com.example.autofinderbot.mapper.CarMapper;
 import com.example.autofinderbot.repository.CarAveragePrice;
 import com.example.autofinderbot.repository.CarRepository;
-import com.example.autofinderbot.shared.Details;
+import com.example.autofinderbot.common.util.Details;
 import com.example.autofinderbot.web.dto.car.CarRequest;
 import com.example.autofinderbot.web.dto.car.CarResponse;
 import com.example.autofinderbot.web.dto.car.SimilarCarPriceResponse;

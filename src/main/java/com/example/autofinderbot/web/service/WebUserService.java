@@ -1,7 +1,7 @@
 package com.example.autofinderbot.web.service;
 
-import com.example.autofinderbot.domain.User;
-import com.example.autofinderbot.repository.UserRepository;
+import com.example.autofinderbot.user.User;
+import com.example.autofinderbot.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;

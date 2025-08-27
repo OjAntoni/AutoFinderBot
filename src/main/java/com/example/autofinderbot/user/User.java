@@ -1,4 +1,4 @@
-package com.example.autofinderbot.domain;
+package com.example.autofinderbot.user;
 
 import jakarta.persistence.*;
 import lombok.Getter;

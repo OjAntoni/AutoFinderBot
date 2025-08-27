@@ -1,9 +1,11 @@
-package com.example.autofinderbot.telegram.listener;
+package com.example.autofinderbot.user;
 
 import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
-import com.example.autofinderbot.domain.User;
+import com.example.autofinderbot.telegram.listener.UserRedirectedValidator;
+import com.example.autofinderbot.telegram.listener.UserUrlValidator;
+import com.example.autofinderbot.user.User;
 import com.example.autofinderbot.domain.UserFilter;
-import com.example.autofinderbot.service.UserService;
+import com.example.autofinderbot.user.UserService;
 import com.example.autofinderbot.common.config.telegram.listener.CommandListener;
 import com.example.autofinderbot.telegram.converter.UrlToFiltersConverter;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @Component
 @TelegramRelated
+//TODO split up into services
 public class UserListener {
     UserService userService;
     UserUrlValidator userUrlValidator;

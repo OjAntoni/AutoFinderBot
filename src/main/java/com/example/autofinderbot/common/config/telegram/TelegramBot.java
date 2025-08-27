@@ -1,7 +1,7 @@
 package com.example.autofinderbot.common.config.telegram;
 
 import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
-import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.common.util.Logger;
 import com.example.autofinderbot.common.config.telegram.listener.StrategyContext;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;

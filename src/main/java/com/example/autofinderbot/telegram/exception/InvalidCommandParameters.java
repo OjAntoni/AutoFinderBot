@@ -1,6 +1,8 @@
 package com.example.autofinderbot.telegram.exception;
 
-public class InvalidCommandParameters extends TelegramBotException{
+import com.example.autofinderbot.common.exception.TelegramBotException;
+
+public class InvalidCommandParameters extends TelegramBotException {
     private static final String MESSAGE = "Invalid command parameters.";
 
     public InvalidCommandParameters() {

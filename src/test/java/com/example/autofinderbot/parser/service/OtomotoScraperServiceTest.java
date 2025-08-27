@@ -2,7 +2,7 @@ package com.example.autofinderbot.parser.service;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.domain.Car;
-import com.example.autofinderbot.shared.Details;
+import com.example.autofinderbot.common.util.Details;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.example.autofinderbot.shared.APIConstants.SEARCH_URL;
+import static com.example.autofinderbot.common.util.APIConstants.SEARCH_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;

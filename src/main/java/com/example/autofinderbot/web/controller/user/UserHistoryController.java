@@ -1,6 +1,6 @@
 package com.example.autofinderbot.web.controller.user;
 
-import com.example.autofinderbot.domain.UserHistory;
+import com.example.autofinderbot.user.history.UserHistory;
 import com.example.autofinderbot.web.service.WebUserHistoryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;

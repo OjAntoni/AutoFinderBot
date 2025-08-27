@@ -1,4 +1,4 @@
-package com.example.autofinderbot.shared;
+package com.example.autofinderbot.common.util;
 
 public class APIConstants {
     public static final String OLX_URL = "https://www.olx.pl/";

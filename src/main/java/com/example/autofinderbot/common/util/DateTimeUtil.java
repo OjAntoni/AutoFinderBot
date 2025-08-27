@@ -1,4 +1,4 @@
-package com.example.autofinderbot.shared;
+package com.example.autofinderbot.common.util;
 
 import org.springframework.stereotype.Component;
 

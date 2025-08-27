@@ -5,7 +5,7 @@ import com.example.autofinderbot.telegram.exception.InvalidSearchUrlException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.example.autofinderbot.shared.APIConstants.SEARCH_URL;
+import static com.example.autofinderbot.common.util.APIConstants.SEARCH_URL;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class UserUrlValidatorTest extends BaseSpringBootTest {

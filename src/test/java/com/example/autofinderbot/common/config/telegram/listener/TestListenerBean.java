@@ -1,9 +1,8 @@
 package com.example.autofinderbot.common.config.telegram.listener;
 
 
-import com.example.autofinderbot.common.config.telegram.listener.CommandListener;
-import com.example.autofinderbot.domain.User;
-import com.example.autofinderbot.telegram.exception.TelegramBotException;
+import com.example.autofinderbot.user.User;
+import com.example.autofinderbot.common.exception.TelegramBotException;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 

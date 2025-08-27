@@ -77,8 +77,8 @@ def excludedPackages = [
         'com.example.autofinderbot.common.config.scheduling.*',
         'com.example.autofinderbot.common.config.telegram.components.*',
         'com.example.autofinderbot.common.config.telegram.TelegramBot*',
+        'com.example.autofinderbot.common.util.*',
         'com.example.autofinderbot.domain.*',
-        'com.example.autofinderbot.shared.*',
         'com.example.autofinderbot.AutoFinderBotApplication*'
 ]
 

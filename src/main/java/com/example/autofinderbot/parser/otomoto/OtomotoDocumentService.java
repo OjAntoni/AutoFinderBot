@@ -1,7 +1,7 @@
 package com.example.autofinderbot.parser.otomoto;
 
 import com.example.autofinderbot.parser.service.DocumentService;
-import com.example.autofinderbot.shared.Logger;
+import com.example.autofinderbot.common.util.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jsoup.nodes.Document;
