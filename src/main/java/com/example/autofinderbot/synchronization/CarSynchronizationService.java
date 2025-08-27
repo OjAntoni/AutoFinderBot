@@ -1,4 +1,4 @@
-package com.example.autofinderbot.service.synchronization;
+package com.example.autofinderbot.synchronization;
 
 import com.example.autofinderbot.domain.Car;
 import com.example.autofinderbot.domain.Report;

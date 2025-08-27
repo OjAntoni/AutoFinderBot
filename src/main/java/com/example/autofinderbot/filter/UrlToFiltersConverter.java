@@ -1,7 +1,6 @@
-package com.example.autofinderbot.telegram.converter;
+package com.example.autofinderbot.filter;
 
 import com.example.autofinderbot.domain.GearboxType;
-import com.example.autofinderbot.domain.UserFilter;
 import com.example.autofinderbot.service.CarFiltersService;
 import com.example.autofinderbot.common.util.Logger;
 import lombok.RequiredArgsConstructor;

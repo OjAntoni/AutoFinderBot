@@ -1,14 +1,12 @@
-package com.example.autofinderbot.repository;
+package com.example.autofinderbot.filter;
 
-import com.example.autofinderbot.domain.UserFilter;
-import com.example.autofinderbot.domain.UserFilter.State;
+import com.example.autofinderbot.filter.UserFilter.State;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.example.autofinderbot.domain.UserFilter.State.NEW;
+import static com.example.autofinderbot.filter.UserFilter.State.NEW;
 
 @Repository
 public interface UserFilterRepository extends JpaRepository<UserFilter, Long> {

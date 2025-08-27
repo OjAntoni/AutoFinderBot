@@ -2,6 +2,7 @@ package com.example.autofinderbot.user;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.domain.*;
+import com.example.autofinderbot.filter.UserFilter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -5,6 +5,8 @@ package com.example.autofinderbot.web.dto.car;
  */
 public record CarRequest(
         String brand,
+        String model,
+        String generation,
         String fuelType,
         Long mileageFrom,
         Long mileageTo,

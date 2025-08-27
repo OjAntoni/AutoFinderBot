@@ -1,8 +1,8 @@
-package com.example.autofinderbot.telegram.listener;
+package com.example.autofinderbot.synchronization;
 
 import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
 import com.example.autofinderbot.domain.Car;
-import com.example.autofinderbot.domain.UserFilter;
+import com.example.autofinderbot.filter.UserFilter;
 import com.example.autofinderbot.user.UserService;
 import com.example.autofinderbot.common.util.Logger;
 import com.example.autofinderbot.common.event.NewCarsEvent;
@@ -30,6 +30,7 @@ public class NewCarsListener {
     CarMenuKeyboardConverter carMenuKeyboardConverter;
 
     @EventListener
+    //TODO place into synchronization module
     public void handleEvent(NewCarsEvent event) {
         List<Car> cars = event.getCars();
         //TODO refactor when user will be able to have several active filters

@@ -1,4 +1,4 @@
-package com.example.autofinderbot.service.synchronization;
+package com.example.autofinderbot.synchronization;
 
 import com.example.autofinderbot.common.config.cache.CacheProperties;
 import com.example.autofinderbot.configuration.BaseSpringBootTest;

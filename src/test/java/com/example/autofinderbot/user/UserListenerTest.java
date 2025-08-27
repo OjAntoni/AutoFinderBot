@@ -2,14 +2,11 @@ package com.example.autofinderbot.user;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.domain.*;
-import com.example.autofinderbot.domain.UserFilter.State;
-import com.example.autofinderbot.repository.UserFilterRepository;
-import com.example.autofinderbot.user.UserListener;
-import com.example.autofinderbot.user.UserRepository;
-import com.example.autofinderbot.user.UserService;
+import com.example.autofinderbot.filter.UserFilter;
+import com.example.autofinderbot.filter.UserFilter.State;
+import com.example.autofinderbot.filter.UserFilterRepository;
 import com.example.autofinderbot.telegram.exception.InvalidSearchUrlException;
 import com.example.autofinderbot.telegram.exception.UserIsNotRedirectedException;
-import com.example.autofinderbot.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -31,7 +28,7 @@ import java.util.Optional;
 
 import static com.example.autofinderbot.domain.GearboxType.AUTOMATIC;
 import static com.example.autofinderbot.domain.GearboxType.MANUAL;
-import static com.example.autofinderbot.domain.UserFilter.State.NEW;
+import static com.example.autofinderbot.filter.UserFilter.State.NEW;
 import static com.example.autofinderbot.common.config.telegram.listener.CommandPath.CONFIRM_FILTER;
 import static com.example.autofinderbot.common.config.telegram.listener.CommandPath.UPLOAD_URL;
 import static java.util.Collections.emptyList;

@@ -1,4 +1,4 @@
-package com.example.autofinderbot.telegram.converter;
+package com.example.autofinderbot.filter;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.domain.*;

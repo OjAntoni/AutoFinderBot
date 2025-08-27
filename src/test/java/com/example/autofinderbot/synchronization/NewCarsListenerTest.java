@@ -1,4 +1,4 @@
-package com.example.autofinderbot.telegram.listener;
+package com.example.autofinderbot.synchronization;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.domain.Car;

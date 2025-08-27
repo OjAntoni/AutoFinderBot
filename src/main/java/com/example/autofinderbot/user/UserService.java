@@ -1,9 +1,10 @@
 package com.example.autofinderbot.user;
 
 import com.example.autofinderbot.domain.*;
+import com.example.autofinderbot.filter.UserFilter;
 import com.example.autofinderbot.repository.CarRepository;
 import com.example.autofinderbot.repository.SelectedCarRepository;
-import com.example.autofinderbot.repository.UserFilterRepository;
+import com.example.autofinderbot.filter.UserFilterRepository;
 import com.example.autofinderbot.common.util.DateTimeUtil;
 import com.example.autofinderbot.common.util.Details;
 import com.example.autofinderbot.common.event.RemoveSelectedCarEvent;
@@ -16,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.autofinderbot.domain.UserFilter.State.NEW;
-import static com.example.autofinderbot.domain.UserFilter.State.OLD;
+import static com.example.autofinderbot.filter.UserFilter.State.NEW;
+import static com.example.autofinderbot.filter.UserFilter.State.OLD;
 import static com.example.autofinderbot.common.util.Answer.NO_PL;
 import static com.example.autofinderbot.common.util.Answer.YES_PL;
 import static java.util.stream.Collectors.toMap;
