@@ -1,9 +1,9 @@
 package com.example.autofinderbot.parser.otomoto;
 
-import com.example.autofinderbot.domain.CarBrand;
-import com.example.autofinderbot.domain.CarModel;
-import com.example.autofinderbot.domain.FuelType;
-import com.example.autofinderbot.domain.Generation;
+import com.example.autofinderbot.car.brand.CarBrand;
+import com.example.autofinderbot.car.model.CarModel;
+import com.example.autofinderbot.car.fuel.FuelType;
+import com.example.autofinderbot.car.generation.Generation;
 import com.example.autofinderbot.common.util.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

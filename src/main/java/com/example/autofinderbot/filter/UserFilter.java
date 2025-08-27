@@ -1,13 +1,17 @@
 package com.example.autofinderbot.filter;
 
-import com.example.autofinderbot.domain.*;
+import com.example.autofinderbot.car.*;
+import com.example.autofinderbot.car.brand.CarBrand;
+import com.example.autofinderbot.car.fuel.FuelType;
+import com.example.autofinderbot.car.generation.Generation;
+import com.example.autofinderbot.car.model.CarModel;
 import com.example.autofinderbot.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
 
-import static com.example.autofinderbot.domain.Seller.SellerType.fromSearchKey;
+import static com.example.autofinderbot.car.seller.Seller.SellerType.fromSearchKey;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 

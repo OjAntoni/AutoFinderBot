@@ -1,13 +1,16 @@
 package com.example.autofinderbot.filter;
 
+import com.example.autofinderbot.car.brand.CarBrand;
+import com.example.autofinderbot.car.model.CarModel;
+import com.example.autofinderbot.car.fuel.FuelType;
+import com.example.autofinderbot.car.generation.Generation;
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
-import com.example.autofinderbot.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.example.autofinderbot.domain.GearboxType.MANUAL;
+import static com.example.autofinderbot.car.GearboxType.MANUAL;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class UrlToFiltersConverterTest extends BaseSpringBootTest {

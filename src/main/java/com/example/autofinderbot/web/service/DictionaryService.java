@@ -1,14 +1,14 @@
 package com.example.autofinderbot.web.service;
 
-import com.example.autofinderbot.domain.CarBrand;
-import com.example.autofinderbot.domain.CarModel;
-import com.example.autofinderbot.domain.FuelType;
-import com.example.autofinderbot.domain.Generation;
-import com.example.autofinderbot.domain.GearboxType;
-import com.example.autofinderbot.repository.CarBrandRepository;
-import com.example.autofinderbot.repository.CarModelRepository;
-import com.example.autofinderbot.repository.FuelTypeRepository;
-import com.example.autofinderbot.repository.GenerationRepository;
+import com.example.autofinderbot.car.brand.CarBrand;
+import com.example.autofinderbot.car.model.CarModel;
+import com.example.autofinderbot.car.fuel.FuelType;
+import com.example.autofinderbot.car.generation.Generation;
+import com.example.autofinderbot.car.GearboxType;
+import com.example.autofinderbot.car.brand.CarBrandRepository;
+import com.example.autofinderbot.car.model.CarModelRepository;
+import com.example.autofinderbot.car.fuel.FuelTypeRepository;
+import com.example.autofinderbot.car.generation.GenerationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;

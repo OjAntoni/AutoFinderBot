@@ -1,8 +1,7 @@
 package com.example.autofinderbot.user;
 
 import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
-import com.example.autofinderbot.telegram.listener.UserRedirectedValidator;
-import com.example.autofinderbot.telegram.listener.UserUrlValidator;
+import com.example.autofinderbot.common.config.telegram.listener.UserRedirectedValidator;
 import com.example.autofinderbot.filter.UserFilter;
 import com.example.autofinderbot.common.config.telegram.listener.CommandListener;
 import com.example.autofinderbot.filter.UrlToFiltersConverter;

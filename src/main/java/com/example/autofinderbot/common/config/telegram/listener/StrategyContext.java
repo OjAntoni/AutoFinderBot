@@ -4,7 +4,6 @@ import com.example.autofinderbot.common.config.telegram.components.TelegramRelat
 import com.example.autofinderbot.user.User;
 import com.example.autofinderbot.user.history.UserHistoryService;
 import com.example.autofinderbot.common.util.Logger;
-import com.example.autofinderbot.telegram.converter.CallbackDataConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;

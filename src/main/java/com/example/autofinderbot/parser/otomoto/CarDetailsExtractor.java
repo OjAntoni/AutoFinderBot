@@ -1,8 +1,8 @@
 package com.example.autofinderbot.parser.otomoto;
 
-import com.example.autofinderbot.domain.Address;
-import com.example.autofinderbot.domain.CarDetail;
-import com.example.autofinderbot.domain.Seller;
+import com.example.autofinderbot.car.seller.Address;
+import com.example.autofinderbot.car.detail.CarDetail;
+import com.example.autofinderbot.car.seller.Seller;
 import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.common.util.Details;
 import com.example.autofinderbot.common.util.Logger;

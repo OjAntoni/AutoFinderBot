@@ -5,7 +5,6 @@ import com.example.autofinderbot.user.User;
 import com.example.autofinderbot.user.history.UserHistory;
 import com.example.autofinderbot.user.history.UserHistoryRepository;
 import com.example.autofinderbot.user.UserRepository;
-import com.example.autofinderbot.telegram.exception.InvalidCommandParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;

@@ -1,10 +1,10 @@
 package com.example.autofinderbot.web.service;
 
-import com.example.autofinderbot.domain.Car;
-import com.example.autofinderbot.domain.CarDetail;
-import com.example.autofinderbot.mapper.CarMapper;
-import com.example.autofinderbot.repository.CarAveragePrice;
-import com.example.autofinderbot.repository.CarRepository;
+import com.example.autofinderbot.car.Car;
+import com.example.autofinderbot.car.detail.CarDetail;
+import com.example.autofinderbot.car.CarMapper;
+import com.example.autofinderbot.car.CarAveragePrice;
+import com.example.autofinderbot.car.CarRepository;
 import com.example.autofinderbot.common.util.Details;
 import com.example.autofinderbot.web.dto.car.CarRequest;
 import com.example.autofinderbot.web.dto.car.CarResponse;

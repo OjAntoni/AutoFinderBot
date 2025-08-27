@@ -1,0 +1,13 @@
+package com.example.autofinderbot.car.model;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface CarModelRepository extends JpaRepository<CarModel, Long> {
+    List<CarModel> findAllBySearchKeyIn(List<String> searchKeys);
+    List<CarModel> findAllByName(String name);
+    List<CarModel> findAllByCarBrandId(long carBrandId);
+}

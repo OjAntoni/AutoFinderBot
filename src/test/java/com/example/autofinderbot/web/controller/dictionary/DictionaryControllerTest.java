@@ -1,10 +1,10 @@
 package com.example.autofinderbot.web.controller.dictionary;
 
 import com.example.autofinderbot.configuration.BaseRestApiTest;
-import com.example.autofinderbot.domain.CarBrand;
-import com.example.autofinderbot.domain.CarModel;
-import com.example.autofinderbot.domain.Generation;
-import com.example.autofinderbot.repository.CarBrandRepository;
+import com.example.autofinderbot.car.brand.CarBrand;
+import com.example.autofinderbot.car.model.CarModel;
+import com.example.autofinderbot.car.generation.Generation;
+import com.example.autofinderbot.car.brand.CarBrandRepository;
 import com.example.autofinderbot.web.dto.dictionary.DictionaryResponse;
 import com.example.autofinderbot.web.dto.dictionary.GearboxTypeResponse;
 import com.example.autofinderbot.web.util.TestRequestSender;

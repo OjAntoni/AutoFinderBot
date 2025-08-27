@@ -1,8 +1,8 @@
 package com.example.autofinderbot.synchronization;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
-import com.example.autofinderbot.domain.Car;
-import com.example.autofinderbot.domain.Seller;
+import com.example.autofinderbot.car.Car;
+import com.example.autofinderbot.car.seller.Seller;
 import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.common.event.NewCarsEvent;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,7 +17,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.IOException;
 import java.util.List;
 
-import static com.example.autofinderbot.domain.Seller.SellerType.PROFESSIONAL;
+import static com.example.autofinderbot.car.seller.Seller.SellerType.PROFESSIONAL;
 import static com.example.autofinderbot.common.util.APIConstants.CAR_PAGE_JSON_DATA;
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;

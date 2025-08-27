@@ -1,6 +1,6 @@
 package com.example.autofinderbot.web.repository;
 
-import com.example.autofinderbot.domain.Car;
+import com.example.autofinderbot.car.Car;
 import com.example.autofinderbot.web.dto.statistics.DayCount;
 import com.example.autofinderbot.web.dto.statistics.DayPrice;
 import org.springframework.data.jpa.repository.Query;

@@ -1,15 +1,21 @@
 package com.example.autofinderbot.user;
 
+import com.example.autofinderbot.car.*;
+import com.example.autofinderbot.car.brand.CarBrand;
+import com.example.autofinderbot.car.detail.CarDetail;
+import com.example.autofinderbot.car.fuel.FuelType;
+import com.example.autofinderbot.car.generation.Generation;
+import com.example.autofinderbot.car.model.CarModel;
+import com.example.autofinderbot.car.seller.Seller;
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
-import com.example.autofinderbot.domain.*;
 import com.example.autofinderbot.filter.UserFilter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.example.autofinderbot.domain.GearboxType.AUTOMATIC;
-import static com.example.autofinderbot.domain.Seller.SellerType.PRIVATE;
+import static com.example.autofinderbot.car.GearboxType.AUTOMATIC;
+import static com.example.autofinderbot.car.seller.Seller.SellerType.PRIVATE;
 import static com.example.autofinderbot.common.util.Details.*;
 import static org.assertj.core.api.Assertions.assertThat;
 

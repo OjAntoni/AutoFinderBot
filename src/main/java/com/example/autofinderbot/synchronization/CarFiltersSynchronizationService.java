@@ -1,10 +1,10 @@
 package com.example.autofinderbot.synchronization;
 
-import com.example.autofinderbot.domain.CarBrand;
-import com.example.autofinderbot.domain.FuelType;
+import com.example.autofinderbot.car.brand.CarBrand;
+import com.example.autofinderbot.car.fuel.FuelType;
 import com.example.autofinderbot.parser.otomoto.CarFiltersParser;
 import com.example.autofinderbot.parser.service.DocumentService;
-import com.example.autofinderbot.service.CarFiltersService;
+import com.example.autofinderbot.filter.CarFiltersService;
 import com.example.autofinderbot.common.util.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

@@ -1,7 +1,7 @@
 package com.example.autofinderbot.web.dto.car;
 
-import com.example.autofinderbot.domain.CarDetail;
-import com.example.autofinderbot.domain.Seller;
+import com.example.autofinderbot.car.detail.CarDetail;
+import com.example.autofinderbot.car.seller.Seller;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,13 +1,13 @@
 package com.example.autofinderbot.synchronization;
 
-import com.example.autofinderbot.domain.Car;
-import com.example.autofinderbot.domain.Report;
+import com.example.autofinderbot.car.Car;
 import com.example.autofinderbot.parser.service.ScraperService;
-import com.example.autofinderbot.service.CarService;
-import com.example.autofinderbot.service.ReportService;
+import com.example.autofinderbot.car.CarService;
+import com.example.autofinderbot.synchronization.report.ReportService;
 import com.example.autofinderbot.common.util.DateTimeUtil;
 import com.example.autofinderbot.common.util.Logger;
 import com.example.autofinderbot.common.event.NewCarsEvent;
+import com.example.autofinderbot.synchronization.report.Report;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.ApplicationEventPublisher;
@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.example.autofinderbot.domain.Report.Operation.DELETE;
-import static com.example.autofinderbot.domain.Report.Operation.INSERT;
+import static com.example.autofinderbot.synchronization.report.Report.Operation.DELETE;
+import static com.example.autofinderbot.synchronization.report.Report.Operation.INSERT;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static lombok.AccessLevel.PRIVATE;
 

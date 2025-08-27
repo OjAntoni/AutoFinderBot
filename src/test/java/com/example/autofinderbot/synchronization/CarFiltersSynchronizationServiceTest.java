@@ -1,12 +1,12 @@
 package com.example.autofinderbot.synchronization;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
-import com.example.autofinderbot.domain.CarBrand;
-import com.example.autofinderbot.repository.CarBrandRepository;
-import com.example.autofinderbot.repository.CarModelRepository;
-import com.example.autofinderbot.repository.FuelTypeRepository;
-import com.example.autofinderbot.repository.GenerationRepository;
-import com.example.autofinderbot.service.CarFiltersService;
+import com.example.autofinderbot.car.brand.CarBrand;
+import com.example.autofinderbot.car.brand.CarBrandRepository;
+import com.example.autofinderbot.car.model.CarModelRepository;
+import com.example.autofinderbot.car.fuel.FuelTypeRepository;
+import com.example.autofinderbot.car.generation.GenerationRepository;
+import com.example.autofinderbot.filter.CarFiltersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

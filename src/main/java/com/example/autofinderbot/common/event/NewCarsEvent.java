@@ -1,6 +1,6 @@
 package com.example.autofinderbot.common.event;
 
-import com.example.autofinderbot.domain.Car;
+import com.example.autofinderbot.car.Car;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
