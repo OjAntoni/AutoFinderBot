@@ -101,8 +101,6 @@ class CarSynchronizationServiceTest extends BaseSpringBootTest {
     @Test
     @DirtiesContext
     void saveCarsWithExceptionDuringPageLoad() throws IOException {
-        reset(documentService);
-
         long count = carRepository.count();
         AtomicInteger invocationCounter = new AtomicInteger();
 

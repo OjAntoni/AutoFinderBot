@@ -1,6 +1,5 @@
 package com.example.autofinderbot.car;
 
-import com.example.autofinderbot.web.dto.car.CarResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
