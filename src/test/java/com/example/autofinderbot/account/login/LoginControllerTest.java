@@ -1,8 +1,7 @@
-package com.example.autofinderbot.account;
+package com.example.autofinderbot.account.login;
 
 import com.example.autofinderbot.configuration.BaseRestApiTest;
 
-import com.example.autofinderbot.account.AuthenticationController.LoginRequest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpStatus.*;
 
-class AuthenticationControllerTest extends BaseRestApiTest {
+class LoginControllerTest extends BaseRestApiTest {
 
     @Test
     void authenticateUser_PosTC() throws JsonProcessingException {
@@ -21,7 +20,7 @@ class AuthenticationControllerTest extends BaseRestApiTest {
             .contentType(ContentType.JSON)
             .body(payload("admin_user", "password"))
         .when()
-            .post("/api/auth/login")
+            .post("/api/account/login")
         .then()
             .statusCode(OK.value())
             .body("tokenType", equalTo("Bearer"))
@@ -35,7 +34,7 @@ class AuthenticationControllerTest extends BaseRestApiTest {
             .contentType(ContentType.JSON)
             .body(payload("invalid", "invalid"))
         .when()
-            .post("/api/auth/login")
+            .post("/api/account/login")
         .then()
             .statusCode(UNAUTHORIZED.value());
     }
@@ -46,7 +45,7 @@ class AuthenticationControllerTest extends BaseRestApiTest {
             .contentType(ContentType.JSON)
             .body(payload(null, ""))
         .when()
-            .post("/api/auth/login")
+            .post("/api/account/login")
         .then()
             .statusCode(BAD_REQUEST.value())
             .body("errors.error", containsInAnyOrder(
@@ -56,10 +55,7 @@ class AuthenticationControllerTest extends BaseRestApiTest {
     }
 
     private String payload(String username, String password) throws JsonProcessingException {
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername(username);
-        loginRequest.setPassword(password);
-
+        LoginRequest loginRequest = new LoginRequest(username, password);
         return objectMapper.writeValueAsString(loginRequest);
     }
 }

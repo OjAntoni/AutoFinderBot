@@ -1,5 +1,7 @@
-package com.example.autofinderbot.account;
+package com.example.autofinderbot.account.create;
 
+import com.example.autofinderbot.account.Account;
+import com.example.autofinderbot.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -10,7 +12,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Service
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public class AccountService {
+class CreateAccountService {
     AccountRepository accountRepository;
     UsernameUniqueValidator usernameUniqueValidator;
 
@@ -18,10 +20,10 @@ public class AccountService {
         usernameUniqueValidator.validate(createAccountRequest.username());
 
         Account account = Account.builder()
-            .username(createAccountRequest.username())
-            .password(createAccountRequest.password())
-            .role(ADMIN)
-            .build();
+                .username(createAccountRequest.username())
+                .password(createAccountRequest.password())
+                .role(ADMIN)
+                .build();
 
         accountRepository.save(account);
     }

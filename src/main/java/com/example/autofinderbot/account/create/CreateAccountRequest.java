@@ -1,8 +1,8 @@
-package com.example.autofinderbot.account;
+package com.example.autofinderbot.account.create;
 
 import jakarta.validation.constraints.Pattern;
 
-public record CreateAccountRequest(
+record CreateAccountRequest(
     @Pattern(regexp = CreateAccountRequest.USERNAME_REGEX, message = CreateAccountRequest.USERNAME_MESSAGE)
     String username,
     @Pattern(regexp = CreateAccountRequest.PASSWORD_REGEX, message = CreateAccountRequest.PASSWORD_MESSAGE)

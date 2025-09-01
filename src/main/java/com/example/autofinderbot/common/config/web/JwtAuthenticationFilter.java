@@ -1,6 +1,6 @@
 package com.example.autofinderbot.common.config.web;
 
-import com.example.autofinderbot.account.CustomUserDetailsService;
+import com.example.autofinderbot.account.AccountDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,14 +27,14 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final List<String> excludedPaths = List.of(
-        "/api/auth/**",
+        "/api/account/login",
         "/api/swagger-ui/**",
         "/api/docs",
         "/api/openapi/**"
     );
 
     JwtTokenProvider tokenProvider;
-    CustomUserDetailsService customUserDetailsService;
+    AccountDetailsService accountDetailsService;
     PathMatcher pathMatcher;
 
     @Override
@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             String username = tokenProvider.getUsernameFromJWT(jwt);
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = accountDetailsService.loadUserByUsername(username);
 
             UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

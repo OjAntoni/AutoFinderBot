@@ -1,8 +1,8 @@
-package com.example.autofinderbot.account;
+package com.example.autofinderbot.account.create;
 
 import com.example.autofinderbot.common.exception.ApiConflictException;
 
-public class UsernameAlreadyExistsException extends ApiConflictException {
+class UsernameAlreadyExistsException extends ApiConflictException {
     private static final String MESSAGE = "Username %s already exists";
 
     public UsernameAlreadyExistsException(String username) {

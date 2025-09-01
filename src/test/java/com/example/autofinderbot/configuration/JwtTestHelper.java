@@ -23,7 +23,7 @@ public class JwtTestHelper {
         Map<String, String> credentials = Map.of("username", username, "password", password);
         ResponseEntity<Map<String, Object>> response = restTemplateProvider.getObject()
             .exchange(
-                "/api/auth/login",
+                "/api/account/login",
                 POST,
                 new HttpEntity<>(credentials),
                 new ParameterizedTypeReference<>() {}

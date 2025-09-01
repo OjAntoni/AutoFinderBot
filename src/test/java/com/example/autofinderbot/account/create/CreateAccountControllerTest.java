@@ -1,5 +1,7 @@
-package com.example.autofinderbot.account;
+package com.example.autofinderbot.account.create;
 
+import com.example.autofinderbot.account.Account;
+import com.example.autofinderbot.account.AccountRepository;
 import com.example.autofinderbot.configuration.BaseRestApiTest;
 import io.restassured.http.ContentType;
 import org.assertj.core.api.Assertions;
@@ -13,7 +15,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpStatus.*;
 
-class AccountControllerTest extends BaseRestApiTest {
+class CreateAccountControllerTest extends BaseRestApiTest {
     @Autowired
     AccountRepository accountRepository;
 

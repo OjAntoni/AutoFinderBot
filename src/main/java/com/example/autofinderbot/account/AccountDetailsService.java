@@ -13,8 +13,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Service
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-//TODO make account service implement the interface
-public class CustomUserDetailsService implements UserDetailsService {
+public class AccountDetailsService implements UserDetailsService {
     AccountRepository accountRepository;
 
     @Override

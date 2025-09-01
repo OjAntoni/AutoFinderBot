@@ -2,7 +2,7 @@ package com.example.autofinderbot.configuration;
 
 import com.example.autofinderbot.account.AccountRepository;
 import com.example.autofinderbot.common.config.web.JwtTokenProvider;
-import com.example.autofinderbot.account.CustomUserDetailsService;
+import com.example.autofinderbot.account.AccountDetailsService;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
@@ -28,7 +28,7 @@ public class BaseRestApiTest extends BaseSpringBootTest {
     @Autowired
     private JwtTokenProvider tokenProvider;
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private AccountDetailsService userDetailsService;
     @Autowired
     private AccountRepository accountRepository;
 

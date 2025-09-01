@@ -12,7 +12,7 @@ import static com.example.autofinderbot.account.Account.Role.ADMIN;
 
 @Configuration
 @RequiredArgsConstructor
-public class DefaultAccountConfig {
+class DefaultAccountConfig {
     @Value("${default.username:admin}")
     private String defaultUsername;
     @Value("${default.password:admin}")

@@ -1,4 +1,4 @@
-package com.example.autofinderbot.account;
+package com.example.autofinderbot.account.create;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -12,17 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static lombok.AccessLevel.PRIVATE;
 
-@FieldDefaults(level = PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/account")
-public class AccountController {
-    AccountService accountService;
+@RequiredArgsConstructor
+@FieldDefaults(level = PRIVATE, makeFinal = true)
+class CreateAccountController {
+    CreateAccountService service;
 
     @PostMapping
     @PreAuthorize("hasRole(T(com.example.autofinderbot.account.Account.Role).ADMIN)")
     @SecurityRequirement(name = "bearerAuth")
     public void createAccount(@RequestBody @Valid CreateAccountRequest createAccountRequest) {
-        accountService.createAccount(createAccountRequest);
+        service.createAccount(createAccountRequest);
     }
 }
+
