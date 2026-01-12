@@ -1,6 +1,6 @@
 package com.example.autofinderbot.user;
 
-import com.example.autofinderbot.car.*;
+import com.example.autofinderbot.car.core.Car;
 import com.example.autofinderbot.car.brand.CarBrand;
 import com.example.autofinderbot.car.detail.CarDetail;
 import com.example.autofinderbot.car.fuel.FuelType;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.example.autofinderbot.car.GearboxType.AUTOMATIC;
+import static com.example.autofinderbot.car.dictionary.GearboxType.AUTOMATIC;
 import static com.example.autofinderbot.car.seller.Seller.SellerType.PRIVATE;
 import static com.example.autofinderbot.common.util.Details.*;
 import static org.assertj.core.api.Assertions.assertThat;

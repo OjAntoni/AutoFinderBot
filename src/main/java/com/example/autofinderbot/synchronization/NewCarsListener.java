@@ -1,12 +1,12 @@
 package com.example.autofinderbot.synchronization;
 
 import com.example.autofinderbot.common.config.telegram.components.TelegramRelated;
-import com.example.autofinderbot.car.Car;
+import com.example.autofinderbot.car.core.Car;
 import com.example.autofinderbot.filter.UserFilter;
 import com.example.autofinderbot.user.UserService;
 import com.example.autofinderbot.common.util.Logger;
 import com.example.autofinderbot.common.event.NewCarsEvent;
-import com.example.autofinderbot.car.converter.CarMenuKeyboardConverter;
+import com.example.autofinderbot.car.core.CarMenuKeyboardConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.event.EventListener;

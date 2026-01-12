@@ -2,12 +2,12 @@ package com.example.autofinderbot.synchronization;
 
 import com.example.autofinderbot.common.config.cache.CacheProperties;
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
-import com.example.autofinderbot.car.Car;
+import com.example.autofinderbot.car.core.Car;
 import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.car.detail.CarDetailRepository;
-import com.example.autofinderbot.car.CarRepository;
+import com.example.autofinderbot.car.core.CarRepository;
 import com.example.autofinderbot.car.seller.SellerRepository;
-import com.example.autofinderbot.car.CarService;
+import com.example.autofinderbot.car.core.CarService;
 import com.example.autofinderbot.synchronization.report.Report;
 import com.example.autofinderbot.synchronization.report.ReportRepository;
 import org.jsoup.nodes.Document;

@@ -1,14 +1,16 @@
 package com.example.autofinderbot.user;
 
-import com.example.autofinderbot.car.*;
+import com.example.autofinderbot.car.core.Car;
+import com.example.autofinderbot.car.dictionary.GearboxType;
+import com.example.autofinderbot.car.selection.SelectedCar;
 import com.example.autofinderbot.car.brand.CarBrand;
 import com.example.autofinderbot.car.detail.CarDetail;
 import com.example.autofinderbot.car.fuel.FuelType;
 import com.example.autofinderbot.car.generation.Generation;
 import com.example.autofinderbot.car.model.CarModel;
 import com.example.autofinderbot.filter.UserFilter;
-import com.example.autofinderbot.car.CarRepository;
-import com.example.autofinderbot.car.SelectedCarRepository;
+import com.example.autofinderbot.car.core.CarRepository;
+import com.example.autofinderbot.car.selection.SelectedCarRepository;
 import com.example.autofinderbot.filter.UserFilterRepository;
 import com.example.autofinderbot.common.util.DateTimeUtil;
 import com.example.autofinderbot.common.util.Details;

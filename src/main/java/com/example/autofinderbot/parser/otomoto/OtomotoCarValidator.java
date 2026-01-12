@@ -1,6 +1,6 @@
 package com.example.autofinderbot.parser.otomoto;
 
-import com.example.autofinderbot.car.Car;
+import com.example.autofinderbot.car.core.Car;
 import org.springframework.stereotype.Component;
 
 @Component

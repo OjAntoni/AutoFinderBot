@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.example.autofinderbot.car.GearboxType.MANUAL;
+import static com.example.autofinderbot.car.dictionary.GearboxType.MANUAL;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class UrlToFiltersConverterTest extends BaseSpringBootTest {

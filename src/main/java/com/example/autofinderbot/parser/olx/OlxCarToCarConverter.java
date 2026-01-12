@@ -1,6 +1,6 @@
 package com.example.autofinderbot.parser.olx;
 
-import com.example.autofinderbot.car.*;
+import com.example.autofinderbot.car.core.Car;
 import com.example.autofinderbot.car.brand.CarBrand;
 import com.example.autofinderbot.car.detail.CarDetail;
 import com.example.autofinderbot.car.fuel.FuelType;

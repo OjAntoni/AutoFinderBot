@@ -1,7 +1,7 @@
 package com.example.autofinderbot.synchronization;
 
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
-import com.example.autofinderbot.car.Car;
+import com.example.autofinderbot.car.core.Car;
 import com.example.autofinderbot.car.seller.Seller;
 import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.common.event.NewCarsEvent;

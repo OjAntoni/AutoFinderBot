@@ -1,6 +1,6 @@
 package com.example.autofinderbot.filter;
 
-import com.example.autofinderbot.car.*;
+import com.example.autofinderbot.car.dictionary.GearboxType;
 import com.example.autofinderbot.car.brand.CarBrand;
 import com.example.autofinderbot.car.fuel.FuelType;
 import com.example.autofinderbot.car.generation.Generation;

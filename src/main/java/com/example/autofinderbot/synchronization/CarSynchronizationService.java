@@ -1,8 +1,8 @@
 package com.example.autofinderbot.synchronization;
 
-import com.example.autofinderbot.car.Car;
+import com.example.autofinderbot.car.core.Car;
 import com.example.autofinderbot.parser.service.ScraperService;
-import com.example.autofinderbot.car.CarService;
+import com.example.autofinderbot.car.core.CarService;
 import com.example.autofinderbot.synchronization.report.ReportService;
 import com.example.autofinderbot.common.util.DateTimeUtil;
 import com.example.autofinderbot.common.util.Logger;

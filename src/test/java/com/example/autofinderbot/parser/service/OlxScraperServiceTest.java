@@ -1,7 +1,7 @@
 package com.example.autofinderbot.parser.service;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
-import com.example.autofinderbot.car.Car;
+import com.example.autofinderbot.car.core.Car;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

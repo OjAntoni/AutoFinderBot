@@ -1,6 +1,6 @@
 package com.example.autofinderbot.filter;
 
-import com.example.autofinderbot.car.GearboxType;
+import com.example.autofinderbot.car.dictionary.GearboxType;
 import com.example.autofinderbot.common.util.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

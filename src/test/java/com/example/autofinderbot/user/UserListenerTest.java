@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Optional;
 
 
-import static com.example.autofinderbot.car.GearboxType.AUTOMATIC;
-import static com.example.autofinderbot.car.GearboxType.MANUAL;
+import static com.example.autofinderbot.car.dictionary.GearboxType.AUTOMATIC;
+import static com.example.autofinderbot.car.dictionary.GearboxType.MANUAL;
 import static com.example.autofinderbot.filter.UserFilter.State.NEW;
 import static com.example.autofinderbot.common.config.telegram.listener.CommandPath.CONFIRM_FILTER;
 import static com.example.autofinderbot.common.config.telegram.listener.CommandPath.UPLOAD_URL;

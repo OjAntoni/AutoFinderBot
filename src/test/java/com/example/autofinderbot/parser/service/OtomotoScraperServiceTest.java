@@ -1,7 +1,7 @@
 package com.example.autofinderbot.parser.service;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
-import com.example.autofinderbot.car.Car;
+import com.example.autofinderbot.car.core.Car;
 import com.example.autofinderbot.common.util.Details;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;

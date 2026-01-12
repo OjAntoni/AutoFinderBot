@@ -1,6 +1,6 @@
 package com.example.autofinderbot.parser.otomoto;
 
-import com.example.autofinderbot.car.Car;
+import com.example.autofinderbot.car.core.Car;
 import com.example.autofinderbot.car.detail.CarDetail;
 import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.parser.service.ScraperService;
