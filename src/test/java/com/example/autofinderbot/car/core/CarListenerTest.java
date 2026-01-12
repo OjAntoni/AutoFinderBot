@@ -1,5 +1,7 @@
 package com.example.autofinderbot.car.core;
 
+import com.example.autofinderbot.car.selection.SelectedCar;
+import com.example.autofinderbot.car.selection.SelectedCarRepository;
 import com.example.autofinderbot.configuration.BaseTelegramListenerTest;
 import com.example.autofinderbot.user.UserService;
 import org.junit.jupiter.api.Test;

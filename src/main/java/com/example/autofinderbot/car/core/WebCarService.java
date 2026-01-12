@@ -1,6 +1,7 @@
 package com.example.autofinderbot.car.core;
 
 import com.example.autofinderbot.car.detail.CarDetail;
+import com.example.autofinderbot.car.statistics.SimilarCarPriceResponse;
 import com.example.autofinderbot.car.statistics.SimilarCarPricesResponse;
 import com.example.autofinderbot.common.util.Details;
 import lombok.RequiredArgsConstructor;

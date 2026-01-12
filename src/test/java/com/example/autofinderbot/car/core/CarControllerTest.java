@@ -1,5 +1,6 @@
 package com.example.autofinderbot.car.core;
 
+import com.example.autofinderbot.car.statistics.SimilarCarPriceResponse;
 import com.example.autofinderbot.car.statistics.SimilarCarPricesResponse;
 import com.example.autofinderbot.configuration.BaseRestApiTest;
 import com.example.autofinderbot.configuration.PagedResponse;
