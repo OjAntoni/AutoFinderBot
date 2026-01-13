@@ -1,6 +1,6 @@
 package com.example.autofinderbot.car.statistics;
 
-import com.example.autofinderbot.car.statistics.StatisticsService;
+import com.example.autofinderbot.car.statistics.CarStatisticsService;
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
 import com.example.autofinderbot.common.util.DateTimeUtil;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class StatisticsServiceTest extends BaseSpringBootTest {
     @MockitoBean
     DateTimeUtil dateTimeUtil;
     @Autowired
-    StatisticsService statisticsService;
+    CarStatisticsService statisticsService;
 
     @Test
     void getBrandStatisticsZeroStd_PosTC() {

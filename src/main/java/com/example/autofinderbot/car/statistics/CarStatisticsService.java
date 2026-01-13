@@ -1,12 +1,6 @@
 package com.example.autofinderbot.car.statistics;
 
-import com.example.autofinderbot.car.statistics.BrandStatisticsRepository;
-import com.example.autofinderbot.car.statistics.BrandStatisticsResponse;
-import com.example.autofinderbot.car.statistics.DayCount;
-import com.example.autofinderbot.car.statistics.DayPrice;
 import com.example.autofinderbot.common.util.DateTimeUtil;
-import com.example.autofinderbot.user.UserStatisticsResponse;
-import com.example.autofinderbot.user.UserStatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -26,18 +20,9 @@ import static lombok.AccessLevel.PRIVATE;
 @Service
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-//TODO split up into user and car statistics service
-public class StatisticsService {
-    UserStatisticsRepository userStatisticsRepository;
+public class CarStatisticsService {
     BrandStatisticsRepository brandStatisticsRepository;
     DateTimeUtil dateTimeUtil;
-
-    @Transactional(readOnly = true)
-    public UserStatisticsResponse getUserStatistics() {
-        LocalDateTime startOfToday = dateTimeUtil.now().toLocalDate().atStartOfDay();
-        LocalDateTime startOfThisWeek = dateTimeUtil.now().toLocalDate().minusWeeks(1).atStartOfDay();
-        return userStatisticsRepository.getUserStatistics(startOfToday, startOfThisWeek);
-    }
 
     @Transactional(readOnly = true)
     public BrandStatisticsResponse getBrandStatistics(String brand) {
@@ -161,5 +146,3 @@ public class StatisticsService {
         return result;
     }
 }
-
-
