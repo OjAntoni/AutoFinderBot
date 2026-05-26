@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
-import static com.example.autofinderbot.common.util.APIConstants.OTOMOTO_URL;
+import static com.example.autofinderbot.common.util.APIConstants.OTOMOTO_FILTERS_URL;
 import static lombok.AccessLevel.PRIVATE;
 
 @Component
@@ -45,7 +45,7 @@ public class CarFiltersSynchronizationService {
             try {
                 if(!carFiltersService.isBrandFiltersValid()) {
                     carFiltersService.deleteBrandFilters();
-                    document.set(documentService.load(OTOMOTO_URL, validator));
+                    document.set(documentService.load(OTOMOTO_FILTERS_URL, validator));
                     List<CarBrand> carBrands = carFiltersParser.extractCarBrands(document.get());
                     carFiltersService.saveBrandFilters(carBrands);
                 }
@@ -61,7 +61,7 @@ public class CarFiltersSynchronizationService {
         transactionTemplate.execute(status -> {
             try {
                 if(!carFiltersService.isFuelTypesValid()) {
-                    if(document.get() == null) document.set(documentService.load(OTOMOTO_URL, validator));
+                    if(document.get() == null) document.set(documentService.load(OTOMOTO_FILTERS_URL, validator));
                     carFiltersService.deleteFuelTypes();
                     List<FuelType> fuelTypes = carFiltersParser.extractFuelTypes(document.get());
                     carFiltersService.saveFuelTypes(fuelTypes);

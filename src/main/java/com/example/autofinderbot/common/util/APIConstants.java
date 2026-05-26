@@ -5,6 +5,7 @@ public class APIConstants {
     public static final String OLX_SEARCH_URL = "https://www.olx.pl/motoryzacja/samochody/?search%5Border%5D=created_at%3Adesc";
     private static final String OLX_SEARCH_URL_WITH_PAGE = OLX_SEARCH_URL + "&page=";
     public static final String OTOMOTO_URL = "https://www.otomoto.pl/";
+    public static final String OTOMOTO_FILTERS_URL = OTOMOTO_URL + "osobowe";
     public static final String SEARCH_URL = "https://www.otomoto.pl/osobowe?search%5Border%5D=created_at_first%3Adesc";
     private static final String SEARCH_URL_WITH_PAGE = SEARCH_URL + "&page=";
 

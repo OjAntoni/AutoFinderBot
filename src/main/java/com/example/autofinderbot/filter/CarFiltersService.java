@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -73,7 +76,13 @@ public class CarFiltersService {
 
     @Transactional(readOnly = true)
     public List<Generation> getGenerations(List<String> searchKeys) {
-        return generationRepository.findAllBySearchKeyIn(searchKeys);
+        return generationRepository.findAllBySearchKeyIn(searchKeys).stream()
+                .collect(Collectors.toMap(
+                        Generation::getSearchKey,
+                        Function.identity(),
+                        (first, ignored) -> first,
+                        LinkedHashMap::new))
+                .values().stream().toList();
     }
 
     @Transactional(readOnly = true)
