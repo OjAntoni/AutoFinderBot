@@ -1,7 +1,7 @@
 package com.example.autofinderbot.parser.otomoto;
 
-import com.example.autofinderbot.domain.CarDetail;
-import com.example.autofinderbot.domain.Seller;
+import com.example.autofinderbot.car.detail.CarDetail;
+import com.example.autofinderbot.car.seller.Seller;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;

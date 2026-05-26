@@ -1,11 +1,17 @@
 package com.example.autofinderbot.parser.olx;
 
-import com.example.autofinderbot.domain.*;
-import com.example.autofinderbot.repository.CarBrandRepository;
-import com.example.autofinderbot.repository.CarModelRepository;
-import com.example.autofinderbot.repository.FuelTypeRepository;
-import com.example.autofinderbot.shared.DateTimeUtil;
-import com.example.autofinderbot.shared.Details;
+import com.example.autofinderbot.car.core.Car;
+import com.example.autofinderbot.car.brand.CarBrand;
+import com.example.autofinderbot.car.detail.CarDetail;
+import com.example.autofinderbot.car.fuel.FuelType;
+import com.example.autofinderbot.car.model.CarModel;
+import com.example.autofinderbot.car.seller.Address;
+import com.example.autofinderbot.car.seller.Seller;
+import com.example.autofinderbot.car.brand.CarBrandRepository;
+import com.example.autofinderbot.car.model.CarModelRepository;
+import com.example.autofinderbot.car.fuel.FuelTypeRepository;
+import com.example.autofinderbot.common.util.DateTimeUtil;
+import com.example.autofinderbot.common.util.Details;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;

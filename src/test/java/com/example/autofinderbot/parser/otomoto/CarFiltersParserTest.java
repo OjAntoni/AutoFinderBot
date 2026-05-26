@@ -1,8 +1,8 @@
 package com.example.autofinderbot.parser.otomoto;
 
 import com.example.autofinderbot.configuration.BaseSpringBootTest;
-import com.example.autofinderbot.domain.CarBrand;
-import com.example.autofinderbot.domain.FuelType;
+import com.example.autofinderbot.car.brand.CarBrand;
+import com.example.autofinderbot.car.fuel.FuelType;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

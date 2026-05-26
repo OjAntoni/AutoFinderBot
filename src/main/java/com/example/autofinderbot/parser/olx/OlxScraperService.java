@@ -1,6 +1,6 @@
 package com.example.autofinderbot.parser.olx;
 
-import com.example.autofinderbot.domain.Car;
+import com.example.autofinderbot.car.core.Car;
 import com.example.autofinderbot.parser.service.DocumentService;
 import com.example.autofinderbot.parser.service.ScraperService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.autofinderbot.shared.APIConstants.OLX_SEARCH_URL;
+import static com.example.autofinderbot.common.util.APIConstants.OLX_SEARCH_URL;
 import static lombok.AccessLevel.PRIVATE;
 
 @Service

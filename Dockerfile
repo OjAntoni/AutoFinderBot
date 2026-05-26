@@ -11,7 +11,7 @@ COPY src ./src
 RUN gradle clean bootJar --no-daemon
 
 # ─── Stage 2: Package & Runtime ──────────────────────────
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jre-jammy
 
 # Install only the Debian libs Playwright’s Chromium actually needs
 RUN apt-get update \
